@@ -16,6 +16,7 @@ export interface StreamEndEvent {
   use_token_count?: number;
   latency?: number;
   recommended_questions?: string[];
+  chat_history_list?: StreamEvent[];
   reference?: {
     referenceType: string;
     referenceContent: string;

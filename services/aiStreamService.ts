@@ -12,7 +12,12 @@ export const fetchAiStream = async (
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify({ query, group_id: String(groupId) }),
+      body: JSON.stringify({
+        query,
+        group_id: String(groupId),
+        select_action: "",
+        form: [],
+      }),
       cache: "no-cache",
       signal: abortSignal,
     }

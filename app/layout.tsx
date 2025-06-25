@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import PersistentDrawer from "@/components/Drawer/CustomDrawer";
+import { MSWComponent } from "./MSWComponent";
 
 export const metadata: Metadata = {
   title: "Chat Bot Template",
@@ -16,10 +17,12 @@ const RootLayout = ({
   return (
     <html lang="ko">
       <body>
-        <Providers>
-          <PersistentDrawer></PersistentDrawer>
-          <main>{children}</main>
-        </Providers>
+        <MSWComponent>
+          <Providers>
+            <PersistentDrawer></PersistentDrawer>
+            <main>{children}</main>
+          </Providers>
+        </MSWComponent>
       </body>
     </html>
   );

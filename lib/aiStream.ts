@@ -26,7 +26,11 @@ export const processAiStream = async (
           (eventType === "ClarioStatus" || eventType === "ClarioResponse") &&
           eventData
         ) {
-          const eventPayload: StreamEvent = JSON.parse(eventData);
+          const parsed = JSON.parse(eventData);
+
+          if (!parsed) continue;
+
+          const eventPayload: StreamEvent = parsed;
 
           if (eventPayload.type === "all") {
             onDone?.(eventPayload);
@@ -56,11 +60,11 @@ const parseStreamEvent = (raw: string) => {
 
   for (const line of lines) {
     if (line.startsWith("event:"))
-      result.eventType = line.replace("event:", "").trim();
+      result.eventType = line.replace("event: ", "").trim();
     else if (line.startsWith("data:"))
-      result.eventData = line.replace("data:", "").trim();
+      result.eventData = line.replace("data: ", "").trim();
     else if (line.startsWith("id:"))
-      result.eventId = line.replace("id:", "").trim();
+      result.eventId = line.replace("id: ", "").trim();
   }
 
   return result;

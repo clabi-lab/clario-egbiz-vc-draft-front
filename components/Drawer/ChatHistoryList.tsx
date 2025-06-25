@@ -1,4 +1,5 @@
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 import {
   List,
@@ -18,18 +19,29 @@ const ChatHistoryList = () => {
           sx={{ pl: 4, py: "2px" }}
           key={`${item.title}-${index}`}
         >
-          <ListItemIcon sx={{ minWidth: "32px" }} />
-          <Link href={`/chat/${item.shareCode}`}>
+          <Link
+            href={`/chat/${item.shareCode}`}
+            className="w-[80%] flex align-center"
+          >
             <ListItemText
+              className="flex align-center truncate"
               primary={item.title}
-              sx={{
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
             />
           </Link>
+          <ListItemIcon
+            className=""
+            sx={{
+              minWidth: "32px",
+              display: "none",
+              "&:hover": { display: "inline-flex" },
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("open");
+            }}
+          >
+            <MoreHorizIcon sx={{ color: "white" }}></MoreHorizIcon>
+          </ListItemIcon>
         </ListItemButton>
       ))}
     </List>

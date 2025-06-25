@@ -1,0 +1,23 @@
+.MuiStep-root > .MuiStepLabel-root {
+  padding: 2px 0;
+}
+
+.MuiStepConnector-root.MuiStepConnector-vertical {
+  margin-left: 6px;
+}
+.MuiStepConnector-root .MuiStepConnector-line {
+  min-height: 12px;
+}
+
+.MuiStepLabel-iconContainer > .MuiSvgIcon-root {
+  width: 14px;
+  height: 14px;
+}
+
+.MuiStepLabel-labelContainer > .MuiStepLabel-label {
+  font-size: 13px;
+}
+
+.MuiStepLabel-labelContainer > .MuiStepLabel-label.Mui-completed {
+  color: var(--text-gray-500);
+}

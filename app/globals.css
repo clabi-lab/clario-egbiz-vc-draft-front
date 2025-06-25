@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
@@ -10,6 +11,9 @@
   /* drawer */
   --drawer-bg: #004785;
   --drawer-text: #ffffff;
+
+  /* chat */
+  --chat-bg: #e1e7fd;
 }
 
 .dark {
@@ -19,9 +23,13 @@
   /* drawer */
   --drawer-bg: #004785;
   --drawer-text: #ffffff;
+
+  /* chat */
+  --chat-bg: #e1e7fd;
 }
 
 @theme {
   --color-drawer-bg: var(--drawer-bg);
   --color-drawer-text: var(--drawer-text);
+  --color-chat-bg: var(--chat-bg);
 }
