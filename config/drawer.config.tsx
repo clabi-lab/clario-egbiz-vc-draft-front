@@ -4,7 +4,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
-import ChatHistoryList from "@/components/Drawer/ChatHistoryList";
+import ChatHistories from "@/components/Drawer/ChatHistories/ChatHistories";
 
 // Drawer 전역 설정 값
 export const drawerConfig = {
@@ -39,6 +39,6 @@ export const drawerMenuList: DrawerItem[] = [
     title: "최근 질문",
     icon: ExpandMoreOutlinedIcon,
     type: "toggle", // 토글형 메뉴 (펼침/접힘)
-    subList: <ChatHistoryList />, // 토글 펼침 시 렌더링할 컴포넌트
+    subList: <ChatHistories />, // 토글 펼침 시 렌더링할 컴포넌트
   },
 ];

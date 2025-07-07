@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Drawer, IconButton, List } from "@mui/material";
-import DrawerMenuItem from "./DrawerMenuItem";
+import DrawerMenuItem from "./DrawerMenu/DrawerMenuItem";
 import { DrawerItem } from "../../types/Drawer";
 
 import MenuIcon from "@mui/icons-material/Menu";

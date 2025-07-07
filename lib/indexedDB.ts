@@ -1,16 +1,21 @@
 const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Clabi";
-const STORE_NAME = "Chat";
+const CHAT_HISTORY_STORE = "ChatHistoryStore";
+const SAVED_CHAT_STORE = "SavedChatStore";
 
-export const getAllChatGroups = (): Promise<
-  Array<{ id: number; title: string; shareCode: string }>
-> => {
+interface IndexedDBItem {
+  id: number;
+  title: string;
+  shareCode: string;
+}
+
+export const getAllChatGroups = (): Promise<IndexedDBItem[]> => {
   return new Promise((resolve, reject) => {
     const openRequest = indexedDB.open(DB_NAME, 1);
 
     openRequest.onupgradeneeded = () => {
       const db = openRequest.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      if (!db.objectStoreNames.contains(CHAT_HISTORY_STORE)) {
+        db.createObjectStore(CHAT_HISTORY_STORE, { keyPath: "id" });
       }
     };
 
@@ -18,8 +23,8 @@ export const getAllChatGroups = (): Promise<
 
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      const tx = db.transaction(STORE_NAME, "readonly");
-      const store = tx.objectStore(STORE_NAME);
+      const tx = db.transaction(CHAT_HISTORY_STORE, "readonly");
+      const store = tx.objectStore(CHAT_HISTORY_STORE);
 
       const getAllRequest = store.getAll();
 
@@ -35,18 +40,14 @@ export const saveChatGroup = async ({
   id,
   title,
   shareCode,
-}: {
-  id: number;
-  title: string;
-  shareCode: string;
-}) => {
+}: IndexedDBItem) => {
   const openRequest = indexedDB.open(DB_NAME, 1);
 
   return new Promise<void>((resolve, reject) => {
     openRequest.onupgradeneeded = () => {
       const db = openRequest.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      if (!db.objectStoreNames.contains(CHAT_HISTORY_STORE)) {
+        db.createObjectStore(CHAT_HISTORY_STORE, { keyPath: "id" });
       }
     };
 
@@ -56,8 +57,8 @@ export const saveChatGroup = async ({
 
     openRequest.onsuccess = () => {
       const db = openRequest.result;
-      const tx = db.transaction(STORE_NAME, "readwrite");
-      const store = tx.objectStore(STORE_NAME);
+      const tx = db.transaction(CHAT_HISTORY_STORE, "readwrite");
+      const store = tx.objectStore(CHAT_HISTORY_STORE);
 
       store.put({ id, title, shareCode });
 
@@ -81,13 +82,13 @@ export const getShareCode = async (id: number): Promise<string | null> => {
     openRequest.onsuccess = () => {
       const db = openRequest.result;
 
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
+      if (!db.objectStoreNames.contains(CHAT_HISTORY_STORE)) {
         resolve(null);
         return;
       }
 
-      const tx = db.transaction(STORE_NAME, "readonly");
-      const store = tx.objectStore(STORE_NAME);
+      const tx = db.transaction(CHAT_HISTORY_STORE, "readonly");
+      const store = tx.objectStore(CHAT_HISTORY_STORE);
       const allRequest = store.getAll();
 
       allRequest.onsuccess = () => {
@@ -97,6 +98,80 @@ export const getShareCode = async (id: number): Promise<string | null> => {
       };
 
       allRequest.onerror = () => reject(allRequest.error);
+    };
+  });
+};
+
+export const updateChatGroup = async ({
+  id,
+  title,
+  shareCode,
+}: IndexedDBItem) => {
+  const openRequest = indexedDB.open(DB_NAME, 1);
+
+  return new Promise<void>((resolve, reject) => {
+    openRequest.onerror = () => reject(openRequest.error);
+
+    openRequest.onsuccess = () => {
+      const db = openRequest.result;
+      const tx = db.transaction(CHAT_HISTORY_STORE, "readwrite");
+      const store = tx.objectStore(CHAT_HISTORY_STORE);
+
+      store.put({ id, title, shareCode });
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    };
+  });
+};
+
+export const deleteChatGroup = async (id: number) => {
+  const openRequest = indexedDB.open(DB_NAME, 1);
+
+  return new Promise<void>((resolve, reject) => {
+    openRequest.onerror = () => reject(openRequest.error);
+
+    openRequest.onsuccess = () => {
+      const db = openRequest.result;
+      const tx = db.transaction(CHAT_HISTORY_STORE, "readwrite");
+      const store = tx.objectStore(CHAT_HISTORY_STORE);
+
+      store.delete(id);
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    };
+  });
+};
+
+export const savedChatGroup = async ({
+  id,
+  title,
+  shareCode,
+}: IndexedDBItem) => {
+  const openRequest = indexedDB.open(DB_NAME, 1);
+
+  return new Promise<void>((resolve, reject) => {
+    openRequest.onupgradeneeded = () => {
+      const db = openRequest.result;
+      if (!db.objectStoreNames.contains(SAVED_CHAT_STORE)) {
+        db.createObjectStore(SAVED_CHAT_STORE, { keyPath: "id" });
+      }
+    };
+
+    openRequest.onerror = () => {
+      reject(openRequest.error);
+    };
+
+    openRequest.onsuccess = () => {
+      const db = openRequest.result;
+      const tx = db.transaction(SAVED_CHAT_STORE, "readwrite");
+      const store = tx.objectStore(SAVED_CHAT_STORE);
+
+      store.put({ id, title, shareCode });
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
     };
   });
 };

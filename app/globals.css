@@ -6,30 +6,42 @@
 
 :root {
   /* globals */
-  --point: #6182f3;
+  --point: #004785;
 
   /* drawer */
-  --drawer-bg: #004785;
-  --drawer-text: #ffffff;
+  --drawer-bg: #f2f7fb;
+  --drawer-text: #000000;
+  --drawer-hover-bg: #004785;
+  --drawer-hover-text: #ffffff;
+  --history-menu-text: #ffffff;
+  --history-menu-bg: #004785;
 
   /* chat */
-  --chat-bg: #e1e7fd;
+  --chat-bg: #fff;
 }
 
 .dark {
   /* globals */
-  --point: #6182f3;
+  --point: #004785;
 
   /* drawer */
-  --drawer-bg: #004785;
-  --drawer-text: #ffffff;
+  --drawer-bg: #f2f7fb;
+  --drawer-text: #000000;
+  --drawer-hover-bg: #004785;
+  --drawer-hover-text: #ffffff;
+  --history-menu-text: #ffffff;
+  --history-menu-bg: #004785;
 
   /* chat */
-  --chat-bg: #e1e7fd;
+  --chat-bg: #fff;
 }
 
 @theme {
   --color-drawer-bg: var(--drawer-bg);
+  --color-drawer-hover-bg: var(--drawer-hover-bg);
+  --color-drawer-hover-text: var(--drawer-hover-text);
   --color-drawer-text: var(--drawer-text);
+  --color-history-menu-text: var(--history-menu-text);
+  --color-history-menu-bg: var(--history-menu-bg);
   --color-chat-bg: var(--chat-bg);
 }

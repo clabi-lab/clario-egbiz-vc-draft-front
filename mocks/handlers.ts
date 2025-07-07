@@ -83,4 +83,17 @@ export const handlers = [
       updated_at: "2025-06-02T09:01:20.215Z",
     });
   }),
+
+  // indexedDB 저장 용
+  http.get(`${API_BASE_URL}/chat/group/share`, ({ request }) => {
+    const url = new URL(request.url);
+    const groupId = url.searchParams.get("groupId");
+    return HttpResponse.json({
+      chat_group_id: groupId ? Number(groupId) : 1,
+      title: "안녕",
+      chats: [savedChat],
+      created_at: "2025-06-02T09:01:20.215Z",
+      updated_at: "2025-06-02T09:01:20.215Z",
+    });
+  }),
 ];
