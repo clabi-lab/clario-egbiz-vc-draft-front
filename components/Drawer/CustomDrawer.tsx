@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -11,7 +12,13 @@ import { getAllChatGroups } from "@/lib/indexedDB";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Drawer, IconButton, List } from "@mui/material";
+import {
+  Drawer,
+  IconButton,
+  List,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import DrawerMenuItem from "./DrawerMenu/DrawerMenuItem";
 import { DrawerItem } from "../../types/Drawer";
 
@@ -25,6 +32,9 @@ const CustomDrawer = () => {
   const { histories, setHistories } = useChatHistoryStore();
 
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // 보통 sm = 600px
 
   // drawerConfig.activeMenu에 있는 메뉴만 필터링
   const filteredMenuList: DrawerItem[] = drawerConfig.activeMenu
@@ -46,6 +56,14 @@ const CustomDrawer = () => {
       setHistories(list);
     });
   }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [isMobile]);
 
   // 미리 chat 페이지 prefetch
   useEffect(() => {
