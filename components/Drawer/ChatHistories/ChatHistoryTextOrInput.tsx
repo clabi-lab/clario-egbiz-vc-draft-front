@@ -84,6 +84,7 @@ export const ChatHistoryTextOrInput = ({
     <Link
       href={`/chat/${shareCode}`}
       className="w-[calc(100%-32px)] flex items-center"
+      passHref
     >
       <ListItemText
         primary={editedTitle}

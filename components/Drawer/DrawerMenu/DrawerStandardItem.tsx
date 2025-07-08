@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
+  styled,
 } from "@mui/material";
 import { DrawerItem } from "@/types/Drawer";
 
@@ -15,41 +16,69 @@ interface Props {
   onClick: (item: DrawerItem) => void;
 }
 
+const StyledListItemButton = styled(ListItemButton, {
+  shouldForwardProp: (prop) => prop !== "isText",
+})<{ isText: boolean }>(({ isText }) => ({
+  "&:hover": isText
+    ? {
+        backgroundColor: "transparent",
+      }
+    : {
+        backgroundColor: "var(--drawer-hover-bg)",
+        color: "var(--drawer-hover-text)",
+      },
+}));
+
+const StyledListItemIcon = styled(ListItemIcon, {
+  shouldForwardProp: (prop) => prop !== "isRotated",
+})<{ isRotated: boolean }>(({ isRotated }) => ({
+  color: "inherit",
+  minWidth: 32,
+  "& svg": {
+    transition: "transform 0.3s ease",
+    transform: isRotated ? "rotate(180deg)" : "none",
+  },
+}));
+
 const DrawerStandardItem = ({ item, isOpen, onClick }: Props) => {
   const { title, icon: IconComponent, type, subList } = item;
   const isToggle = type === "toggle";
+  const isText = type === "text";
 
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton
+        <StyledListItemButton
+          disableRipple={isText}
+          isText={isText}
           onClick={() => onClick(item)}
-          sx={{
-            "&:hover": {
-              backgroundColor: "var(--drawer-hover-bg)",
-              color: "var(--drawer-hover-text)",
-            },
-          }}
         >
-          <ListItemText primary={title} />
+          <ListItemText
+            primary={title}
+            slotProps={{
+              primary: {
+                sx: {
+                  fontWeight: "bold",
+                },
+              },
+            }}
+          />
           {IconComponent && (
-            <ListItemIcon sx={{ color: "inherit", minWidth: 32 }}>
-              <IconComponent
-                sx={{
-                  transition: "transform 0.3s ease",
-                  transform: isToggle && !isOpen ? "rotate(180deg)" : "none",
-                }}
-              />
-            </ListItemIcon>
+            <StyledListItemIcon isRotated={isToggle && !isOpen}>
+              <IconComponent />
+            </StyledListItemIcon>
           )}
-        </ListItemButton>
+        </StyledListItemButton>
       </ListItem>
 
-      {isToggle && subList && (
-        <Collapse in={isOpen} timeout="auto" unmountOnExit>
-          {subList}
-        </Collapse>
-      )}
+      {subList &&
+        (isToggle ? (
+          <Collapse in={isOpen} timeout="auto" unmountOnExit>
+            {subList}
+          </Collapse>
+        ) : (
+          <>{subList}</>
+        ))}
     </>
   );
 };

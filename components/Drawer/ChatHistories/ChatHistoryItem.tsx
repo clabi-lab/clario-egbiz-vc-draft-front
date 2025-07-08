@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ListItemButton, ListItemIcon } from "@mui/material";
+import { ListItemButton, ListItemIcon, styled } from "@mui/material";
 
 import {
   deleteChatGroup,
@@ -20,6 +20,30 @@ import {
 } from "@mui/icons-material";
 
 import { History } from "@/types/ChatHistory";
+
+const StyledListItemButton = styled(ListItemButton, {
+  shouldForwardProp: (prop) => prop !== "isEditing",
+})<{ isEditing: boolean }>(({ isEditing, theme }) => ({
+  paddingLeft: theme.spacing(4),
+  paddingTop: "2px",
+  paddingBottom: "2px",
+  "&:hover .more-icon": {
+    display: "inline-flex",
+  },
+  "&.Mui-focusVisible": {
+    backgroundColor: "transparent",
+  },
+  ...(isEditing
+    ? {
+        "&:hover": { backgroundColor: "transparent" },
+      }
+    : {
+        "&:hover": {
+          backgroundColor: "var(--drawer-hover-bg)",
+          color: "var(--drawer-hover-text)",
+        },
+      }),
+}));
 
 const ChatHistoryItem = ({ item }: { item: History }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -73,26 +97,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
 
   return (
     <>
-      <ListItemButton
-        sx={{
-          pl: 4,
-          py: "2px",
-          "&:hover .more-icon": {
-            display: "inline-flex",
-          },
-          "&.Mui-focusVisible": { backgroundColor: "transparent" },
-          ...(isEditing
-            ? {
-                "&:hover": { backgroundColor: "transparent" },
-              }
-            : {
-                "&:hover": {
-                  backgroundColor: "var(--drawer-hover-bg)",
-                  color: "var(--drawer-hover-text)",
-                },
-              }),
-        }}
-      >
+      <StyledListItemButton isEditing={isEditing}>
         <ChatHistoryTextOrInput
           isEditing={isEditing}
           editedTitle={editedTitle}
@@ -115,7 +120,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
             <MoreIcon sx={{ color: "white" }} />
           </ListItemIcon>
         )}
-      </ListItemButton>
+      </StyledListItemButton>
 
       <ChatHistoryMenu
         anchorEl={menuAnchorEl}
