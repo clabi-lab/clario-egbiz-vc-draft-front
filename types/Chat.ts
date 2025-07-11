@@ -19,10 +19,7 @@ export interface Chat {
   latency?: number;
   action?: string;
   sub_action?: string;
-  recommended_questions?: {
-    question: string;
-    answer: string;
-  }[];
+  recommended_questions?: RecommendedQuestions[];
   references?:
     | {
         referenceType: string;
@@ -39,4 +36,19 @@ export interface Chat {
     type: string;
     text: string;
   }[];
+}
+
+export interface ChatListItem {
+  question: string;
+  streamStages: {
+    type: string;
+    text: string;
+  }[];
+  streamText: string;
+  recommendedQuestions?: RecommendedQuestions[];
+}
+
+export interface RecommendedQuestions {
+  answer: string;
+  question: string;
 }

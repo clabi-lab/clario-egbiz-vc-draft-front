@@ -1,21 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchGreeting, fetchPromptInput } from "@/services/homeService";
+import { fetchSetting } from "@/services/homeService";
 
-export const useFetchPromptInput = () => {
+export const useFetchSetting = () => {
   return useQuery({
-    queryKey: ["PromptInput"],
-    queryFn: fetchPromptInput,
-    initialData: { id: 0, input: "검색어를 입력하세요" },
-  });
-};
-
-export const useFetchGreeting = () => {
-  return useQuery({
-    queryKey: ["Greeting"],
-    queryFn: fetchGreeting,
+    queryKey: ["setting"],
+    queryFn: fetchSetting,
     initialData: {
-      id: 0,
-      mainGreeting: "CLARIO는 아래와 같은 내용에 대한 질의응답이 가능합니다.",
+      greeting: {
+        id: 0,
+        main_greeting: "",
+        light_logo_url: null,
+        dark_logo_url: null,
+      },
+      prompt: {
+        id: 0,
+        input: "",
+      },
+      example_questions: [],
     },
   });
 };

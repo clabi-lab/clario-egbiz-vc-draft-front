@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
 import { homeConfig } from "@/config/home.config";
-import { useFetchPromptInput } from "@/hooks/useHomeData";
 import { useFilterStore } from "@/store/useDrawerStore";
 
 import Image from "next/image";
@@ -12,11 +11,12 @@ import SearchBar from "@/components/SearchBar";
 import Greeting from "@/components/Greeting";
 import AiDisclaimer from "@/components/AiDisclaimer";
 import { Chip, Stack } from "@mui/material";
+import { useFetchSetting } from "@/hooks/useHomeData";
 
 const HomePage = () => {
   const router = useRouter();
 
-  const { data: promptInputData } = useFetchPromptInput();
+  const { data: settingData } = useFetchSetting();
   const filterTags = useFilterStore((state) => state.filterTags);
 
   const handleSearch = async (searchText: string) => {
@@ -33,7 +33,7 @@ const HomePage = () => {
         <Greeting className="mt-4" />
         <SearchBar
           className="mt-8 w-full"
-          placeholder={promptInputData.input}
+          placeholder={settingData.prompt.input}
           onSearch={handleSearch}
         />
 

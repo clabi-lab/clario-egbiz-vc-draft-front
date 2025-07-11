@@ -6,19 +6,19 @@ export const createChatGroup = async (
   title: string
 ): Promise<ChatGroupResponse> => {
   const response = await baseService.post(`/chat/group`, { title });
-  return response.data;
+  return response.data.data;
 };
 
 export const saveChat = async (chatData: Chat): Promise<ChatGroupResponse> => {
   const response = await baseService.post(`/chat`, chatData);
-  return response.data;
+  return response.data.data;
 };
 
 export const updateChat = async (
   chatData: Chat
 ): Promise<ChatGroupResponse> => {
   const response = await baseService.put(`/chat`, chatData);
-  return response.data;
+  return response.data.data;
 };
 
 export const createShareCode = async (
@@ -29,7 +29,7 @@ export const createShareCode = async (
   const response = await baseService.get(
     `/chat/group/share?groupId=${groupId}`
   );
-  return response.data;
+  return response.data.data;
 };
 
 export const fetchSavedChat = async (
@@ -39,5 +39,5 @@ export const fetchSavedChat = async (
   chats: Chat[];
 }> => {
   const response = await baseService.get(`/chat/group/share/${encodedData}`);
-  return response.data;
+  return response.data.data;
 };

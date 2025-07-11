@@ -3,40 +3,40 @@ import { StreamEndEvent } from "@/types/Stream";
 export const formatChatSaveData = (
   event: StreamEndEvent,
   chatGroupId: number,
-  chat_history_list: {
-    type: string;
-    text: string;
-  }[]
+  chatHistoryList: { type: string; text: string }[]
 ) => {
   const {
+    ip_address = "",
     chat_question = "",
     chat_answer = "",
-    ip_address = "",
     use_token_count = 0,
     latency = 0,
+    clario_uuid = 0,
     action = "",
     sub_action = "",
+    select_items = "",
     recommended_questions = [],
     reference = [],
     images = [],
   } = event;
 
-  const formattedRecommendedQuestions = recommended_questions.map(
-    (question) => ({ question, answer: "" })
-  );
-
   return {
+    ip_address,
     chat_question,
     chat_answer,
-    chat_group_id: chatGroupId,
-    ip_address,
     use_token_count,
     latency,
+    clario_uuid,
     action,
     sub_action,
-    recommended_questions: formattedRecommendedQuestions,
+    select_items,
+    recommended_questions: recommended_questions.map((question) => ({
+      question,
+      answer: "",
+    })),
     references: reference,
     images,
-    chat_history_list,
+    chat_history_list: chatHistoryList,
+    chat_group_id: chatGroupId,
   };
 };

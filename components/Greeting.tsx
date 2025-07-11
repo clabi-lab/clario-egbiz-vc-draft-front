@@ -1,13 +1,13 @@
 import React from "react";
-import { useFetchGreeting } from "@/hooks/useHomeData";
+import { useFetchSetting } from "@/hooks/useHomeData";
 
 const Greeting = ({ className }: { className?: string }) => {
-  const { data: greetingData } = useFetchGreeting();
+  const { data: settingData } = useFetchSetting();
 
   return (
     <div
       className={`text-cente ${className}`}
-      dangerouslySetInnerHTML={{ __html: greetingData.mainGreeting }}
+      dangerouslySetInnerHTML={{ __html: settingData.greeting.main_greeting }}
     />
   );
 };

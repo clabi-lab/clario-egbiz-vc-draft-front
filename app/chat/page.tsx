@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { useFetchPromptInput } from "@/hooks/useHomeData";
+import { useFetchSetting } from "@/hooks/useHomeData";
 
 import Greeting from "@/components/Greeting";
 import SearchBar from "@/components/SearchBar";
@@ -11,7 +11,7 @@ import SearchBar from "@/components/SearchBar";
 const ChatPage = () => {
   const router = useRouter();
 
-  const { data: promptInputData } = useFetchPromptInput();
+  const { data: settingData } = useFetchSetting();
 
   const handleSearch = async (searchText: string) => {
     const obj = {
@@ -25,7 +25,7 @@ const ChatPage = () => {
       <Greeting />
       <SearchBar
         className="mt-8"
-        placeholder={promptInputData.input}
+        placeholder={settingData.prompt.input}
         onSearch={handleSearch}
       />
     </div>

@@ -9,6 +9,7 @@ export interface StreamEndEvent {
   chat_question?: string;
   chat_answer?: string;
   chat_ai_group_id?: number;
+  chat_group_id?: number;
   clario_uuid?: string;
   ip_address?: string;
   action?: string;
@@ -26,4 +27,11 @@ export interface StreamEndEvent {
     imageType: string;
   }[];
   [key: string]: unknown;
+}
+
+export interface ChatGroup {
+  question: string;
+  streamStages: StreamEvent[];
+  streamText: string;
+  isFinished: boolean;
 }
