@@ -1,13 +1,13 @@
 import React from "react";
-import { useFetchSetting } from "@/hooks/useHomeData";
+import { useProjectInfoStore } from "@/store/useCommonStore";
 
 const Greeting = ({ className }: { className?: string }) => {
-  const { data: settingData } = useFetchSetting();
+  const greeting = useProjectInfoStore((state) => state.greeting);
 
   return (
     <div
       className={`text-cente ${className}`}
-      dangerouslySetInnerHTML={{ __html: settingData.greeting.main_greeting }}
+      dangerouslySetInnerHTML={{ __html: greeting.main_greeting }}
     />
   );
 };

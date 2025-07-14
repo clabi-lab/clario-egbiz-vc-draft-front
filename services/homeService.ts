@@ -4,8 +4,8 @@ export const fetchSetting = async (): Promise<{
   greeting: {
     id: number;
     main_greeting: string;
-    light_logo_url: null;
-    dark_logo_url: null;
+    light_logo_url: string;
+    dark_logo_url: string;
   };
   prompt: {
     id: number;

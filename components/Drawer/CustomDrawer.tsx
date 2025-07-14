@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { useDrawerStore } from "../../store/useDrawerStore";
 import { useChatHistoryStore } from "../../store/useChatHistoryStore";
+import { useProjectInfoStore } from "@/store/useCommonStore";
 import { drawerConfig, drawerMenuList } from "../../config/drawer.config";
 import { getAllChatGroups } from "@/lib/indexedDB";
 
@@ -30,6 +31,7 @@ const CustomDrawer = () => {
 
   const { isOpen, setOpen } = useDrawerStore();
   const { histories, setHistories } = useChatHistoryStore();
+  const greeting = useProjectInfoStore((state) => state.greeting);
 
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
 
@@ -126,9 +128,15 @@ const CustomDrawer = () => {
           >
             <MenuIcon></MenuIcon>
           </IconButton>
-          {drawerConfig.showLogo && (
+          {drawerConfig.showLogo && greeting.light_logo_url && (
             <Link href="/" className="h-[27px] ml-6">
-              <Image src={Logo} alt="logo" className="h-full w-auto" />
+              <Image
+                src={greeting.light_logo_url || Logo}
+                alt="logo"
+                width={60}
+                height={10}
+                className="h-full w-auto"
+              />
             </Link>
           )}
         </div>

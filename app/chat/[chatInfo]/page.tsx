@@ -2,10 +2,10 @@
 "use client";
 
 import React, { use, useEffect, useRef, useState } from "react";
-import { useFetchSetting } from "@/hooks/useHomeData";
 import { useAiStreaming } from "@/hooks/useAiStreaming";
 import { useCreateChatGroup, useFetchSavedChat } from "@/hooks/useChatData";
 import { base64Decode } from "@/utils/encoding";
+import { useProjectInfoStore } from "@/store/useCommonStore";
 
 import SearchBar from "@/components/SearchBar";
 import QuestionView from "@/components/Chat/QuestionView";
@@ -20,8 +20,9 @@ const ChatDetailPage = ({
 }: {
   params: Promise<{ chatInfo: string }>;
 }) => {
+  const prompt = useProjectInfoStore((state) => state.prompt);
+
   const { chatInfo } = use(params);
-  const { data: settingData } = useFetchSetting();
   const { mutateAsync: fetchSavedChat } = useFetchSavedChat();
   const { mutateAsync: createChatGroup } = useCreateChatGroup();
   const [chatGroupId, setChatGroupId] = useState<number>();
@@ -154,7 +155,7 @@ const ChatDetailPage = ({
 
       <SearchBar
         className="mt-4 mx-auto"
-        placeholder={settingData.prompt.input}
+        placeholder={prompt.input}
         onSearch={handleSearch}
       />
     </div>
