@@ -78,6 +78,7 @@ const ChatDetailPage = ({
         setChatList(list);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatInfo]);
 
   useEffect(() => {
