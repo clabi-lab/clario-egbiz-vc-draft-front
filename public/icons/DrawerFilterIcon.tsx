@@ -1,5 +1,4 @@
-import { mergeClassNames } from '../../src/lib/mergeClassNames';
-import React from 'react';
+import { mergeClassNames } from "@/lib/mergeClassNames";
 
 export default function DrawerFilterIcon({
   className,

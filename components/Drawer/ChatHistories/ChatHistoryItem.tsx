@@ -51,7 +51,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
   const [editedTitle, setEditedTitle] = useState(item.title);
 
   const isMenuOpen = Boolean(menuAnchorEl);
-  const { setHistories } = useChatHistoryStore();
+  const setHistories = useChatHistoryStore((state) => state.setHistories);
 
   const openMenu = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -60,8 +60,12 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
   const closeMenu = () => setMenuAnchorEl(null);
 
   const refreshHistory = async () => {
-    const list = await getAllChatGroups();
-    setHistories(list);
+    try {
+      const list = await getAllChatGroups();
+      setHistories(list);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleRename = () => {
@@ -70,29 +74,41 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
   };
 
   const handleSubmitRename = async () => {
-    if (!editedTitle.trim()) return;
-    await updateChatGroup({
-      id: Number(item.id),
-      title: editedTitle,
-      shareCode: item.shareCode,
-    });
-    setIsEditing(false);
-    refreshHistory();
+    try {
+      if (!editedTitle.trim()) return;
+      await updateChatGroup({
+        id: Number(item.id),
+        title: editedTitle,
+        shareCode: item.shareCode,
+      });
+      setIsEditing(false);
+      refreshHistory();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleArchive = async () => {
-    await savedChatGroup({
-      id: Number(item.id),
-      title: item.title,
-      shareCode: item.shareCode,
-    });
-    closeMenu();
+    try {
+      await savedChatGroup({
+        id: Number(item.id),
+        title: item.title,
+        shareCode: item.shareCode,
+      });
+      closeMenu();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleDelete = async () => {
-    await deleteChatGroup(Number(item.id));
-    refreshHistory();
-    closeMenu();
+    try {
+      await deleteChatGroup(Number(item.id));
+      refreshHistory();
+      closeMenu();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

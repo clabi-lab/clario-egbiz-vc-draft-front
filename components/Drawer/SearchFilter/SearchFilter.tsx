@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useFilterStore } from "@/store/useFilterStore";
+
 import {
   Collapse,
   InputAdornment,
@@ -9,6 +11,8 @@ import {
   ListItemText,
   TextField,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import {
   SelectAllListItemButton,
@@ -18,11 +22,8 @@ import {
   StyledListItemText,
 } from "./styles";
 
-import SearchIcon from "@mui/icons-material/Search";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import { Filter } from "@/types/Filter";
-import { useFilterStore } from "@/store/useDrawerStore";
+import posthog from "posthog-js";
 
 // Mock data for filters
 const Data = [
@@ -129,6 +130,10 @@ const SearchFilter = ({
     if (selectedFilters.length === filters.length) {
       setSelectedFilters([]);
     } else {
+      posthog.capture("filters", {
+        keyword: filters.map((f) => f.description).join(", "),
+        source: "filters",
+      });
       setSelectedFilters(filters);
     }
   };
@@ -163,6 +168,11 @@ const SearchFilter = ({
     }
 
     newSelected = Array.from(new Set(newSelected));
+
+    posthog.capture("filters", {
+      keyword: newSelected.map((f) => f.description).join(", "),
+      source: "filters",
+    });
 
     setSelectedFilters(newSelected);
   };

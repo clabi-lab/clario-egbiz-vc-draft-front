@@ -4,7 +4,7 @@ import { List } from "@mui/material";
 import ChatHistoryItem from "./ChatHistoryItem";
 
 const ChatHistories = () => {
-  const { histories } = useChatHistoryStore();
+  const histories = useChatHistoryStore((state) => state.histories);
 
   return (
     <List component="div" disablePadding key="histories">

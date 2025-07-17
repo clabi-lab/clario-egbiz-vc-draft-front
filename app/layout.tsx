@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 
-import "./globals.css";
 import { Providers } from "./providers";
-import PersistentDrawer from "@/components/Drawer/CustomDrawer";
 import { MSWComponent } from "./MSWComponent";
+
+import PersistentDrawer from "@/components/Drawer/CustomDrawer";
+import AppInitializer from "@/components/AppInitializer";
+import { GlobalAlert } from "@/components/GlobalAlert";
+
+import "./globals.css";
+import PostHogProvider from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: "Chat Bot Template",
@@ -19,8 +24,12 @@ const RootLayout = ({
       <body>
         <MSWComponent>
           <Providers>
-            <PersistentDrawer></PersistentDrawer>
-            <main>{children}</main>
+            <AppInitializer />
+            <PostHogProvider>
+              <PersistentDrawer></PersistentDrawer>
+              <GlobalAlert />
+              <main>{children}</main>
+            </PostHogProvider>
           </Providers>
         </MSWComponent>
       </body>

@@ -9,8 +9,8 @@ export const useFetchSetting = () => {
       greeting: {
         id: 0,
         main_greeting: "",
-        light_logo_url: null,
-        dark_logo_url: null,
+        light_logo_url: "",
+        dark_logo_url: "",
       },
       prompt: {
         id: 0,

@@ -41,6 +41,7 @@
 }
 
 @theme {
+  --color-point: var(--point);
   --color-drawer-bg: var(--drawer-bg);
   --color-drawer-hover-bg: var(--drawer-hover-bg);
   --color-drawer-hover-text: var(--drawer-hover-text);

@@ -3,23 +3,25 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { homeConfig } from "@/config/home.config";
-import { useFilterStore } from "@/store/useDrawerStore";
+import { useFilterStore } from "@/store/useFilterStore";
+import { useFetchSetting } from "@/hooks/useHomeData";
 
 import Image from "next/image";
 import SearchBar from "@/components/SearchBar";
 import Greeting from "@/components/Greeting";
 import AiDisclaimer from "@/components/AiDisclaimer";
 import { Chip, Stack } from "@mui/material";
-import { useFetchSetting } from "@/hooks/useHomeData";
+
+import { homeConfig } from "@/config/home.config";
 
 const HomePage = () => {
   const router = useRouter();
 
   const { data: settingData } = useFetchSetting();
+
   const filterTags = useFilterStore((state) => state.filterTags);
 
-  const handleSearch = async (searchText: string) => {
+  const handleSearch = (searchText: string) => {
     const obj = {
       title: searchText,
     };
@@ -28,8 +30,15 @@ const HomePage = () => {
 
   return (
     <div className="h-full w-full p-[1rem] flex flex-col items-center">
-      <div className="flex-1 overflow-auto flex flex-col items-center justify-center md:min-w-[640px]">
-        <Image src={homeConfig.logo} alt="logo" />
+      <div className="flex-1 overflow-auto flex flex-col items-center justify-center w-full md:max-w-[640px]">
+        {settingData.greeting.light_logo_url && (
+          <Image
+            src={settingData.greeting.light_logo_url || homeConfig.logo}
+            width={300}
+            height={100}
+            alt="logo"
+          />
+        )}
         <Greeting className="mt-4" />
         <SearchBar
           className="mt-8 w-full"

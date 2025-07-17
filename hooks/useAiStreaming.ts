@@ -1,86 +1,145 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCreateShareCode, useSaveChat } from "@/hooks/useChatData";
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
-import { processAiStream } from "@/lib/aiStream";
 import { formatChatSaveData } from "@/lib/chatDataFormatter";
 import { saveChatGroup } from "@/lib/indexedDB";
+import { handleStream } from "@/lib/streamHandler";
+import { useStreamingState } from "./useStreamingState";
 
-import { fetchAiStream } from "@/services/aiStreamService";
-
-import type { StreamEvent, StreamEndEvent } from "@/types/Stream";
-import { RecommendedQuestions } from "@/types/Chat";
+import { StreamEndEvent, StreamEvent } from "@/types/Stream";
 
 export const useAiStreaming = (
   chatGroupId: number | undefined,
   question: string
 ) => {
   const router = useRouter();
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const controllerRef = useRef<AbortController | null>(null);
 
-  const { addHistory } = useChatHistoryStore();
+  const addHistory = useChatHistoryStore((state) => state.addHistory);
+
   const { mutate: saveChat } = useSaveChat();
   const { mutateAsync: createShareCode } = useCreateShareCode();
 
-  const [streamText, setStreamText] = useState("");
-  const [streamStages, setStreamStages] = useState<StreamEvent[]>([]);
-  const [recommendedQuestions, setRecommendedQuestions] = useState<
-    RecommendedQuestions[]
-  >([]);
-  const [isFinished, setIsFinished] = useState<boolean>(false);
+  const {
+    streamText,
+    streamStages,
+    streamStagesRef,
+    recommendedQuestions,
+    setRecommendedQuestions,
+    references,
+    setReferences,
+    isFinished,
+    completeStream,
+    appendStage,
+    appendText,
+    isStreaming,
+    setIsStreaming,
+    hasError,
+    setHasError,
+  } = useStreamingState();
 
-  const streamStagesRef = useRef<StreamEvent[]>([]);
-
-  // chatGroup 생성 완료되면 스트리밍 시작
   useEffect(() => {
     if (!chatGroupId) return;
+    if (!question.trim()) return;
+
+    if (isStreaming) {
+      // 이미 스트리밍 중이면 중복 호출 방지
+      console.warn("중복 스트리밍 요청 방지");
+      return;
+    }
 
     const controller = new AbortController();
-    abortControllerRef.current = controller;
+    controllerRef.current = controller;
 
-    fetchAiStream(question, chatGroupId, controller.signal)
-      .then((stream) =>
-        processAiStream(
-          stream,
-          handleStreamingEvent,
-          onStreamingComplete,
-          onStreamingError
-        )
-      )
-      .catch((err) => console.error("스트리밍 오류:", err));
+    setIsStreaming(true);
+    setHasError(false);
 
-    return () => controller.abort();
-  }, [question]);
+    startStreaming("c3", { select_items: [] }, controller.signal);
 
-  // 스트리밍 이벤트 처리
-  const handleStreamingEvent = (event: StreamEvent) => {
-    if (!event || event === undefined) return;
+    return () => {
+      controller.abort();
+      setIsStreaming(false);
+    };
+  }, [chatGroupId, question]);
 
-    switch (event.type) {
-      case "eventId":
-        break;
-      case "main":
-      case "sub":
-        setStreamStages((prev) => {
-          const updated = [...prev, event];
-          streamStagesRef.current = updated;
-          return updated;
-        });
-        break;
-      case "response":
-        setStreamText((prev) => prev + event.text);
-
-      default:
-        setIsFinished(true);
+  const startStreaming = async (
+    endpoint: string,
+    extraData: Record<string, unknown>,
+    signal: AbortSignal
+  ) => {
+    try {
+      await handleStream({
+        endpoint,
+        question,
+        chatGroupId: chatGroupId!,
+        extraData,
+        signal,
+        onEvent: handleStreamingEvent,
+        onComplete: handleComplete,
+        onError: handleError,
+      });
+    } catch (err) {
+      handleError(err as Error);
     }
   };
 
-  // 스트리밍 완료 시 저장 및 라우팅
-  const onStreamingComplete = async (event: StreamEndEvent) => {
+  const handleStreamingEvent = (event: StreamEvent) => {
+    if (!event) return;
+
+    switch (event.type) {
+      case "main":
+      case "sub":
+        appendStage(event);
+        break;
+      case "response":
+        appendText(event.text);
+        break;
+    }
+  };
+
+  const handleComplete = async (event: StreamEndEvent) => {
+    setIsStreaming(false);
+
     if (!chatGroupId) return;
 
-    console.log(event);
+    if (event.next_endpoint) {
+      controllerRef.current?.abort();
+
+      const newController = new AbortController();
+      controllerRef.current = newController;
+
+      setIsStreaming(true);
+
+      return startStreaming(
+        event.next_endpoint,
+        {
+          transfer_data: event.transfer_data,
+          re_select_data: event.re_select_data,
+          reAnswerData: event.re_answer_data,
+        },
+        newController.signal
+      );
+    }
+
+    saveChatHistory(event, chatGroupId);
+
+    completeStream();
+  };
+
+  const saveChatHistory = async (
+    event: StreamEndEvent,
+    chatGroupId: number
+  ) => {
+    if (event.type === "all" && !event.chat_question) {
+      appendText(
+        event.chat_question ||
+          "현재 서비스가 원할하지 못합니다. 서비스팀에 문의해주세요."
+      );
+
+      return;
+    }
 
     const chatData = formatChatSaveData(
       event,
@@ -89,38 +148,47 @@ export const useAiStreaming = (
     );
 
     setRecommendedQuestions(chatData.recommended_questions);
+    setReferences(chatData.references);
 
     await saveChat({ chatData });
 
-    const shareCodeData = await createShareCode({
-      groupId: chatGroupId,
-    });
+    setTimeout(async () => {
+      const shareCodeData = await createShareCode({ groupId: chatGroupId });
 
-    await saveChatGroup({
-      id: chatGroupId,
-      title: question,
-      shareCode: shareCodeData.encoded_data,
-    }).finally(() => {
-      setTimeout(() => {
-        router.replace(`/chat/${shareCodeData.encoded_data}`);
-      }, 5000);
+      await saveChatGroup({
+        id: chatGroupId,
+        title: question,
+        shareCode: shareCodeData.encoded_data,
+      });
 
+      router.replace(`/chat/${shareCodeData.encoded_data}`);
       addHistory({
         id: chatGroupId,
         title: question,
         shareCode: shareCodeData.encoded_data,
       });
-    });
+    }, 2000);
   };
 
-  const onStreamingError = (err: Error) => {
-    console.error("❌ 스트리밍 중 오류 발생:", err);
+  const handleError = (error: Error) => {
+    if (error.name.includes("AbortError")) {
+      // 스트림 중단에 따른 정상 에러이므로 무시
+      console.log("스트림이 중단되었습니다.");
+    } else {
+      console.error("예상치 못한 에러:", error);
+    }
+
+    setHasError(true);
+    setIsStreaming(false);
   };
 
   return {
     streamText,
     streamStages,
     recommendedQuestions,
+    references,
     isFinished,
+    isStreaming,
+    hasError,
   };
 };

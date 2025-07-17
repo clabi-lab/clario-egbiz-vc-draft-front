@@ -4,13 +4,13 @@ import ModeCommentIcon from "@mui/icons-material/ModeComment";
 
 import type { RecommendedQuestions } from "@/types/Chat";
 
-interface RecommendedQuestionsProps {
+interface RecommendedQuestionsViewProps {
   questions: RecommendedQuestions[];
   className: string;
   onClick: (item: string) => void;
 }
 
-const RecommendedQuestions: React.FC<RecommendedQuestionsProps> = ({
+const RecommendedQuestionsView: React.FC<RecommendedQuestionsViewProps> = ({
   questions,
   className,
   onClick,
@@ -40,4 +40,4 @@ const RecommendedQuestions: React.FC<RecommendedQuestionsProps> = ({
   );
 };
 
-export default RecommendedQuestions;
+export default RecommendedQuestionsView;

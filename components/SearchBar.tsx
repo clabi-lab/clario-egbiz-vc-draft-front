@@ -9,6 +9,7 @@ import VoiceVisualizer from "./VoiceVisualizer";
 import { InputAdornment, Input } from "@mui/material";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+import posthog from "posthog-js";
 
 type SearchBarProps = {
   className?: string;
@@ -28,12 +29,18 @@ const SearchBar = ({
     const trimmed = value.trim();
     if (!trimmed) return;
 
+    // PostHog로 검색 이벤트 트래킹
+    posthog.capture("searched_keyword", {
+      keyword: trimmed,
+      source: "search_input",
+    });
+
     onSearch(trimmed);
     setSearchText("");
   };
 
   return (
-    <div className={`relative w-full flex items-center ${className}`}>
+    <div className={`relative flex items-center ${className}`}>
       <div className="flex-1 py-2 px-3 border border-[var(--point)] rounded-3xl">
         <Input
           fullWidth

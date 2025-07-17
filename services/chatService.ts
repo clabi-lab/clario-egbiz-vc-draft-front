@@ -1,24 +1,24 @@
 import { baseService } from "./baseService";
 
-import { Chat, ChatGroupResponse } from "@/types/Chat";
+import { Chat, ChatGroupResponse, Satisfaction } from "@/types/Chat";
 
 export const createChatGroup = async (
   title: string
 ): Promise<ChatGroupResponse> => {
   const response = await baseService.post(`/chat/group`, { title });
-  return response.data.data;
+  return response.data;
 };
 
 export const saveChat = async (chatData: Chat): Promise<ChatGroupResponse> => {
   const response = await baseService.post(`/chat`, chatData);
-  return response.data.data;
+  return response.data;
 };
 
 export const updateChat = async (
   chatData: Chat
 ): Promise<ChatGroupResponse> => {
   const response = await baseService.put(`/chat`, chatData);
-  return response.data.data;
+  return response.data;
 };
 
 export const createShareCode = async (
@@ -29,7 +29,7 @@ export const createShareCode = async (
   const response = await baseService.get(
     `/chat/group/share?groupId=${groupId}`
   );
-  return response.data.data;
+  return response.data;
 };
 
 export const fetchSavedChat = async (
@@ -39,5 +39,12 @@ export const fetchSavedChat = async (
   chats: Chat[];
 }> => {
   const response = await baseService.get(`/chat/group/share/${encodedData}`);
-  return response.data.data;
+  return response.data;
+};
+
+export const updateSatisfaction = async (
+  satisfaction: Satisfaction
+): Promise<Satisfaction> => {
+  const response = await baseService.post(`/chat/satisfaction`, satisfaction);
+  return response.data;
 };
