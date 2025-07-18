@@ -32,6 +32,7 @@ export const useStreamingState = () => {
 
   return {
     streamText,
+    setStreamText,
     streamStages,
     streamStagesRef,
     recommendedQuestions,

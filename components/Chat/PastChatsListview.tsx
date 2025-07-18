@@ -1,0 +1,70 @@
+import AnswerView from "./AnswerView";
+import FeedBack from "./FeedBack";
+import QuestionView from "./QuestionView";
+import RecommendedQuestionsView from "./RecommendedQuestionsView";
+import ReferencesView from "./ReferencesView";
+import StreamStagesView from "./StreamStagesView";
+
+import { ChatListItem } from "@/types/Chat";
+
+const PastChatsListview = ({
+  chatList,
+  onSearch,
+}: {
+  chatList: ChatListItem[];
+  onSearch: (question: string) => void;
+}) => {
+  return (
+    <>
+      {chatList && (
+        <>
+          {chatList.map((chat, index) => {
+            return (
+              <div
+                className={index !== 0 ? "mt-10" : ""}
+                key={`${chat.question}_${index}`}
+              >
+                {chat.question && (
+                  <div className="flex items-center justify-end">
+                    <QuestionView type="contained" question={chat.question} />
+                  </div>
+                )}
+                {chat.streamStages && (
+                  <StreamStagesView
+                    className="my-4 border border-gray-300 py-2 px-4 rounded"
+                    question={chat.question}
+                    streamStages={chat.streamStages}
+                    isFinished={true}
+                    defaultOpen={false}
+                  />
+                )}
+                {chat.streamText && <AnswerView streamText={chat.streamText} />}
+                {chat.references && chat.references.length > 0 && (
+                  <ReferencesView
+                    references={chat.references}
+                    className="bg-gray-200 p-2  mt-2"
+                    onClick={(item) => console.log(item)}
+                  />
+                )}
+                {chat.chatId && (
+                  <FeedBack streamText={chat.streamText} chatId={chat.chatId} />
+                )}
+
+                {chat.recommendedQuestions &&
+                  chat.recommendedQuestions.length > 0 && (
+                    <RecommendedQuestionsView
+                      className="mt-6"
+                      questions={chat.recommendedQuestions}
+                      onClick={(question) => onSearch(question)}
+                    />
+                  )}
+              </div>
+            );
+          })}
+        </>
+      )}
+    </>
+  );
+};
+
+export default PastChatsListview;

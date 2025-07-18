@@ -8,6 +8,7 @@ import {
   updateChatGroup,
 } from "@/lib/indexedDB";
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
+import { useAlertStore } from "@/store/useAlertStore";
 
 import { ChatHistoryTextOrInput } from "./ChatHistoryTextOrInput";
 import ChatHistoryMenu from "./ChatHistoryMenu";
@@ -52,6 +53,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
 
   const isMenuOpen = Boolean(menuAnchorEl);
   const setHistories = useChatHistoryStore((state) => state.setHistories);
+  const openAlert = useAlertStore((state) => state.openAlert);
 
   const openMenu = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -84,7 +86,10 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       setIsEditing(false);
       refreshHistory();
     } catch (error) {
-      console.log(error);
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
     }
   };
 
@@ -97,7 +102,10 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       });
       closeMenu();
     } catch (error) {
-      console.log(error);
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
     }
   };
 
@@ -107,7 +115,10 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       refreshHistory();
       closeMenu();
     } catch (error) {
-      console.log(error);
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
     }
   };
 

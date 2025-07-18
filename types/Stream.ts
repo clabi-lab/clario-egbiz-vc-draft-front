@@ -26,12 +26,29 @@ export interface StreamEndEvent {
     imageType: string;
   }[];
   next_endpoint?: string;
-  form?: unknown;
+  form?: {
+    category: UserActionFormData;
+  };
   transfer_data?: unknown[];
   re_select_data?: unknown;
   re_answer_data?: unknown;
   select_items?: unknown[];
   [key: string]: unknown;
+}
+
+export interface UserActionFormData {
+  type: string;
+  items: UserActionFormItem[];
+}
+
+export interface UserActionFormItem {
+  title: string;
+  title_kr: string;
+  publication_year: string;
+}
+export interface UserActionData {
+  re_select_data: UserActionFormItem[];
+  re_answer_data: string;
 }
 
 export interface ChatGroup {

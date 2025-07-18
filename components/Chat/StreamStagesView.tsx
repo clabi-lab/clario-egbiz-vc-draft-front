@@ -112,44 +112,40 @@ const StreamStagesView = ({
 
   return (
     <div className={clsx(className)}>
-      <>
-        {question && (
-          <div
-            className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
-              isOpen ? "mb-2" : ""
-            }`}
-          >
-            <p className="text-sm" onClick={() => setIsOpen(!isOpen)}>
-              💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
-            </p>
-            {isFinished && (
-              <ExpandMoreOutlinedIcon
-                sx={{
-                  transition: "transform 0.3s ease",
-                  transform: isOpen ? "none" : "rotate(180deg)",
-                }}
-              />
-            )}
-          </div>
-        )}
-        <Collapse in={isOpen} timeout="auto" unmountOnExit>
-          <Stepper
-            activeStep={activeStep}
-            orientation="vertical"
-            connector={<Connector />}
-          >
-            {streamStages.map((stage, index) => {
-              return (
-                <Step key={`streamStage_${index}`}>
-                  <StepLabel StepIconComponent={StepIcon}>
-                    {stage.text}
-                  </StepLabel>
-                </Step>
-              );
-            })}
-          </Stepper>
-        </Collapse>
-      </>
+      {question && (
+        <div
+          className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
+            isOpen ? "mb-2" : ""
+          }`}
+        >
+          <p className="text-sm" onClick={() => setIsOpen(!isOpen)}>
+            💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
+          </p>
+          {isFinished && (
+            <ExpandMoreOutlinedIcon
+              sx={{
+                transition: "transform 0.3s ease",
+                transform: isOpen ? "none" : "rotate(180deg)",
+              }}
+            />
+          )}
+        </div>
+      )}
+      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Stepper
+          activeStep={activeStep}
+          orientation="vertical"
+          connector={<Connector />}
+        >
+          {streamStages.map((stage, index) => {
+            return (
+              <Step key={`streamStage_${index}`}>
+                <StepLabel StepIconComponent={StepIcon}>{stage.text}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+      </Collapse>
     </div>
   );
 };

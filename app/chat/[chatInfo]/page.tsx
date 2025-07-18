@@ -11,8 +11,9 @@ import QuestionView from "@/components/Chat/QuestionView";
 import StreamStagesView from "@/components/Chat/StreamStagesView";
 import AnswerView from "@/components/Chat/AnswerView";
 import RecommendedQuestionsView from "@/components/Chat/RecommendedQuestionsView";
-import FeedBack from "@/components/Chat/FeedBack";
 import ReferencesView from "@/components/Chat/ReferencesView";
+import UserActionForm from "@/components/Chat/UserActionForm";
+import PastChatsListview from "@/components/Chat/PastChatsListview";
 
 import { ChatListItem } from "@/types/Chat";
 
@@ -26,10 +27,11 @@ const ChatDetailPage = ({
   const { chatInfo } = use(params);
   const { mutateAsync: fetchSavedChat } = useFetchSavedChat();
   const { mutateAsync: createChatGroup } = useCreateChatGroup();
-  const [chatGroupId, setChatGroupId] = useState<number>();
 
-  const [chatList, setChatList] = useState<ChatListItem[]>([]);
+  const [chatGroupId, setChatGroupId] = useState<number>();
+  const [pastChats, setPastChats] = useState<ChatListItem[]>([]);
   const [newQuestion, setNewQuestion] = useState<string>("");
+  const [isRecommend, setIsRecommend] = useState<boolean>(false);
 
   const {
     streamStages,
@@ -37,19 +39,17 @@ const ChatDetailPage = ({
     recommendedQuestions,
     references,
     isFinished,
-  } = useAiStreaming(chatGroupId, newQuestion);
+    abortStreaming,
+  } = useAiStreaming(chatGroupId, newQuestion, isRecommend);
 
   const chatWrapRef = useRef<HTMLDivElement>(null);
 
-  const handleCreate = async (title: string) => {
-    try {
-      const chatGroup = await createChatGroup({ title });
-      setChatGroupId(chatGroup.chat_group_id);
-      setNewQuestion(title);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // 언마운트 시 스트리밍 중단
+  useEffect(() => {
+    return () => {
+      abortStreaming?.();
+    };
+  }, []);
 
   // 초기 마운트 시 처리
   useEffect(() => {
@@ -75,86 +75,54 @@ const ChatDetailPage = ({
             references: chat.references ?? [],
           };
         });
-        setChatList(list);
+        setPastChats(list);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatInfo]);
 
+  // 채팅이 추가되거나 질문이 생기면 자동 스크롤
   useEffect(() => {
-    // chatList나 newQuestion이 바뀔 때마다 스크롤 맨 아래로 이동
     if (chatWrapRef.current) {
       chatWrapRef.current.scrollTop = chatWrapRef.current.scrollHeight;
     }
-  }, [chatList, newQuestion, streamText]);
+  }, [pastChats, newQuestion, streamText]);
+
+  const handleCreate = async (title: string) => {
+    try {
+      const chatGroup = await createChatGroup({ title });
+      setChatGroupId(chatGroup.chat_group_id);
+      setNewQuestion(title);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSearch = (text: string) => {
     if (!text) return;
 
+    setIsRecommend(true);
     setNewQuestion(text);
   };
 
   return (
     <div className="h-full w-full flex flex-col justify-between">
+      {/* 스트리밍 준 사용자 액션 영역 */}
+      <UserActionForm></UserActionForm>
+
       <div
         id="chatwrap"
         ref={chatWrapRef}
         className="flex-1 overflow-y-auto p-4"
       >
-        {chatList && (
-          <>
-            {chatList.map((chat, index) => {
-              return (
-                <div
-                  className={index !== 0 ? "mt-10" : ""}
-                  key={`${chat.question}_${index}`}
-                >
-                  {chat.question && (
-                    <div className="flex items-center justify-end">
-                      <QuestionView type="contained" question={chat.question} />
-                    </div>
-                  )}
-                  {chat.streamStages && (
-                    <StreamStagesView
-                      className="my-4 border border-gray-300 py-2 px-4 rounded"
-                      question={chat.question}
-                      streamStages={chat.streamStages}
-                      isFinished={true}
-                      defaultOpen={false}
-                    />
-                  )}
-                  {chat.streamText && (
-                    <AnswerView streamText={chat.streamText} />
-                  )}
-                  {chat.references && chat.references.length > 0 && (
-                    <ReferencesView
-                      references={chat.references}
-                      className="bg-gray-200 p-2  mt-2"
-                      onClick={(item) => console.log(item)}
-                    />
-                  )}
-                  {chat.chatId && (
-                    <FeedBack
-                      streamText={chat.streamText}
-                      chatId={chat.chatId}
-                    />
-                  )}
-
-                  {chat.recommendedQuestions &&
-                    chat.recommendedQuestions.length > 0 && (
-                      <RecommendedQuestionsView
-                        className="mt-6"
-                        questions={chat.recommendedQuestions}
-                        onClick={(question) => handleSearch(question)}
-                      />
-                    )}
-                </div>
-              );
-            })}
-          </>
+        {/* 이전 채팅 목록 */}
+        {pastChats.length > 0 && (
+          <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
         )}
+
+        {/* 새 질문 응답 영역 */}
         {newQuestion && (
-          <div className={chatList.length === 0 ? "" : "mt-10"}>
+          <div className={pastChats.length === 0 ? "" : "mt-10"}>
             {newQuestion && (
               <div className="flex items-center justify-end">
                 <QuestionView type="contained" question={newQuestion} />

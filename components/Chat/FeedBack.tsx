@@ -77,7 +77,10 @@ const FeedBack = ({
       });
       handleClose();
     } catch (error) {
-      console.error("피드백 제출 실패:", error);
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
     }
   };
 

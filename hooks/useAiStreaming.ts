@@ -8,22 +8,32 @@ import { saveChatGroup } from "@/lib/indexedDB";
 import { handleStream } from "@/lib/streamHandler";
 import { useStreamingState } from "./useStreamingState";
 
-import { StreamEndEvent, StreamEvent } from "@/types/Stream";
+import {
+  StreamEndEvent,
+  StreamEvent,
+  UserActionData,
+  UserActionFormData,
+} from "@/types/Stream";
+import { useUserActionStore } from "@/store/useChatStore";
+import { useFilterStore } from "@/store/useFilterStore";
 
 export const useAiStreaming = (
   chatGroupId: number | undefined,
-  question: string
+  question: string,
+  isRecommend?: boolean
 ) => {
   const router = useRouter();
   const controllerRef = useRef<AbortController | null>(null);
 
   const addHistory = useChatHistoryStore((state) => state.addHistory);
+  const selectedFilters = useFilterStore((state) => state.selectedFilters);
 
   const { mutate: saveChat } = useSaveChat();
   const { mutateAsync: createShareCode } = useCreateShareCode();
 
   const {
     streamText,
+    setStreamText,
     streamStages,
     streamStagesRef,
     recommendedQuestions,
@@ -56,13 +66,18 @@ export const useAiStreaming = (
     setIsStreaming(true);
     setHasError(false);
 
-    startStreaming("c3", { select_items: [] }, controller.signal);
+    startStreaming("c3", { select_items: selectedFilters }, controller.signal);
 
     return () => {
       controller.abort();
       setIsStreaming(false);
     };
   }, [chatGroupId, question]);
+
+  const abortStreaming = () => {
+    controllerRef.current?.abort();
+    // 상태 초기화 등도 여기서 처리
+  };
 
   const startStreaming = async (
     endpoint: string,
@@ -104,12 +119,40 @@ export const useAiStreaming = (
 
     if (!chatGroupId) return;
 
+    if (event.form && event.next_endpoint) {
+      setStreamText("");
+      controllerRef.current?.abort();
+
+      // 유저 응답을 기다리는 Promise 생성
+      try {
+        const userActionData = await waitForUserAction(event.form.category);
+
+        const newController = new AbortController();
+        controllerRef.current = newController;
+        setIsStreaming(true);
+
+        return startStreaming(
+          event.next_endpoint,
+          {
+            ...userActionData, // 유저가 선택한 값 전달
+            transfer_data: event.transfer_data,
+            re_select_data: event.re_select_data,
+            reAnswerData: event.re_answer_data,
+          },
+          newController.signal
+        );
+      } catch (err) {
+        console.warn("유저 응답 취소 또는 실패", err);
+        return;
+      }
+    }
+
     if (event.next_endpoint) {
+      setStreamText("");
       controllerRef.current?.abort();
 
       const newController = new AbortController();
       controllerRef.current = newController;
-
       setIsStreaming(true);
 
       return startStreaming(
@@ -124,8 +167,15 @@ export const useAiStreaming = (
     }
 
     saveChatHistory(event, chatGroupId);
-
     completeStream();
+  };
+
+  const waitForUserAction = (
+    form: UserActionFormData
+  ): Promise<UserActionData> => {
+    return new Promise((resolve, reject) => {
+      useUserActionStore.getState().open(form, resolve, reject);
+    });
   };
 
   const saveChatHistory = async (
@@ -144,7 +194,8 @@ export const useAiStreaming = (
     const chatData = formatChatSaveData(
       event,
       chatGroupId,
-      streamStagesRef.current
+      streamStagesRef.current,
+      isRecommend
     );
 
     setRecommendedQuestions(chatData.recommended_questions);
@@ -190,5 +241,6 @@ export const useAiStreaming = (
     isFinished,
     isStreaming,
     hasError,
+    abortStreaming,
   };
 };
