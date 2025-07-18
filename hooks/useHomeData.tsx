@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchSetting } from "@/services/homeService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { fetchFilters, fetchSetting } from "@/services/homeService";
 
 export const useFetchSetting = () => {
   return useQuery({
@@ -18,5 +18,12 @@ export const useFetchSetting = () => {
       },
       example_questions: [],
     },
+  });
+};
+
+export const useFetchFilters = () => {
+  return useMutation({
+    mutationFn: ({ year, search }: { year?: string; search?: string }) =>
+      fetchFilters({ year, search }),
   });
 };

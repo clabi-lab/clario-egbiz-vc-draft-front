@@ -12,9 +12,9 @@ export const useFilterStore = create<FilterState>((set) => ({
   filterTags: [],
   setSelectedFilters: (filters) => {
     const tags = filters
-      .filter((f) => f.depth === 3 && f.description)
+      .filter((f) => f.depth === 3 && f.division)
       .sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
-      .map((f) => f.description);
+      .map((f) => f.division);
 
     set({
       selectedFilters: filters,

@@ -3,23 +3,20 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { useFilterStore } from "@/store/useFilterStore";
 import { useFetchSetting } from "@/hooks/useHomeData";
 
 import Image from "next/image";
-import SearchBar from "@/components/SearchBar";
-import Greeting from "@/components/Greeting";
-import AiDisclaimer from "@/components/AiDisclaimer";
-import { Chip, Stack } from "@mui/material";
+import SearchBar from "@/components/Common/SearchBar";
+import Greeting from "@/components/Common/Greeting";
+import AiDisclaimer from "@/components/Common/AiDisclaimer";
 
 import { homeConfig } from "@/config/home.config";
+import FiltersView from "@/components/Common/FiltersView";
 
 const HomePage = () => {
   const router = useRouter();
 
   const { data: settingData } = useFetchSetting();
-
-  const filterTags = useFilterStore((state) => state.filterTags);
 
   const handleSearch = (searchText: string) => {
     const obj = {
@@ -45,38 +42,7 @@ const HomePage = () => {
           placeholder={settingData.prompt.input}
           onSearch={handleSearch}
         />
-
-        <Stack
-          spacing={{ xs: 1, sm: 1 }}
-          direction="row"
-          useFlexGap
-          className="mt-4"
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {filterTags.length > 0 &&
-            filterTags.map((tag, index) => (
-              <Chip
-                label={tag}
-                key={`${tag}_${index}`}
-                sx={{
-                  backgroundColor: "var(--tag-bg)",
-                  color: "var(--tag-text)",
-                  borderRadius: "8px",
-                  px: 0.75,
-                  py: 0.5,
-                  height: "auto",
-                  "& .MuiChip-label": {
-                    display: "block",
-                    whiteSpace: "normal",
-                  },
-                }}
-              />
-            ))}
-        </Stack>
+        <FiltersView></FiltersView>
       </div>
       <AiDisclaimer className="mt-2" />
     </div>

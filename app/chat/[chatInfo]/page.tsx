@@ -6,7 +6,7 @@ import { useCreateChatGroup, useFetchSavedChat } from "@/hooks/useChatData";
 import { base64Decode } from "@/utils/encoding";
 import { useFetchSetting } from "@/hooks/useHomeData";
 
-import SearchBar from "@/components/SearchBar";
+import SearchBar from "@/components/Common/SearchBar";
 import QuestionView from "@/components/Chat/QuestionView";
 import StreamStagesView from "@/components/Chat/StreamStagesView";
 import AnswerView from "@/components/Chat/AnswerView";

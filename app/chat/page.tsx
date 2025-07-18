@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { base64Encode } from "@/utils/encoding";
 import { useFetchSetting } from "@/hooks/useHomeData";
 
-import Greeting from "@/components/Greeting";
-import SearchBar from "@/components/SearchBar";
+import Greeting from "@/components/Common/Greeting";
+import SearchBar from "@/components/Common/SearchBar";
 import Image from "next/image";
 import { homeConfig } from "@/config/home.config";
+import FiltersView from "@/components/Common/FiltersView";
 
 const ChatPage = () => {
   const router = useRouter();
@@ -33,6 +34,7 @@ const ChatPage = () => {
         />
       )}
       <Greeting />
+      <FiltersView></FiltersView>
       <SearchBar
         className="mt-8 mx-2 w-full"
         placeholder={settingData.prompt.input}
