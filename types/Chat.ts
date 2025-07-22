@@ -1,3 +1,5 @@
+import { StreamStage } from "./Stream";
+
 export interface ChatGroupResponse {
   chat_group_id: number;
   title: string;
@@ -53,10 +55,7 @@ export interface Chat {
 
 export interface ChatListItem {
   question: string;
-  streamStages: {
-    type: string;
-    text: string;
-  }[];
+  streamStages: StreamStage[];
   streamText: string;
   recommendedQuestions?: RecommendedQuestions[];
   references?: Reference[];

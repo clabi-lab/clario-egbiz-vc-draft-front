@@ -81,7 +81,6 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       await updateChatGroup({
         id: Number(item.id),
         title: editedTitle,
-        shareCode: item.shareCode,
       });
       setIsEditing(false);
       refreshHistory();
@@ -98,7 +97,6 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       await savedChatGroup({
         id: Number(item.id),
         title: item.title,
-        shareCode: item.shareCode,
       });
       closeMenu();
     } catch (error) {
@@ -128,7 +126,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
         <ChatHistoryTextOrInput
           isEditing={isEditing}
           editedTitle={editedTitle}
-          shareCode={item.shareCode}
+          id={Number(item.id)}
           onChange={setEditedTitle}
           onSubmit={handleSubmitRename}
           itemId={item.id}

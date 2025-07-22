@@ -1,6 +1,6 @@
 import { Reference } from "./Chat";
 
-export interface StreamEvent {
+export interface StreamStage {
   type: string;
   text: string;
   [key: string]: unknown;
@@ -19,7 +19,7 @@ export interface StreamEndEvent {
   use_token_count?: number;
   latency?: number;
   recommended_questions?: string | string[];
-  chat_history_list?: StreamEvent[];
+  chat_history_list?: StreamStage[];
   references?: Reference[];
   images?: {
     imageUrl: string;
@@ -53,7 +53,7 @@ export interface UserActionData {
 
 export interface ChatGroup {
   question: string;
-  streamStages: StreamEvent[];
+  streamStages: StreamStage[];
   streamText: string;
   isFinished: boolean;
 }

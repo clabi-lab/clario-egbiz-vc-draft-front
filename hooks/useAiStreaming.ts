@@ -1,62 +1,49 @@
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-import { useCreateShareCode, useSaveChat } from "@/hooks/useChatData";
+import { useSaveChat } from "@/hooks/useChatData";
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
 import { formatChatSaveData } from "@/lib/chatDataFormatter";
 import { saveChatGroup } from "@/lib/indexedDB";
 import { handleStream } from "@/lib/streamHandler";
-import { useStreamingState } from "./useStreamingState";
+
+import { useUserActionStore } from "@/store/useChatStore";
+import { useFilterStore } from "@/store/useFilterStore";
 
 import {
   StreamEndEvent,
-  StreamEvent,
+  StreamStage,
   UserActionData,
   UserActionFormData,
 } from "@/types/Stream";
-import { useUserActionStore } from "@/store/useChatStore";
-import { useFilterStore } from "@/store/useFilterStore";
+import { RecommendedQuestions, Reference } from "@/types/Chat";
 
 export const useAiStreaming = (
   chatGroupId: number | undefined,
   question: string,
   isRecommend?: boolean
 ) => {
-  const router = useRouter();
   const controllerRef = useRef<AbortController | null>(null);
+  const streamStagesRef = useRef<StreamStage[]>([]);
 
   const addHistory = useChatHistoryStore((state) => state.addHistory);
   const selectedFilters = useFilterStore((state) => state.selectedFilters);
-
   const { mutate: saveChat } = useSaveChat();
-  const { mutateAsync: createShareCode } = useCreateShareCode();
 
-  const {
-    streamText,
-    setStreamText,
-    streamStages,
-    streamStagesRef,
-    recommendedQuestions,
-    setRecommendedQuestions,
-    references,
-    setReferences,
-    isFinished,
-    completeStream,
-    appendStage,
-    appendText,
-    isStreaming,
-    setIsStreaming,
-    hasError,
-    setHasError,
-  } = useStreamingState();
+  const [streamText, setStreamText] = useState("");
+  const [streamStages, setStreamStages] = useState<StreamStage[]>([]);
+  const [recommendedQuestions, setRecommendedQuestions] = useState<
+    RecommendedQuestions[]
+  >([]);
+  const [references, setReferences] = useState<Reference[]>([]);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (!chatGroupId) return;
     if (!question.trim()) return;
 
     if (isStreaming) {
-      // 이미 스트리밍 중이면 중복 호출 방지
-      console.warn("중복 스트리밍 요청 방지");
       return;
     }
 
@@ -73,11 +60,6 @@ export const useAiStreaming = (
       setIsStreaming(false);
     };
   }, [chatGroupId, question]);
-
-  const abortStreaming = () => {
-    controllerRef.current?.abort();
-    // 상태 초기화 등도 여기서 처리
-  };
 
   const startStreaming = async (
     endpoint: string,
@@ -100,7 +82,7 @@ export const useAiStreaming = (
     }
   };
 
-  const handleStreamingEvent = (event: StreamEvent) => {
+  const handleStreamingEvent = (event: StreamStage) => {
     if (!event) return;
 
     switch (event.type) {
@@ -112,6 +94,18 @@ export const useAiStreaming = (
         appendText(event.text);
         break;
     }
+  };
+
+  const appendStage = (event: StreamStage) => {
+    setStreamStages((prev) => {
+      const updated = [...prev, event];
+      streamStagesRef.current = updated;
+      return updated;
+    });
+  };
+
+  const appendText = (text: string) => {
+    setStreamText((prev) => prev + text);
   };
 
   const handleComplete = async (event: StreamEndEvent) => {
@@ -204,19 +198,14 @@ export const useAiStreaming = (
     await saveChat({ chatData });
 
     setTimeout(async () => {
-      const shareCodeData = await createShareCode({ groupId: chatGroupId });
-
       await saveChatGroup({
         id: chatGroupId,
         title: question,
-        shareCode: shareCodeData.encoded_data,
       });
 
-      router.replace(`/chat/${shareCodeData.encoded_data}`);
       addHistory({
         id: chatGroupId,
         title: question,
-        shareCode: shareCodeData.encoded_data,
       });
     }, 2000);
   };
@@ -233,6 +222,20 @@ export const useAiStreaming = (
     setIsStreaming(false);
   };
 
+  const completeStream = () => setIsFinished(true);
+
+  const abortStreaming = () => {
+    controllerRef.current?.abort();
+  };
+
+  const resetStreaming = () => {
+    setStreamStages([]);
+    setStreamText("");
+    setRecommendedQuestions([]);
+    setReferences([]);
+    setIsFinished(false);
+  };
+
   return {
     streamText,
     streamStages,
@@ -242,5 +245,6 @@ export const useAiStreaming = (
     isStreaming,
     hasError,
     abortStreaming,
+    resetStreaming,
   };
 };

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
 import { useFetchSetting } from "@/hooks/useHomeData";
+import { useCreateChatGroup } from "@/hooks/useChatData";
 
 import Image from "next/image";
 import SearchBar from "@/components/Common/SearchBar";
@@ -17,12 +18,16 @@ const HomePage = () => {
   const router = useRouter();
 
   const { data: settingData } = useFetchSetting();
+  const { mutateAsync: createGroup } = useCreateChatGroup();
 
-  const handleSearch = (searchText: string) => {
-    const obj = {
-      title: searchText,
-    };
-    router.push(`/chat/${base64Encode(JSON.stringify(obj))}`);
+  const handleSearch = async (searchText: string) => {
+    try {
+      const chatGroup = await createGroup({ title: searchText });
+
+      router.push(
+        `/chat/${base64Encode(JSON.stringify(chatGroup.chat_group_id))}`
+      );
+    } catch (error) {}
   };
 
   return (

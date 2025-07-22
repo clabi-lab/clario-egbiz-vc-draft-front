@@ -9,10 +9,15 @@ import {
 } from "@/services/chatService";
 
 import { Chat } from "@/types/Chat";
+import { queryClient } from "@/lib/queryClient";
 
 export const useCreateChatGroup = () => {
   return useMutation({
     mutationFn: ({ title }: { title: string }) => createChatGroup(title),
+    onSuccess: (data) => {
+      const key = ["chatGroup", data.chat_group_id];
+      queryClient.setQueryData(key, data);
+    },
   });
 };
 
