@@ -4,22 +4,29 @@ import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
 import { useFetchSetting } from "@/hooks/useHomeData";
+import { useCreateChatGroup } from "@/hooks/useChatData";
 
-import Greeting from "@/components/Greeting";
-import SearchBar from "@/components/SearchBar";
+import Greeting from "@/components/Common/Greeting";
+import SearchBar from "@/components/Common/SearchBar";
+import FiltersView from "@/components/Common/FiltersView";
 import Image from "next/image";
+
 import { homeConfig } from "@/config/home.config";
 
 const ChatPage = () => {
   const router = useRouter();
 
   const { data: settingData } = useFetchSetting();
+  const { mutateAsync: createGroup } = useCreateChatGroup();
 
-  const handleSearch = (searchText: string) => {
-    const obj = {
-      title: searchText,
-    };
-    router.push(`/chat/${base64Encode(JSON.stringify(obj))}`);
+  const handleSearch = async (searchText: string) => {
+    try {
+      const chatGroup = await createGroup({ title: searchText });
+
+      router.push(
+        `/chat/${base64Encode(JSON.stringify(chatGroup.chat_group_id))}`
+      );
+    } catch (error) {}
   };
 
   return (
@@ -33,6 +40,7 @@ const ChatPage = () => {
         />
       )}
       <Greeting />
+      <FiltersView></FiltersView>
       <SearchBar
         className="mt-8 mx-2 w-full"
         placeholder={settingData.prompt.input}

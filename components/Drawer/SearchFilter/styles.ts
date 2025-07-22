@@ -16,7 +16,8 @@ const BaseListItemButton = styled(ListItemButton)(({ theme }) => ({
 // 전체 선택 항목 전용
 export const SelectAllListItemButton = styled(BaseListItemButton)(
   ({ theme }) => ({
-    marginLeft: theme.spacing(1),
+    marginTop: 4,
+    marginLeft: theme.spacing(1.5),
   })
 );
 
@@ -24,7 +25,7 @@ export const SelectAllListItemButton = styled(BaseListItemButton)(
 export const FilterListItemButton = styled(BaseListItemButton, {
   shouldForwardProp: (prop) => prop !== "depth",
 })<{ depth: number }>(({ theme, depth }) => ({
-  paddingLeft: theme.spacing((depth + 1) * 2),
+  paddingLeft: theme.spacing(depth + 3),
 }));
 
 // 폼 라벨 스타일

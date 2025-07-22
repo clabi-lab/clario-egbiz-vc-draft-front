@@ -5,10 +5,10 @@ import { MSWComponent } from "./MSWComponent";
 
 import PersistentDrawer from "@/components/Drawer/CustomDrawer";
 import AppInitializer from "@/components/AppInitializer";
-import { GlobalAlert } from "@/components/GlobalAlert";
+import { GlobalAlert } from "@/components/Common/GlobalAlert";
+import PostHogProvider from "@/components/PostHogProvider";
 
 import "./globals.css";
-import PostHogProvider from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: "Chat Bot Template",

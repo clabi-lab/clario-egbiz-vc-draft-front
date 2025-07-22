@@ -1,22 +1,18 @@
+import { Filter } from "@/types/Filter";
 import { baseService } from "./baseService";
+import { Setting } from "@/types/Home";
 
-export const fetchSetting = async (): Promise<{
-  greeting: {
-    id: number;
-    main_greeting: string;
-    light_logo_url: string;
-    dark_logo_url: string;
-  };
-  prompt: {
-    id: number;
-    input: string;
-  };
-  example_questions: {
-    id: number;
-    question: string;
-    image_url: string;
-  }[];
-}> => {
+export const fetchSetting = async (): Promise<Setting> => {
   const response = await baseService.get(`/setting/all`);
+  return response.data;
+};
+
+export const fetchFilters = async (params?: {
+  year?: string;
+  search?: string;
+}): Promise<Filter[]> => {
+  const response = await baseService.get("/chat/filter/tree", {
+    params,
+  });
   return response.data;
 };

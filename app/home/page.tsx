@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { useFilterStore } from "@/store/useFilterStore";
 import { useFetchSetting } from "@/hooks/useHomeData";
+import { useCreateChatGroup } from "@/hooks/useChatData";
 
 import Image from "next/image";
-import SearchBar from "@/components/SearchBar";
-import Greeting from "@/components/Greeting";
-import AiDisclaimer from "@/components/AiDisclaimer";
-import { Chip, Stack } from "@mui/material";
+import SearchBar from "@/components/Common/SearchBar";
+import Greeting from "@/components/Common/Greeting";
+import AiDisclaimer from "@/components/Common/AiDisclaimer";
+import FiltersView from "@/components/Common/FiltersView";
 
 import { homeConfig } from "@/config/home.config";
 
@@ -18,14 +18,16 @@ const HomePage = () => {
   const router = useRouter();
 
   const { data: settingData } = useFetchSetting();
+  const { mutateAsync: createGroup } = useCreateChatGroup();
 
-  const filterTags = useFilterStore((state) => state.filterTags);
+  const handleSearch = async (searchText: string) => {
+    try {
+      const chatGroup = await createGroup({ title: searchText });
 
-  const handleSearch = (searchText: string) => {
-    const obj = {
-      title: searchText,
-    };
-    router.push(`/chat/${base64Encode(JSON.stringify(obj))}`);
+      router.push(
+        `/chat/${base64Encode(JSON.stringify(chatGroup.chat_group_id))}`
+      );
+    } catch (error) {}
   };
 
   return (
@@ -45,38 +47,7 @@ const HomePage = () => {
           placeholder={settingData.prompt.input}
           onSearch={handleSearch}
         />
-
-        <Stack
-          spacing={{ xs: 1, sm: 1 }}
-          direction="row"
-          useFlexGap
-          className="mt-4"
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {filterTags.length > 0 &&
-            filterTags.map((tag, index) => (
-              <Chip
-                label={tag}
-                key={`${tag}_${index}`}
-                sx={{
-                  backgroundColor: "var(--tag-bg)",
-                  color: "var(--tag-text)",
-                  borderRadius: "8px",
-                  px: 0.75,
-                  py: 0.5,
-                  height: "auto",
-                  "& .MuiChip-label": {
-                    display: "block",
-                    whiteSpace: "normal",
-                  },
-                }}
-              />
-            ))}
-        </Stack>
+        <FiltersView></FiltersView>
       </div>
       <AiDisclaimer className="mt-2" />
     </div>

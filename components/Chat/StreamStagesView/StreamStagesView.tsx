@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 import clsx from "clsx";
+import { useChatScrollStore } from "@/store/useChatScrollStore";
 
 import {
   Collapse,
@@ -13,18 +16,17 @@ import {
 import { Check } from "@mui/icons-material";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 
-import { StreamEvent } from "@/types/Stream";
+import { StreamStage } from "@/types/Stream";
 
 import "./StreamStagesView.css";
-import { useState } from "react";
 
-type StreamStagesViewProps = {
+interface StreamStagesViewProps {
   question: string;
-  streamStages: StreamEvent[];
+  streamStages: StreamStage[];
   isFinished?: boolean;
   className?: string;
   defaultOpen?: boolean;
-};
+}
 
 const Connector = styled(StepConnector)(() => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -94,7 +96,16 @@ const StreamStagesView = ({
 }: StreamStagesViewProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
 
+  const setIsProcessesDropdownOpen = useChatScrollStore(
+    (state) => state.setIsProcessesDropdownOpen
+  );
+
   const activeStep = streamStages.length - 1;
+
+  const handleDropdownOpen = () => {
+    setIsOpen(!isOpen);
+    setIsProcessesDropdownOpen(!isOpen);
+  };
 
   const StepIcon = (props: StepIconProps) => {
     const { active, completed, className } = props;
@@ -112,44 +123,41 @@ const StreamStagesView = ({
 
   return (
     <div className={clsx(className)}>
-      <>
-        {question && (
-          <div
-            className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
-              isOpen ? "mb-2" : ""
-            }`}
-          >
-            <p className="text-sm" onClick={() => setIsOpen(!isOpen)}>
-              💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
-            </p>
-            {isFinished && (
-              <ExpandMoreOutlinedIcon
-                sx={{
-                  transition: "transform 0.3s ease",
-                  transform: isOpen ? "none" : "rotate(180deg)",
-                }}
-              />
-            )}
-          </div>
-        )}
-        <Collapse in={isOpen} timeout="auto" unmountOnExit>
-          <Stepper
-            activeStep={activeStep}
-            orientation="vertical"
-            connector={<Connector />}
-          >
-            {streamStages.map((stage, index) => {
-              return (
-                <Step key={`streamStage_${index}`}>
-                  <StepLabel StepIconComponent={StepIcon}>
-                    {stage.text}
-                  </StepLabel>
-                </Step>
-              );
-            })}
-          </Stepper>
-        </Collapse>
-      </>
+      {question && (
+        <div
+          className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
+            isOpen ? "mb-2" : ""
+          }`}
+          onClick={() => handleDropdownOpen()}
+        >
+          <p className="text-sm">
+            💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
+          </p>
+          {isFinished && (
+            <ExpandMoreOutlinedIcon
+              sx={{
+                transition: "transform 0.3s ease",
+                transform: isOpen ? "none" : "rotate(180deg)",
+              }}
+            />
+          )}
+        </div>
+      )}
+      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Stepper
+          activeStep={activeStep}
+          orientation="vertical"
+          connector={<Connector />}
+        >
+          {streamStages.map((stage, index) => {
+            return (
+              <Step key={`streamStage_${index}`}>
+                <StepLabel StepIconComponent={StepIcon}>{stage.text}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+      </Collapse>
     </div>
   );
 };

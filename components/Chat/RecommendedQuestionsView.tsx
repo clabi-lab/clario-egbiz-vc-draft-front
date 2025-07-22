@@ -10,11 +10,11 @@ interface RecommendedQuestionsViewProps {
   onClick: (item: string) => void;
 }
 
-const RecommendedQuestionsView: React.FC<RecommendedQuestionsViewProps> = ({
+const RecommendedQuestionsView = ({
   questions,
   className,
   onClick,
-}) => {
+}: RecommendedQuestionsViewProps) => {
   return (
     <div className={className}>
       <p className="mb-1">

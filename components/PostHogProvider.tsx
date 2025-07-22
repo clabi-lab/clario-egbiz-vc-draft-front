@@ -14,7 +14,9 @@ export default function PostHogProvider({
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    initPostHog();
+    if (typeof window !== "undefined") {
+      initPostHog();
+    }
   }, []);
 
   useEffect(() => {

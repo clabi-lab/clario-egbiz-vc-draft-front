@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { DrawerItem } from "@/types/Drawer";
 
-interface Props {
+interface DrawerStandardItemProps {
   item: DrawerItem;
   isOpen: boolean;
   onClick: (item: DrawerItem) => void;
@@ -40,7 +40,11 @@ const StyledListItemIcon = styled(ListItemIcon, {
   },
 }));
 
-const DrawerStandardItem = ({ item, isOpen, onClick }: Props) => {
+const DrawerStandardItem = ({
+  item,
+  isOpen,
+  onClick,
+}: DrawerStandardItemProps) => {
   const { title, icon: IconComponent, type, subList } = item;
   const isToggle = type === "toggle";
   const isText = type === "text";

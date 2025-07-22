@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { DrawerItem } from "@/types/Drawer";
 
-interface Props {
+interface DrawerButtonItemProps {
   item: DrawerItem;
   onClick: (item: DrawerItem) => void;
 }
@@ -36,7 +36,7 @@ const StyledDrawerButton = styled(ListItemButton)(() => ({
   },
 }));
 
-const DrawerButtonItem = ({ item, onClick }: Props) => {
+const DrawerButtonItem = ({ item, onClick }: DrawerButtonItemProps) => {
   const { title, icon: IconComponent } = item;
 
   return (

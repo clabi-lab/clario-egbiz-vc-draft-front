@@ -7,14 +7,19 @@ interface ActionItem {
   onClick: () => void;
 }
 
-interface Props {
+interface ChatHistoryMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
   actions: ActionItem[];
 }
 
-const ChatHistoryMenu = ({ anchorEl, open, onClose, actions }: Props) => (
+const ChatHistoryMenu = ({
+  anchorEl,
+  open,
+  onClose,
+  actions,
+}: ChatHistoryMenuProps) => (
   <Menu
     anchorEl={anchorEl}
     open={open}

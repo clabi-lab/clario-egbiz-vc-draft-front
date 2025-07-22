@@ -1,6 +1,6 @@
 "use client";
 
-import AiDisclaimer from "@/components/AiDisclaimer";
+import AiDisclaimer from "@/components/Common/AiDisclaimer";
 
 const HomeLayout = ({
   children,

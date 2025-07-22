@@ -1,23 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { getSatisfactionId, saveSatisfactionId } from "@/lib/indexedDB";
 import { useAlertStore } from "@/store/useAlertStore";
+
 import { Button, IconButton, InputBase, Menu, Paper } from "@mui/material";
 
 import ChatVoiceIcon from "@/public/icons/ChatVoiceIcon";
 import ChatDislikeIcon from "@/public/icons/ChatDislikeIcon";
 import ChatlikeIcon from "@/public/icons/ChatlikeIcon";
 import ChatCopyIcon from "@/public/icons/ChatCopyIcon";
-import { updateSatisfaction } from "@/services/chatService";
-import { getSatisfactionId, saveSatisfactionId } from "@/lib/indexedDB";
 
-const FeedBack = ({
-  streamText,
-  chatId,
-}: {
+import { updateSatisfaction } from "@/services/chatService";
+
+interface FeedBackProps {
   streamText: string;
   chatId: number;
-}) => {
+}
+
+const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
   const openAlert = useAlertStore((state) => state.openAlert);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -77,7 +78,10 @@ const FeedBack = ({
       });
       handleClose();
     } catch (error) {
-      console.error("피드백 제출 실패:", error);
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
     }
   };
 

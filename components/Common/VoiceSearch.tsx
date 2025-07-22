@@ -6,9 +6,9 @@ import SpeechRecognition, {
 
 import MicIcon from "@mui/icons-material/Mic";
 
-type VoiceSearchProps = {
+interface VoiceSearchProps {
   onSearch: (transcript: string) => void;
-};
+}
 
 const VoiceSearch = ({ onSearch }: VoiceSearchProps) => {
   const {

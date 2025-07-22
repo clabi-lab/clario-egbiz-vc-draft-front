@@ -1,4 +1,3 @@
-import React from "react";
 import { homeConfig } from "@/config/home.config";
 
 const AiDisclaimer = ({ className }: { className?: string }) => {

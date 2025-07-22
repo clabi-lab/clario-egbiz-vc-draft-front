@@ -3,7 +3,8 @@ import { StreamEndEvent } from "@/types/Stream";
 export const formatChatSaveData = (
   event: StreamEndEvent,
   chatGroupId: number,
-  chatHistoryList: { type: string; text: string }[]
+  chatHistoryList: { type: string; text: string }[],
+  isRecommend?: boolean
 ) => {
   const {
     ip_address = "",
@@ -18,6 +19,8 @@ export const formatChatSaveData = (
     recommended_questions = "[]",
     references = [],
     images = [],
+    re_select_data = [],
+    re_answer_data = "",
   } = event;
 
   return {
@@ -27,9 +30,13 @@ export const formatChatSaveData = (
     use_token_count,
     latency,
     clario_uuid,
-    action,
+    action: isRecommend ? "recommend" : action,
     sub_action,
-    select_items: select_items.join(", "),
+    select_items: [
+      ...select_items.map((item) => item.description),
+      ...re_select_data.map((item) => item.title),
+      re_answer_data,
+    ].join(", "),
     recommended_questions: (typeof recommended_questions === "string"
       ? JSON.parse(recommended_questions)
       : recommended_questions
@@ -42,92 +49,4 @@ export const formatChatSaveData = (
     chat_history_list: chatHistoryList,
     chat_group_id: chatGroupId,
   };
-};
-
-const data = {
-  type: "all",
-  chat_ai_group_id: "101",
-  clario_uuid: "d2574b73-4748-4371-8d05-6e31ecc385a30a3174564316707975",
-  chat_question: "전기 방벽",
-  ip_address: "1.209.229.248",
-  chat_answer:
-    "전기방벽이란 다음과 같은 의미를 가지고 있습니다:\n\n* **전기적으로 연속된 구조**: 전기방벽은 전기적으로 연속된 구조를 의미합니다. 즉, 내부에 존재하는 전하가 자유롭게 이동할 수 있도록 해주는 역할을 합니다.\n* **전자파 차단 효과**: 전기방벽은 전자파 차단 효과가 뛰어나며 이를 통해 외부로부터 유입되는 노이즈나 간섭 등을 방지해 줍니다.\n* **안전성 향상**: 전기장비를 보호하기 위해 사용되는 경우가 많으며 이때 안전성을 높여주는 효과를 발휘하기도 합니다.\n* **다양한 산업 분야에서 활용**: 반도체 공정이나 디스플레이 제작 등에서 필수적이며 그 외에도 항공우주산업, 군사 분야에서도 널리 쓰이고 있습니다.\n\n\n이러한 특징들로 인해 많은 곳에서 이용되고 있지만 때로는 비용이 비싸거나 불안정한 문제점 또한 나타나기도 하므로 상황에 맞게 잘 선택하여야 하며 만약 문제가 발생한다면 전문가에게 문의하시는 것이 좋습니다.",
-  use_token_count: 1544,
-  references: [
-    {
-      title: "EC",
-      code_nm: "전선 및 케이블",
-      depth1: "ECB 7200",
-      text: "\n        [서적 정보]\n        서적 코드 : EC-ECB\n        서적 한글 명 : 전선 및 전로용품(전선 및 케이블)\n        발행년도 : 2020\n\n        [문헌 정보]\n        - 대분류 : ECB 7200 (송배전용 5-46 kV차폐형 전력용 케이블)\n        - 중분류 :  (유전율)\n        - 소분류 : 8 (연합 및 충전물, 케이블 식별)\n        - 세분류 : 8.3 (선심 식별)\n        - 상세분류 : 8.3.1 (접지도체)\n        - 문헌 타입 : text\n\n        [문헌 내용]\n        접지도체가 요구되는 2, 3 및 4 심절연 전력케이 블의 연합은달리 규정하지 않으면 표 8.2에 나타 낸 바와 같이 최소 접지도체 크기를 가져야 한다. 절연 또는 비절연 접지도체는 여 러부분으로 나누 어도 좋으나 어떤부분도 No. 12 AWG보다작아 서는 안 되며, KE PIC-ECB7100의 2 및 3항에 주 어 진요건을만족해야 한다. 주 <1>대구경 케이블의 접지도체에 대해서는 제조자와상의한다.\n\n        ",
-      code: "ECB",
-      depth3_nm: "연합 및 충전물, 케이블 식별",
-      depth4: "8.3",
-      depth5: "8.3.1",
-      depth5_nm: "접지도체",
-      host: [],
-      type: "text",
-      id: "4b108ac0-e3ba-474f-8736-38edcf6a99940a7349892069358474",
-      depth1_nm: "송배전용 5-46 kV차폐형 전력용 케이블",
-      depth2: "",
-      depth2_nm: "유전율",
-      depth3: "8",
-      page_no: "82.0",
-      title_nm: "전선 및 전로용품",
-      publication_year: "2020",
-      depth4_nm: "선심 식별",
-    },
-    {
-      title: "EC",
-      code_nm: "전선 및 케이블",
-      depth1: "ECB 5400",
-      text: "\n        [서적 정보]\n        서적 코드 : EC-ECB\n        서적 한글 명 : 전선 및 전로용품(전선 및 케이블)\n        발행년도 : 2020\n\n        [문헌 정보]\n        - 대분류 : ECB 5400 (변전소 케이블 계통의 설계 및 설치)\n        - 중분류 :  (부 록)\n        - 소분류 :  (부록 C (기준) 제어 및 전력 케이블 선정)\n        - 세분류 :  (C.6 절연)\n        - 상세분류 :  (C.6.1 전압 정격)\n        - 문헌 타입 : text\n\n        [문헌 내용]\n        케이블 전압 정 격의 선정은 전기회로 주파수, 위 상 및 접지 방식 그리고접지와 다른활선 도체에 대한 정상 상태 및 과도 도체전압 등 부록 B의 운전 조건에 기초한다. 전압정 격은 KEPIC ECB 4000/ICEA S-73[B157] 에 따른 절연 재료 및 두께의 각 표준 구성에 따라 선정되어 왔다. 선정된 전압정격에서는 케이블 절연 계통이 정상 운전조건하에서 절연 파괴를 일으키지 않고 활선 도체전압을 유지할 수 있어야 한다.\n\n        ",
-      code: "ECB",
-      depth3_nm: "부록 C (기준) 제어 및 전력 케이블 선정",
-      depth4: "",
-      depth5: "",
-      depth5_nm: "C.6.1 전압 정격",
-      host: [],
-      type: "text",
-      id: "bfef8a81-0c3f-4a25-a853-fa78c939d8a90a6384560139789041",
-      depth1_nm: "변전소 케이블 계통의 설계 및 설치",
-      depth2: "",
-      depth2_nm: "부 록",
-      depth3: "",
-      page_no: "108.0",
-      title_nm: "전선 및 전로용품",
-      publication_year: "2020",
-      depth4_nm: "C.6 절연",
-    },
-    {
-      title: "EC",
-      code_nm: "전선 및 케이블",
-      depth1: "ECB 5310",
-      text: '\n        [서적 정보]\n        서적 코드 : EC-ECB\n        서적 한글 명 : 전선 및 전로용품(전선 및 케이블)\n        발행년도 : 2020\n\n        [문헌 정보]\n        - 대분류 : ECB 5310 (저압 케이블 차폐 실무에 대한 지침)\n        - 중분류 : 그림 1 (- 포일 있는 가장자리 및 포일 없는 가장자리 차폐 테이프)\n        - 소분류 :  ()\n        - 세분류 :  ()\n        - 상세분류 :  ()\n        - 문헌 타입 : table\n\n        [문헌 내용]\n        \n\n<table>\n  <tr> \n    <td  colspan="2">  <div class="cell">알루미늄</div>  </td>\n    <td >  <div class="cell"></div>  </td>\n  </tr>\n  <tr> \n    <td  colspan="3">  <div class="cell">폴리에스터<img src=\'https://api-test2.researchthelive.kro.kr/content/otl/extract_test2/E-119.ECB__20250328_173336_5e047a44/images/table_cell_image_128_1_0_2.png\' />\n</div>  </td>\n  </tr>\n  <tr> \n    <td >  <div class="cell"></div>  </td>\n    <td >  <div class="cell">접지용전선</div>  </td>\n  </tr>\n  <tr> \n    <td  colspan="3" rowspan="2">  <div class="cell">절연 도체</div>  </td>\n    <td >  <div class="cell"></div>  </td>\n  </tr>\n  <tr> \n  </tr>\n</table>\n\n\n\n        ',
-      code: "ECB",
-      depth3_nm: "",
-      depth4: "",
-      depth5: "",
-      depth5_nm: "",
-      host: [
-        "https://api-test2.researchthelive.kro.kr/content/otl/extract_test2/E-119.ECB__20250328_173336_5e047a44/images/img_p128_2.png",
-      ],
-      type: "table",
-      id: "dff02fbd-010b-4018-a217-f01ac3bda8030a3559046296001842",
-      depth1_nm: "저압 케이블 차폐 실무에 대한 지침",
-      depth2: "그림 1",
-      depth2_nm: "- 포일 있는 가장자리 및 포일 없는 가장자리 차폐 테이프",
-      depth3: "",
-      page_no: "18.0",
-      title_nm: "전선 및 전로용품",
-      publication_year: "2020",
-      depth4_nm: "",
-    },
-  ],
-  images: [],
-  action: "M1ActionE3",
-  sub_action: "",
-  recommended_questions:
-    "[  \n    \"포켓몬 배틀에서 전기 타입 포켓몬의 '전기 방벽' 기술은 어떤 효과를 가지나요?\",\n    \"'전기 방벽' 기술의 효과와 사용법을 간략하게 설명해주실 수 있을까요?\",\n    \"배틀 오브젝트 중 하나인 '전기 방벽'은 게임 내에서 언제 주로 활용되나요? 이 기술에 대한 자세한 정보가 필요합니다.\"\n]",
-  latency: 14.324267728254199,
-  select_items: [],
 };
