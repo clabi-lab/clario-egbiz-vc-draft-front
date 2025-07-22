@@ -1,4 +1,4 @@
-const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Clabi";
+const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Kea";
 const DB_VERSION = 1;
 const CHAT_HISTORY_STORE = "ChatHistoryStore";
 const SAVED_CHAT_STORE = "SavedChatStore";
