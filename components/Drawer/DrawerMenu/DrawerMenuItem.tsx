@@ -5,13 +5,13 @@ import { DrawerItem } from "@/types/Drawer";
 import DrawerButtonItem from "./DrawerButtonItem";
 import DrawerStandardItem from "./DrawerStandardItem";
 
-interface Props {
+interface DrawerMenuItemProps {
   item: DrawerItem;
   isOpen: boolean;
   onClick: (item: DrawerItem) => void;
 }
 
-const DrawerMenuItem = ({ item, isOpen, onClick }: Props) => {
+const DrawerMenuItem = ({ item, isOpen, onClick }: DrawerMenuItemProps) => {
   if (item.type === "button") {
     return <DrawerButtonItem item={item} onClick={onClick} />;
   }

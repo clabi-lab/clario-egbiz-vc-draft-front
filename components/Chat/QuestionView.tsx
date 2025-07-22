@@ -1,17 +1,13 @@
-import React from "react";
 import clsx from "clsx";
+import SafeHTML from "@/utils/SafeHTML";
 
-type QuestionViewProps = {
+interface QuestionViewProps {
   question: string;
   type?: "border" | "bold" | "contained";
   className?: string;
-};
+}
 
-const QuestionView: React.FC<QuestionViewProps> = ({
-  question,
-  type,
-  className,
-}) => {
+const QuestionView = ({ question, type, className }: QuestionViewProps) => {
   return (
     <div
       className={clsx(
@@ -21,7 +17,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
         type === "contained" && "bg-gray-200 py-2 px-4 rounded inline-block"
       )}
     >
-      {question}
+      <SafeHTML html={question.replace(/\n/g, "<br />")} />
     </div>
   );
 };

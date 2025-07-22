@@ -4,18 +4,43 @@ import { useState } from "react";
 import { SearchBoxConfig } from "@/config/common";
 
 import { useSpeechRecognition } from "react-speech-recognition";
-import VoiceSearch from "./VoiceSearch";
-import VoiceVisualizer from "./VoiceVisualizer";
-import { InputAdornment, Input } from "@mui/material";
-
-import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import posthog from "posthog-js";
 
-type SearchBarProps = {
+import VoiceSearch from "./VoiceSearch";
+import VoiceVisualizer from "./VoiceVisualizer";
+import { InputAdornment, TextField, styled } from "@mui/material";
+import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+
+interface SearchBarProps {
   className?: string;
   placeholder?: string;
   onSearch: (searchText: string) => void;
-};
+}
+
+const CustomField = styled(TextField)({
+  "& label.Mui-focused": {
+    color: "var(--point)",
+    borderRadius: "32px",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "var(--point)",
+    borderRadius: "32px",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "var(--point)",
+      borderRadius: "32px",
+    },
+    "&:hover fieldset": {
+      borderColor: "var(--point)",
+      borderRadius: "32px",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "var(--point)",
+      borderRadius: "32px",
+    },
+  },
+});
 
 const SearchBar = ({
   className = "",
@@ -26,43 +51,45 @@ const SearchBar = ({
   const [searchText, setSearchText] = useState("");
 
   const handleSubmit = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
+    if (!value) return;
 
     // PostHog로 검색 이벤트 트래킹
     posthog.capture("searched_keyword", {
-      keyword: trimmed,
+      keyword: value,
       source: "search_input",
     });
 
-    onSearch(trimmed);
+    onSearch(value);
     setSearchText("");
   };
 
   return (
     <div className={`relative flex items-center ${className}`}>
-      <div className="flex-1 py-2 px-3 border border-[var(--point)] rounded-3xl">
-        <Input
+      <div className="flex-1">
+        <CustomField
           fullWidth
+          multiline
+          maxRows={5}
           placeholder={listening ? "" : placeholder}
           value={listening ? "" : searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
               handleSubmit(searchText);
             }
           }}
-          endAdornment={
-            !listening && (
-              <InputAdornment position="end">
-                <SendOutlinedIcon
-                  sx={{ cursor: "pointer", color: "var(--point)" }}
-                  onClick={() => handleSubmit(searchText)}
-                />
-              </InputAdornment>
-            )
-          }
-          disableUnderline
+          slotProps={{
+            input: {
+              endAdornment: !listening && (
+                <InputAdornment position="end">
+                  <SendOutlinedIcon
+                    sx={{ cursor: "pointer", color: "var(--point)" }}
+                    onClick={() => handleSubmit(searchText)}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
         />
       </div>
 

@@ -7,7 +7,6 @@ const SATISFACTION_STORE = "SatisfactionStore";
 interface IndexedDBItem {
   id: number;
   title: string;
-  shareCode: string;
 }
 
 interface SatisfactionDBItem {
@@ -73,12 +72,6 @@ export const saveChatGroup = async (item: IndexedDBItem): Promise<void> => {
 export const savedChatGroup = async (item: IndexedDBItem): Promise<void> => {
   const store = await getStore(SAVED_CHAT_STORE, "readwrite");
   await wrapRequest(store.put(item));
-};
-
-export const getShareCode = async (id: number): Promise<string | null> => {
-  const store = await getStore(CHAT_HISTORY_STORE, "readonly");
-  const item = await wrapRequest(store.get(id));
-  return item?.shareCode ?? null;
 };
 
 export const updateChatGroup = async (item: IndexedDBItem): Promise<void> => {

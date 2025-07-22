@@ -1,4 +1,3 @@
-import React from "react";
 import clsx from "clsx";
 
 import ReactMarkdown from "react-markdown";
@@ -10,7 +9,7 @@ type AnswerViewProps = {
 
 const AnswerView = ({ streamText, className }: AnswerViewProps) => {
   return (
-    <div className={clsx(className, "prose ")}>
+    <div className={clsx(className, "prose max-w-full")}>
       <ReactMarkdown>{streamText}</ReactMarkdown>
     </div>
   );

@@ -6,9 +6,9 @@ import SpeechRecognition, {
 
 import MicIcon from "@mui/icons-material/Mic";
 
-type VoiceSearchProps = {
+interface VoiceSearchProps {
   onSearch: (transcript: string) => void;
-};
+}
 
 const VoiceSearch = ({ onSearch }: VoiceSearchProps) => {
   const {
@@ -22,7 +22,6 @@ const VoiceSearch = ({ onSearch }: VoiceSearchProps) => {
     if (transcript) {
       onSearch(transcript);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript]);
 
   if (!browserSupportsSpeechRecognition && listening) {

@@ -1,6 +1,11 @@
 import { baseService } from "./baseService";
 
-import { Chat, ChatGroupResponse, Satisfaction } from "@/types/Chat";
+import {
+  Chat,
+  ChatGroupResponse,
+  ChatResponse,
+  Satisfaction,
+} from "@/types/Chat";
 
 export const createChatGroup = async (
   title: string
@@ -9,14 +14,12 @@ export const createChatGroup = async (
   return response.data;
 };
 
-export const saveChat = async (chatData: Chat): Promise<ChatGroupResponse> => {
+export const saveChat = async (chatData: Chat): Promise<ChatResponse> => {
   const response = await baseService.post(`/chat`, chatData);
   return response.data;
 };
 
-export const updateChat = async (
-  chatData: Chat
-): Promise<ChatGroupResponse> => {
+export const updateChat = async (chatData: Chat): Promise<ChatResponse> => {
   const response = await baseService.put(`/chat`, chatData);
   return response.data;
 };

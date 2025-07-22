@@ -4,12 +4,13 @@ import { useEffect, useRef } from "react";
 
 import { TextField, ListItemText, TextFieldProps } from "@mui/material";
 import Link from "next/link";
+import { base64Encode } from "@/utils/encoding";
 
 interface Props {
   isEditing: boolean;
   editedTitle: string;
   itemId: string | number;
-  shareCode: string;
+  id: number;
   onChange: (value: string) => void;
   onSubmit: () => void;
 }
@@ -28,7 +29,7 @@ const textFieldStyles: TextFieldProps["sx"] = {
 export const ChatHistoryTextOrInput = ({
   isEditing,
   editedTitle,
-  shareCode,
+  id,
   onChange,
   onSubmit,
 }: Props) => {
@@ -82,7 +83,7 @@ export const ChatHistoryTextOrInput = ({
 
   return (
     <Link
-      href={`/chat/${shareCode}`}
+      href={`/chat/${base64Encode(JSON.stringify(id))}`}
       className="w-[calc(100%-32px)] flex items-center"
       passHref
     >

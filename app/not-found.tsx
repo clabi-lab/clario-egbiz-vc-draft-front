@@ -11,7 +11,6 @@ const NotFound = () => {
 
   useEffect(() => {
     setOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

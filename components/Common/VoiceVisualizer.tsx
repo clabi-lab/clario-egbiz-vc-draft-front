@@ -1,5 +1,6 @@
 "use client";
 
+import { useAlertStore } from "@/store/useAlertStore";
 import { useEffect, useRef } from "react";
 import { useSpeechRecognition } from "react-speech-recognition";
 
@@ -8,6 +9,7 @@ const VoiceVisualizer = () => {
   const animationRef = useRef<number | null>(null);
 
   const { listening } = useSpeechRecognition();
+  const openAlert = useAlertStore((state) => state.openAlert);
 
   // 오디오 및 시각화 관련 객체 refs
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -87,7 +89,10 @@ const VoiceVisualizer = () => {
         source.connect(analyser);
         draw();
       } catch (error) {
-        console.error("Error accessing microphone:", error);
+        openAlert({
+          severity: "error",
+          message: "잠시 후 다시 시도해주세요",
+        });
       }
     };
 

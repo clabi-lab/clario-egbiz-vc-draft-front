@@ -3,7 +3,8 @@ import { StreamEndEvent } from "@/types/Stream";
 export const formatChatSaveData = (
   event: StreamEndEvent,
   chatGroupId: number,
-  chatHistoryList: { type: string; text: string }[]
+  chatHistoryList: { type: string; text: string }[],
+  isRecommend?: boolean
 ) => {
   const {
     ip_address = "",
@@ -18,6 +19,8 @@ export const formatChatSaveData = (
     recommended_questions = "[]",
     references = [],
     images = [],
+    re_select_data = [],
+    re_answer_data = "",
   } = event;
 
   return {
@@ -27,9 +30,13 @@ export const formatChatSaveData = (
     use_token_count,
     latency,
     clario_uuid,
-    action,
+    action: isRecommend ? "recommend" : action,
     sub_action,
-    select_items: select_items.join(", "),
+    select_items: [
+      ...select_items.map((item) => item.description),
+      ...re_select_data.map((item) => item.title),
+      re_answer_data,
+    ].join(", "),
     recommended_questions: (typeof recommended_questions === "string"
       ? JSON.parse(recommended_questions)
       : recommended_questions

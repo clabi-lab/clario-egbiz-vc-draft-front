@@ -1,6 +1,7 @@
 import { Reference } from "./Chat";
+import { Filter } from "./Filter";
 
-export interface StreamEvent {
+export interface StreamStage {
   type: string;
   text: string;
   [key: string]: unknown;
@@ -19,24 +20,45 @@ export interface StreamEndEvent {
   use_token_count?: number;
   latency?: number;
   recommended_questions?: string | string[];
-  chat_history_list?: StreamEvent[];
+  chat_history_list?: StreamStage[];
   references?: Reference[];
   images?: {
     imageUrl: string;
     imageType: string;
   }[];
   next_endpoint?: string;
-  form?: unknown;
+  form?: {
+    category: UserActionFormData;
+  };
   transfer_data?: unknown[];
-  re_select_data?: unknown;
-  re_answer_data?: unknown;
-  select_items?: unknown[];
+  re_select_data?: {
+    publication_year: string;
+    title: string;
+    title_kr: string;
+  }[];
+  re_answer_data?: string;
+  select_items?: Filter[];
   [key: string]: unknown;
+}
+
+export interface UserActionFormData {
+  type: string;
+  items: UserActionFormItem[];
+}
+
+export interface UserActionFormItem {
+  title: string;
+  title_kr: string;
+  publication_year: string;
+}
+export interface UserActionData {
+  re_select_data: UserActionFormItem[];
+  re_answer_data: string;
 }
 
 export interface ChatGroup {
   question: string;
-  streamStages: StreamEvent[];
+  streamStages: StreamStage[];
   streamText: string;
   isFinished: boolean;
 }
