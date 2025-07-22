@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { initPostHog } from "@/lib/posthog";
 import posthog from "@/lib/posthog";
 
@@ -11,7 +11,6 @@ export default function PostHogProvider({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -23,9 +22,8 @@ export default function PostHogProvider({
     // 페이지 이동 시마다 추적
     posthog.capture("$pageview", {
       pathname,
-      search: searchParams.toString(),
     });
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return <>{children}</>;
 }
