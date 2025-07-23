@@ -15,22 +15,28 @@ import {
   TextField,
 } from "@mui/material";
 
+const GradientWrapper = styled("div")({
+  padding: "1px",
+  borderRadius: "32px",
+  marginTop: "1rem",
+  background: "linear-gradient(0deg, #005CA4 0%, #CEE2FF 100%)",
+});
+
 const CustomField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "var(--point)",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "var(--point)",
-  },
+  borderRadius: "30px",
+  backgroundColor: "white",
+  width: "100%",
   "& .MuiOutlinedInput-root": {
+    borderRadius: "30px",
+    backgroundColor: "white",
     "& fieldset": {
-      borderColor: "var(--point)",
+      borderColor: "transparent",
     },
     "&:hover fieldset": {
-      borderColor: "var(--point)",
+      borderColor: "transparent",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--point)",
+      borderColor: "transparent",
     },
   },
 });
@@ -119,22 +125,24 @@ const UserActionForm = ({
                     display: "block",
                     whiteSpace: "nowrap",
                   },
+                  "&:hover": {
+                    backgroundColor: "var(--tag-bg)",
+                    color: "var(--tag-text)",
+                  },
                 }}
               />
             ))}
         </Stack>
         {isInput && (
-          <CustomField
-            fullWidth
-            variant="outlined"
-            placeholder={inputPlaceholder}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            size="small"
-            sx={{
-              mt: 2,
-            }}
-          />
+          <GradientWrapper>
+            <CustomField
+              fullWidth
+              placeholder={inputPlaceholder}
+              size="small"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </GradientWrapper>
         )}
       </DialogContent>
       <DialogActions>
@@ -142,6 +150,7 @@ const UserActionForm = ({
           닫기
         </Button>
         <Button
+          color="primary"
           variant="contained"
           onClick={handleSubmit}
           disabled={selectedItems.length === 0 && !searchText}
