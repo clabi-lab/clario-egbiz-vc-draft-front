@@ -1,14 +1,25 @@
 "use client";
 
-import DOMPurify from "dompurify";
 import { useMemo } from "react";
+import DOMPurify from "isomorphic-dompurify";
 
-const SafeHTML = ({ html }: { html: string }) => {
+const SafeHTML = ({
+  html,
+  className,
+}: {
+  html: string;
+  className?: string;
+}) => {
   const safeHtml = useMemo(() => {
     return DOMPurify.sanitize(html);
   }, [html]);
 
-  return <div dangerouslySetInnerHTML={{ __html: safeHtml }} />;
+  return (
+    <div
+      className={className ? className : ""}
+      dangerouslySetInnerHTML={{ __html: safeHtml }}
+    />
+  );
 };
 
 export default SafeHTML;

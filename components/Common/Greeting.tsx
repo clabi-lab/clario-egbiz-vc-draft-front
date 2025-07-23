@@ -1,13 +1,13 @@
-import React from "react";
 import { useFetchSetting } from "@/hooks/useHomeData";
+import SafeHTML from "@/utils/SafeHTML";
 
 const Greeting = ({ className }: { className?: string }) => {
   const { data: settingData } = useFetchSetting();
 
   return (
-    <div
-      className={`text-cente ${className}`}
-      dangerouslySetInnerHTML={{ __html: settingData.greeting.main_greeting }}
+    <SafeHTML
+      className={`text-center ${className}`}
+      html={settingData.greeting.main_greeting.replace(/\n/g, "<br />")}
     />
   );
 };
