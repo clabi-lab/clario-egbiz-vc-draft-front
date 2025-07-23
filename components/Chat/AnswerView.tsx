@@ -9,7 +9,7 @@ type AnswerViewProps = {
 
 const AnswerView = ({ streamText, className }: AnswerViewProps) => {
   return (
-    <div className={clsx(className, "prose max-w-full")}>
+    <div className={clsx(className, "prose max-w-full text-chat-base")}>
       <ReactMarkdown>{streamText}</ReactMarkdown>
     </div>
   );

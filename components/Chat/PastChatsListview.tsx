@@ -21,7 +21,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
           {chatList.map((chat, index) => {
             return (
               <div
-                className={index !== 0 ? "mt-12" : ""}
+                className={index !== 0 ? "mt-12 text-inherit" : "text-inherit"}
                 key={`${chat.question}_${index}`}
               >
                 {chat.question && (
@@ -31,13 +31,13 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 )}
                 {chat.selectedItems && chat.selectedItems.length > 0 && (
                   <SelectedItemsView
-                    className="my-3"
+                    className="my-4"
                     selectItems={chat.selectedItems}
                   />
                 )}
                 {chat.streamStages && (
                   <StreamStagesView
-                    className="my-4 border border-gray-300 py-2 px-4 rounded"
+                    className="my-4 border border-gray-300 py-3 px-6 rounded"
                     question={chat.question}
                     streamStages={chat.streamStages}
                     isFinished={true}
@@ -48,7 +48,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 {chat.references && chat.references.length > 0 && (
                   <ReferencesView
                     references={chat.references}
-                    className="p-2  mt-2"
+                    className="mt-4"
                     onClick={(item) => console.log(item)}
                   />
                 )}
@@ -59,7 +59,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 {chat.recommendedQuestions &&
                   chat.recommendedQuestions.length > 0 && (
                     <RecommendedQuestionsView
-                      className="mt-6"
+                      className="mt-8"
                       questions={chat.recommendedQuestions}
                       onClick={(question) => onSearch(question, true)}
                     />

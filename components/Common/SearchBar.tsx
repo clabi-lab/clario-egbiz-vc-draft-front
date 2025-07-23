@@ -9,7 +9,9 @@ import posthog from "posthog-js";
 import VoiceSearch from "./VoiceSearch";
 import VoiceVisualizer from "./VoiceVisualizer";
 import { InputAdornment, TextField, styled } from "@mui/material";
-import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+
+import SendIcon from "@/public/icons/SendIcon";
+
 
 interface SearchBarProps {
   className?: string;
@@ -17,28 +19,30 @@ interface SearchBarProps {
   onSearch: (searchText: string) => void;
 }
 
-const CustomField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "var(--point)",
-    borderRadius: "32px",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "var(--point)",
-    borderRadius: "32px",
-  },
+const GradientWrapper = styled("div")({
+  padding: "1px",
+  borderRadius: "32px",
+  background: "linear-gradient(0deg, #005CA4 0%, #CEE2FF 100%)",
+});
+
+const InnerField = styled(TextField)({
+  borderRadius: "30px",
+  backgroundColor: "white",
+  width: "100%",
   "& .MuiOutlinedInput-root": {
+    borderRadius: "30px",
+    backgroundColor: "white",
+    padding:"12px",
     "& fieldset": {
-      borderColor: "var(--point)",
-      borderRadius: "32px",
+      borderColor: "transparent",
     },
     "&:hover fieldset": {
-      borderColor: "var(--point)",
-      borderRadius: "32px",
+      borderColor: "transparent",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--point)",
-      borderRadius: "32px",
+      borderColor: "transparent",
     },
+
   },
 });
 
@@ -64,38 +68,38 @@ const SearchBar = ({
   };
 
   return (
-    <div className={`relative flex items-center ${className}`}>
+    <div className={`relative flex items-end ${className} `}>
       <div className="flex-1">
-        <CustomField
-          fullWidth
-          multiline
-          maxRows={5}
-          placeholder={listening ? "" : placeholder}
-          value={listening ? "" : searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(searchText);
-            }
-          }}
-          slotProps={{
-            input: {
-              endAdornment: !listening && (
-                <InputAdornment position="end">
-                  <SendOutlinedIcon
-                    sx={{ cursor: "pointer", color: "var(--point)" }}
-                    onClick={() => handleSubmit(searchText)}
-                  />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+         <GradientWrapper>
+          <InnerField           
+              fullWidth
+              multiline
+              maxRows={5}
+              placeholder={listening ? "" : placeholder}
+              value={listening ? "" : searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(searchText);
+                }
+              }}
+              slotProps={{
+                input: {
+                  endAdornment: !listening && (
+                    <InputAdornment position="end">
+                      <div onClick={() => handleSubmit(searchText)}>
+                        <SendIcon />
+                      </div>
+                    </InputAdornment>
+                  ),
+                },
+              }} />
+        </GradientWrapper>
       </div>
 
       <div
-        className={`absolute top-[8px] left-[16px] w-[calc(100%-60px)] ${
+        className={`absolute top-[8px] left-[16px] w-[calc(100%-62px)] ${
           listening ? "" : "hidden"
         }`}
       >

@@ -2,7 +2,7 @@ import { DrawerItem } from "../types/Drawer";
 
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import ChatHistories from "@/components/Drawer/ChatHistories/ChatHistories";
 import SearchFilter from "@/components/Drawer/SearchFilter/SearchFilter";
@@ -30,14 +30,14 @@ export const drawerMenuList: DrawerItem[] = [
   },
   {
     key: "chat",
-    title: "새 대화 시작",
-    icon: AddCircleOutlineOutlinedIcon,
+    title: "새로운 채팅",
+    icon: AddCircleIcon,
     type: "button",
     link: "/chat",
   },
   {
     key: "history",
-    title: "최근 질문",
+    title: "질문 내역",
     icon: ExpandMoreOutlinedIcon,
     type: "toggle", // 토글형 메뉴 (펼침/접힘)
     subList: <ChatHistories />, // 토글 펼침 시 렌더링할 컴포넌트

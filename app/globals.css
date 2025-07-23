@@ -4,6 +4,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Pretendard', sans-serif;
+}
+
 :root {
   /* globals */
   --point: #004785;
@@ -16,10 +28,15 @@
   --history-menu-text: #ffffff;
   --history-menu-bg: #004785;
   --tag-bg: #004785;
+  --tag-last-bg: #7EBAEB;
   --tag-text: #ffffff;
 
   /* chat */
   --chat-bg: #fff;
+
+  --chat-base: 18px;
+  --chat-sm: 16px;
+  --chat-xs: 14px;
 }
 
 .dark {
@@ -34,6 +51,7 @@
   --history-menu-text: #ffffff;
   --history-menu-bg: #004785;
   --tag-bg: #004785;
+  --tag-last-bg: #7EBAEB;
   --tag-text: #ffffff;
 
   /* chat */
@@ -50,5 +68,9 @@
   --color-history-menu-bg: var(--history-menu-bg);
   --color-chat-bg: var(--chat-bg);
   --color-tag-bg: var(--tag-bg);
+  --color-tag-last-bg: var(--tag-last-bg);
   --color-tag-text: var(--tag-text);
+  --text-chat-base: var(--chat-base);
+  --text-chat-sm: var(--chat-sm);
+  --text-chat-xs: var(--chat-xs);
 }

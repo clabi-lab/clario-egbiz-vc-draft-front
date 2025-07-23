@@ -182,7 +182,7 @@ const SearchFilter = () => {
         <StyledListItemText
           primary={
             <StyledFormControlLabel
-              label="전체 선택"
+              label="전체"
               control={
                 <StyledCheckbox
                   size="small"

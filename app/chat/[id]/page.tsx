@@ -176,7 +176,7 @@ const ChatDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col justify-between relative">
+    <div className="h-full w-full flex flex-col justify-between relative text-chat-base">
       {!newQuestion && pastChats.length === 0 && (
         <div className="text-lg text-gray-400 absolute top-[50%] left-[50%] translate-[-50%]">
           무엇이든 질문해 주세요
@@ -190,28 +190,30 @@ const ChatDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
         ref={chatWrapRef}
         className="flex-1 overflow-y-auto p-4"
       >
-        {/* 이전 채팅 목록 */}
-        {pastChats.length > 0 && (
-          <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
-        )}
+        <div className="max-w-[800px] m-auto">
+          {/* 이전 채팅 목록 */}
+          {pastChats.length > 0 && (
+            <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
+          )}
 
-        {/* 새 질문 응답 영역 */}
-        {newQuestion && (
-          <CurrentChatView
-            className={pastChats.length === 0 ? "" : "mt-10"}
-            question={newQuestion}
-            streamStages={streamStages}
-            streamText={streamText}
-            isFinished={isFinished}
-            references={references}
-            recommendedQuestions={recommendedQuestions}
-            onSearch={handleSearch}
-          />
-        )}
+          {/* 새 질문 응답 영역 */}
+          {newQuestion && (
+            <CurrentChatView
+              className={pastChats.length === 0 ? "" : "mt-10"}
+              question={newQuestion}
+              streamStages={streamStages}
+              streamText={streamText}
+              isFinished={isFinished}
+              references={references}
+              recommendedQuestions={recommendedQuestions}
+              onSearch={handleSearch}
+            />
+          )}
+        </div>
       </div>
 
       <SearchBar
-        className="mt-4 mx-auto w-[90%]"
+        className="mt-4 mx-auto max-w-[800px] w-full"
         placeholder={settingData.prompt.input}
         onSearch={handleSearch}
       />

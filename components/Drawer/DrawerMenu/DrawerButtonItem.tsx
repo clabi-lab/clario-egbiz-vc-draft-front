@@ -15,22 +15,24 @@ interface DrawerButtonItemProps {
 }
 
 const StyledDrawerButton = styled(ListItemButton)(() => ({
-  margin: "0.5rem 1rem",
-  borderRadius: "10px",
+  margin: "0.25rem 0.75rem",
+  padding: "0.4rem 1.5rem",
+  borderRadius: "6px",
   border: "1px solid var(--point)",
-  color: "var(--point)",
-  fontWeight: "bold",
-
+  color: "#000",
+  boxShadow: "0px 2px 4px 0px rgba(0, 0, 0, 0.25)",
+  backgroundColor: "#fff",
   "& .MuiListItemIcon-root": {
     justifyContent: "center",
     color: "var(--point)",
   },
-
+  "& .MuiTypography-root": {
+    fontWeight: "600",
+  },
   "&:hover": {
     backgroundColor: "var(--drawer-hover-bg)",
     color: "var(--drawer-hover-text)",
   },
-
   "&:hover .MuiListItemIcon-root": {
     color: "var(--drawer-hover-text)",
   },

@@ -45,7 +45,7 @@ const Connector = styled(StepConnector)(() => ({
   },
   [`& .${stepConnectorClasses.line}`]: {
     borderColor: "#bbbbbb",
-    borderRadius: 1,
+    borderRadius: 0.5,
     margin: "-5px 0 -5px -3px",
   },
 }));
@@ -66,21 +66,12 @@ const StepIconRoot = styled("div")<{ ownerState: { active?: boolean } }>(
       height: 8,
       borderRadius: "50%",
       backgroundColor: "currentColor",
-      keyframes: {
-        blink: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0" },
-        },
-      },
-      animation: {
-        blink: "blink 1s step-start infinite",
-      },
     },
     variants: [
       {
         props: ({ ownerState }) => ownerState.active,
         style: {
-          color: "#005CA4",
+          color: "var(--point)",
         },
       },
     ],
@@ -100,7 +91,7 @@ const StreamStagesView = ({
     (state) => state.setIsProcessesDropdownOpen
   );
 
-  const activeStep = streamStages.length - 1;
+  const activeStep = isFinished ? streamStages.length : streamStages.length - 1;
 
   const handleDropdownOpen = () => {
     setIsOpen(!isOpen);
@@ -125,19 +116,21 @@ const StreamStagesView = ({
     <div className={clsx(className)}>
       {question && (
         <div
-          className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
+          className={`flex items-start justify-between ml-[-3px] cursor-pointer  ${
             isOpen ? "mb-2" : ""
           }`}
           onClick={() => handleDropdownOpen()}
         >
-          <p className="text-sm">
+          <p className="text-chat-sm">
             💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
           </p>
           {isFinished && (
             <ExpandMoreOutlinedIcon
               sx={{
+                ml: 2,
+                color: "#bbbbbb",
                 transition: "transform 0.3s ease",
-                transform: isOpen ? "none" : "rotate(180deg)",
+                transform: isOpen ? "rotate(180deg)" : "none",
               }}
             />
           )}

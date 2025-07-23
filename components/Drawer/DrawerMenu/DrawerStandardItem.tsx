@@ -36,7 +36,7 @@ const StyledListItemIcon = styled(ListItemIcon, {
   minWidth: 32,
   "& svg": {
     transition: "transform 0.3s ease",
-    transform: isRotated ? "rotate(180deg)" : "none",
+    transform: isRotated ? "none" : "rotate(180deg)",
   },
 }));
 

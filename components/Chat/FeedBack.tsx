@@ -86,7 +86,7 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
   };
 
   return (
-    <div className="flex items-center mt-2">
+    <div className="flex items-center mt-2 gap-1">
       <IconButton sx={{ padding: "2px" }} onClick={handleCopy}>
         <ChatCopyIcon />
       </IconButton>
