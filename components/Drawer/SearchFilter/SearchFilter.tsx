@@ -140,7 +140,7 @@ const SearchFilter = () => {
               <ExpandMoreIcon
                 sx={{
                   transition: "transform 0.3s ease",
-                  transform: isExpanded ? "none" : "rotate(-180deg)",
+                  transform: isExpanded ? "rotate(-180deg)" : "none",
                 }}
               />
             </ListItemIcon>
@@ -200,7 +200,7 @@ const SearchFilter = () => {
           <ExpandMoreIcon
             sx={{
               transition: "transform 0.3s ease",
-              transform: !isFilterVisible ? "rotate(180deg)" : "none",
+              transform: !isFilterVisible ? "none" : "rotate(-180deg)",
             }}
           />
         </ListItemIcon>
