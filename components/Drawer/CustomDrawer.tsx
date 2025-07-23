@@ -98,7 +98,7 @@ const CustomDrawer = () => {
   return (
     <>
       {/* 상단 좌측 toggle button (Drawer 열기용) */}
-      <div className="px-2 pt-1 fixed">
+      <div className="px-2 pt-1 fixed z-100">
         <IconButton
           onClick={() => {
             setOpen(true);
