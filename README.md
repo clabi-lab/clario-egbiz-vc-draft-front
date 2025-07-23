@@ -1,6 +1,6 @@
 ## 프로젝트 개요
 
-Clabi Chat Bot Template 입니다.
+대한전기협회 프로젝트 입니다.
 
 ## 기능
 
@@ -9,13 +9,9 @@ Clabi Chat Bot Template 입니다.
 기본적으로 아래 4가지의 메뉴가 있습니다.
 
 - 홈
-- 스타일 변경
 - 새 대화 시작
 - 최근 질문
-
-**추가 기능**
-
-- 필터(Project. 대한전기협회)
+- 필터
 
 메뉴는 `config/drawer.config`에서 추가 가능합니다.
 Drawer Color는 `app/globals.css`에서 변경 가능합니다.
@@ -72,7 +68,6 @@ Chat Page에 진입하면 다음과 같은 순서로 동작이 수행됩니다:
 [Material UI](https://mui.com/material-ui/getting-started/installation/)
 [Zustand](https://zustand.docs.pmnd.rs/getting-started/introduction)
 [react-markdown](https://github.com/remarkjs/react-markdown)
-[msw](https://mswjs.io/)
 
 ## 추후 개발
 
