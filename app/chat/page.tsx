@@ -40,12 +40,12 @@ const ChatPage = () => {
         />
       )}
       <Greeting />
-      <FiltersView></FiltersView>
       <SearchBar
         className="mt-8 mx-2 w-full"
         placeholder={settingData.prompt.input}
         onSearch={handleSearch}
       />
+      <FiltersView></FiltersView>
     </div>
   );
 };
