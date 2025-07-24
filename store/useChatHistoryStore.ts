@@ -9,7 +9,7 @@ interface ChatHistoryState {
 
 export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
   histories: [],
-  setHistories: (histories) => set({ histories }),
+  setHistories: (histories) => set({ histories: [...histories].reverse() }),
   addHistory: (history: History) =>
-    set((state) => ({ histories: [...state.histories, history] })),
+    set((state) => ({ histories: [history, ...state.histories] })),
 }));
