@@ -39,7 +39,7 @@ const ChatPage = () => {
           alt="logo"
         />
       )}
-      <Greeting />
+      <Greeting className="mt-4"/>
       <SearchBar
         className="mt-8 mx-2 w-full"
         placeholder={settingData.prompt.input}
