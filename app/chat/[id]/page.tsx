@@ -95,7 +95,7 @@ const ChatDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
           }))
         );
 
-        if (cachedData) {
+        if (chats.length === 0 && cachedData) {
           setNewQuestion(cachedData.title);
         }
       } catch (error) {

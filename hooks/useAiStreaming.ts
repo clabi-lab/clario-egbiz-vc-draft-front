@@ -30,6 +30,7 @@ export const useAiStreaming = (
   const controllerRef = useRef<AbortController | null>(null);
   const streamStagesRef = useRef<StreamStage[]>([]);
 
+  const histories = useChatHistoryStore((state) => state.histories);
   const addHistory = useChatHistoryStore((state) => state.addHistory);
   const selectedFilters = useFilterStore((state) => state.selectedFilters);
 
@@ -201,10 +202,16 @@ export const useAiStreaming = (
       title: question,
     });
 
-    await addHistory({
-      id: chatGroupId,
-      title: question,
-    });
+    const hasHistory = await histories.some(
+      (history) => history.id === chatGroupId
+    );
+
+    if (!hasHistory) {
+      await addHistory({
+        id: chatGroupId,
+        title: question,
+      });
+    }
 
     await completeStream();
   };

@@ -13,7 +13,12 @@ export const useCreateChatGroup = () => {
     mutationFn: ({ title }: { title: string }) => createChatGroup(title),
     onSuccess: (data) => {
       const key = ["chatGroup", data.chat_group_id];
+
       queryClient.setQueryData(key, data);
+
+      queryClient.setQueryDefaults(key, {
+        gcTime: 1000 * 60 * 1,
+      });
     },
   });
 };
