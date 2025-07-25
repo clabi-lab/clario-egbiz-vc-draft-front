@@ -61,9 +61,8 @@ const ShareDetailPage = ({
   }, []);
 
   return (
-    <div className="h-full w-full flex flex-col justify-between relative">
-      <div id="chatwrap" className="flex-1 overflow-y-auto p-4">
-        {/* 이전 채팅 목록 */}
+    <div className="h-full w-full">
+      <div className="max-w-[640px] m-auto mt-4 overflow-y-auto p-4">
         {pastChats.length > 0 && <PastChatsListview chatList={pastChats} />}
       </div>
     </div>

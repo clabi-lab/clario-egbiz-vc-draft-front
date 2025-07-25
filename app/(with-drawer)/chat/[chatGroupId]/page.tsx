@@ -15,11 +15,11 @@ import SearchBar from "@/components/Common/SearchBar";
 import UserActionForm from "@/components/Chat/UserActionForm";
 import PastChatsListview from "@/components/Chat/PastChatsListview";
 import CurrentChatView from "@/components/Chat/CurrentChatView";
+import ChatNavigation from "@/components/Chat/ChatNavigation";
 
 import { createShareCode } from "@/services/chatService";
 
 import { ChatGroupResponse, ChatListItem } from "@/types/Chat";
-import ChatNavigation from "@/components/Chat/ChatNavigation";
 
 const ChatDetailPage = ({
   params,
@@ -188,24 +188,26 @@ const ChatDetailPage = ({
         ref={chatWrapRef}
         className="flex-1 overflow-y-auto p-4"
       >
-        {/* 이전 채팅 목록 */}
-        {pastChats.length > 0 && (
-          <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
-        )}
+        <div className="max-w-[640px] m-auto">
+          {/* 이전 채팅 목록 */}
+          {pastChats.length > 0 && (
+            <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
+          )}
 
-        {/* 새 질문 응답 영역 */}
-        {newQuestion && (
-          <CurrentChatView
-            className={pastChats.length === 0 ? "" : "mt-10"}
-            question={newQuestion}
-            streamStages={streamStages}
-            streamText={streamText}
-            isFinished={isFinished}
-            references={references}
-            recommendedQuestions={recommendedQuestions}
-            onSearch={handleSearch}
-          />
-        )}
+          {/* 새 질문 응답 영역 */}
+          {newQuestion && (
+            <CurrentChatView
+              className={pastChats.length === 0 ? "" : "mt-10"}
+              question={newQuestion}
+              streamStages={streamStages}
+              streamText={streamText}
+              isFinished={isFinished}
+              references={references}
+              recommendedQuestions={recommendedQuestions}
+              onSearch={handleSearch}
+            />
+          )}
+        </div>
       </div>
 
       <SearchBar

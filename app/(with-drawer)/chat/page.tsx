@@ -30,7 +30,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center md:max-w-[640px] m-auto">
+    <div className="h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto">
       {settingData.greeting.light_logo_url && (
         <Image
           src={settingData.greeting.light_logo_url || homeConfig.logo}
