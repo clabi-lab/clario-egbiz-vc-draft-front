@@ -49,7 +49,7 @@ const CurrentChatView = ({
       {references && references.length > 0 && (
         <ReferencesView
           references={references}
-          className="p-2 mt-2"
+          className="mt-2"
           onClick={(item) => console.log(item)}
         />
       )}

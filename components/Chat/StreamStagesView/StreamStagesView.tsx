@@ -138,6 +138,7 @@ const StreamStagesView = ({
               sx={{
                 transition: "transform 0.3s ease",
                 transform: isOpen ? "none" : "rotate(180deg)",
+                ml: 0.75,
               }}
             />
           )}

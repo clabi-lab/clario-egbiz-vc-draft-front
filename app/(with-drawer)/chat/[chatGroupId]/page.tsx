@@ -216,7 +216,7 @@ const ChatDetailPage = ({
       </div>
 
       <SearchBar
-        className="mt-4 mx-auto w-[90%]"
+        className="mt-4 md:mx-auto md:max-w-[640px] md:px-0 max-w-full w-full px-2"
         placeholder={settingData.prompt.input}
         onSearch={handleSearch}
       />

@@ -31,7 +31,7 @@ const FiltersView = () => {
               px: 0.75,
               py: 0.5,
               height: "auto",
-              width: "calc(16% - 3px)",
+              width: "calc(16.666% - 8px)",
               "& .MuiChip-label": {
                 display: "block",
                 whiteSpace: "nowrap",
@@ -49,10 +49,10 @@ const FiltersView = () => {
             px: 0.75,
             py: 0.5,
             height: "auto",
-            width: "calc(16% - 3px)",
+            width: "calc(16.666% - 8px)",
             "& .MuiChip-label": {
               display: "block",
-              whiteSpace: "normal",
+              whiteSpace: "nowrap",
             },
           }}
         />
