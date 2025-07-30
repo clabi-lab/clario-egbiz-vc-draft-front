@@ -1,6 +1,5 @@
-"use client";
+import ModeCommentIcon from "@mui/icons-material/ModeComment";
 
-import clsx from "clsx";
 import type { RecommendedQuestions } from "@/types/Chat";
 
 interface RecommendedQuestionsViewProps {
@@ -15,8 +14,17 @@ const RecommendedQuestionsView = ({
   onClick,
 }: RecommendedQuestionsViewProps) => {
   return (
-    <div className={clsx(className, "text-chat-sm")}>
-      <p className="mb-1">🗨️ 추천 질의어</p>
+    <div className={className}>
+      <p className="mb-1">
+        <ModeCommentIcon
+          sx={{
+            verticalAlign: "middle",
+            width: "16px",
+            height: "16px",
+          }}
+        />{" "}
+        추천 질의어
+      </p>
       {questions.map((question, index) => (
         <div
           key={`${question}_${index}`}

@@ -45,7 +45,7 @@ const Connector = styled(StepConnector)(() => ({
   },
   [`& .${stepConnectorClasses.line}`]: {
     borderColor: "#bbbbbb",
-    borderRadius: 0.5,
+    borderRadius: 1,
     margin: "-5px 0 -5px -3px",
   },
 }));
@@ -66,12 +66,21 @@ const StepIconRoot = styled("div")<{ ownerState: { active?: boolean } }>(
       height: 8,
       borderRadius: "50%",
       backgroundColor: "currentColor",
+      keyframes: {
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
+      },
+      animation: {
+        blink: "blink 1s step-start infinite",
+      },
     },
     variants: [
       {
         props: ({ ownerState }) => ownerState.active,
         style: {
-          color: "var(--point)",
+          color: "#005CA4",
         },
       },
     ],
@@ -91,7 +100,7 @@ const StreamStagesView = ({
     (state) => state.setIsProcessesDropdownOpen
   );
 
-  const activeStep = isFinished ? streamStages.length : streamStages.length - 1;
+  const activeStep = streamStages.length - 1;
 
   const handleDropdownOpen = () => {
     setIsOpen(!isOpen);
@@ -121,13 +130,12 @@ const StreamStagesView = ({
           }`}
           onClick={() => handleDropdownOpen()}
         >
-          <p className="text-chat-sm">
+          <p className="text-sm">
             💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
           </p>
           {isFinished && (
             <ExpandMoreOutlinedIcon
               sx={{
-                color: "#bbbbbb",
                 transition: "transform 0.3s ease",
                 transform: isOpen ? "none" : "rotate(180deg)",
                 ml: 0.75,

@@ -169,7 +169,7 @@ const CustomDrawer = () => {
               <DrawerStandardItem
                 key={menu.key}
                 item={menu}
-                isOpen={isOpen}
+                isOpen={toggleStates[menu.key] ?? false}
                 onClick={handleListItemClick}
               />
             );

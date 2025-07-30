@@ -27,7 +27,7 @@ const FiltersView = () => {
             sx={{
               backgroundColor: "var(--tag-bg)",
               color: "var(--tag-text)",
-              borderRadius: "6px",
+              borderRadius: "8px",
               px: 0.75,
               py: 0.5,
               height: "auto",
@@ -43,9 +43,9 @@ const FiltersView = () => {
         <Chip
           label={`외 ${filterTags.length - 17}개`}
           sx={{
-            backgroundColor: "var(--tag-last-bg)",
+            backgroundColor: "#7EBAEB",
             color: "var(--tag-text)",
-            borderRadius: "6px",
+            borderRadius: "8px",
             px: 0.75,
             py: 0.5,
             height: "auto",

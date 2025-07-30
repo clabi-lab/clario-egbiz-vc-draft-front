@@ -18,5 +18,5 @@ export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
     set({ histories: mappedHistories.reverse() }); // 최신순으로 정렬
   },
   addHistory: (history: History) =>
-    set((state) => ({ histories: [history, ...state.histories] })),
+    set((state) => ({ histories: [...state.histories, history] })),
 }));

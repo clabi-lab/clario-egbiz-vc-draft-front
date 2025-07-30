@@ -1,10 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import {
-  createChatGroup,
-  createShareCode,
-  fetchSavedChat,
-} from "@/services/chatService";
+import { createChatGroup, fetchSavedChat } from "@/services/chatService";
 
 import { queryClient } from "@/lib/queryClient";
 
@@ -20,12 +16,6 @@ export const useCreateChatGroup = () => {
         gcTime: 1000 * 60 * 1,
       });
     },
-  });
-};
-
-export const useCreateShareCode = () => {
-  return useMutation({
-    mutationFn: ({ groupId }: { groupId: number }) => createShareCode(groupId),
   });
 };
 

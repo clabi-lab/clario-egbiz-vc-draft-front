@@ -30,15 +30,6 @@ const HomePage = () => {
   return (
     <div className="h-full w-full p-[1rem] flex flex-col items-center">
       <div className="flex-1 overflow-auto flex flex-col items-center justify-center w-full md:max-w-[640px]">
-<<<<<<<< HEAD:app/home/page.tsx
-        {settingData.greeting.light_logo_url && (
-          <Image
-            src={settingData.greeting.light_logo_url || homeConfig.logo}
-            width={250}
-            height={100}
-            alt="logo"
-          />
-========
         {settingData && (
           <>
             {settingData?.greeting?.light_logo_url && (
@@ -57,7 +48,6 @@ const HomePage = () => {
             />
             <FiltersView></FiltersView>
           </>
->>>>>>>> 969eeabc5c596715aac95ac5081c221c767e0d2d:app/(with-drawer)/page.tsx
         )}
       </div>
     </div>
