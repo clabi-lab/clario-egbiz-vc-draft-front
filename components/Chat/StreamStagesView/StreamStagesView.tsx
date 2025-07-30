@@ -125,7 +125,7 @@ const StreamStagesView = ({
     <div className={clsx(className)}>
       {question && (
         <div
-          className={`flex items-center justify-between ml-[-3px] cursor-pointer  ${
+          className={`flex items-start justify-between ml-[-3px] cursor-pointer  ${
             isOpen ? "mb-2" : ""
           }`}
           onClick={() => handleDropdownOpen()}

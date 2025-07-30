@@ -56,13 +56,6 @@ const ChatDetailPage = ({
 
   return (
     <div className="h-full w-full flex flex-col justify-between">
-      {/* 처음 접속했을 때 안내 문구 (질문 없고, 과거 채팅도 없을 경우) */}
-      {!newQuestion && pastChats.length === 0 && (
-        <div className="text-lg text-gray-400 absolute top-[50%] left-[50%] translate-[-50%]">
-          무엇이든 질문해 주세요
-        </div>
-      )}
-
       {/* 과거 채팅이 있을 경우 상단 네비게이션 노출 */}
       {pastChats.length > 0 && <ChatNavigation />}
 

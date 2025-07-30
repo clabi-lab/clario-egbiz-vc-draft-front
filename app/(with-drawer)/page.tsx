@@ -30,21 +30,25 @@ const HomePage = () => {
   return (
     <div className="h-full w-full p-[1rem] flex flex-col items-center">
       <div className="flex-1 overflow-auto flex flex-col items-center justify-center w-full md:max-w-[640px]">
-        {settingData?.greeting?.light_logo_url && (
-          <Image
-            src={settingData.greeting.light_logo_url}
-            width={300}
-            height={100}
-            alt="logo"
-          />
+        {settingData && (
+          <>
+            {settingData?.greeting?.light_logo_url && (
+              <Image
+                src={settingData.greeting.light_logo_url}
+                width={300}
+                height={100}
+                alt="logo"
+              />
+            )}
+            <Greeting className="mt-4" />
+            <SearchBar
+              className="mt-8"
+              placeholder={settingData.prompt.input}
+              onSearch={handleSearch}
+            />
+            <FiltersView></FiltersView>
+          </>
         )}
-        <Greeting className="mt-4" />
-        <SearchBar
-          className="mt-8"
-          placeholder={settingData.prompt.input}
-          onSearch={handleSearch}
-        />
-        <FiltersView></FiltersView>
       </div>
     </div>
   );

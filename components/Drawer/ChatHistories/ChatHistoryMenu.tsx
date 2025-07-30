@@ -1,4 +1,3 @@
-"use client";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 
 interface ActionItem {

@@ -18,8 +18,6 @@ interface ReferencesViewProps {
 }
 
 const ReferencesView = ({ references, className }: ReferencesViewProps) => {
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [selectedReference, setSelectedReference] = useState<Reference | null>(
     null
   );

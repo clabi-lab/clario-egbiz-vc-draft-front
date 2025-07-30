@@ -1,5 +1,3 @@
-"use client";
-
 import PersistentDrawer from "@/components/Drawer/CustomDrawer";
 
 const ChatLayout = ({

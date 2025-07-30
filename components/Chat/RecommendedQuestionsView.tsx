@@ -1,5 +1,3 @@
-"use client";
-
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 
 import type { RecommendedQuestions } from "@/types/Chat";

@@ -1,5 +1,3 @@
-"use client";
-
 import QuestionView from "@/components/Chat/QuestionView";
 import StreamStagesView from "@/components/Chat/StreamStagesView/StreamStagesView";
 import AnswerView from "@/components/Chat/AnswerView";
@@ -47,11 +45,7 @@ const CurrentChatView = ({
       )}
       {streamText && <AnswerView streamText={streamText} />}
       {references && references.length > 0 && (
-        <ReferencesView
-          references={references}
-          className="mt-2"
-          onClick={(item) => console.log(item)}
-        />
+        <ReferencesView references={references} className="mt-2" />
       )}
       {recommendedQuestions.length > 0 && (
         <RecommendedQuestionsView

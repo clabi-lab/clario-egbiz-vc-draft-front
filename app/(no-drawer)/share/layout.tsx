@@ -1,5 +1,3 @@
-"use client";
-
 import AiDisclaimer from "@/components/Common/AiDisclaimer";
 
 const shareLayout = ({
