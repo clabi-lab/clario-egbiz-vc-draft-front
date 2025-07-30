@@ -10,7 +10,7 @@ import { ChatListItem } from "@/types/Chat";
 
 interface PastChatsListviewProps {
   chatList: ChatListItem[];
-  onSearch: (question: string, isRecommend: boolean) => void;
+  onSearch?: (question: string, isRecommend: boolean) => void;
 }
 
 const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
@@ -48,8 +48,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 {chat.references && chat.references.length > 0 && (
                   <ReferencesView
                     references={chat.references}
-                    className="mt-4"
-                    onClick={(item) => console.log(item)}
+                    className="mt-2"
                   />
                 )}
                 {chat.chatId && (
@@ -61,7 +60,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                     <RecommendedQuestionsView
                       className="mt-8"
                       questions={chat.recommendedQuestions}
-                      onClick={(question) => onSearch(question, true)}
+                      onClick={(question) => onSearch?.(question, true)}
                     />
                   )}
               </div>

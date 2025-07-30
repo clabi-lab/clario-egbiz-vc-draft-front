@@ -1,18 +1,16 @@
+import {
+  IndexedDBItem,
+  SatisfactionDBItem,
+  ShareDBItem,
+} from "@/types/indexedDB";
+
 const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Kea";
 const DB_VERSION = 1;
-const CHAT_HISTORY_STORE = "ChatHistoryStore";
-const SAVED_CHAT_STORE = "SavedChatStore";
-const SATISFACTION_STORE = "SatisfactionStore";
 
-interface IndexedDBItem {
-  id: number;
-  title: string;
-}
-
-interface SatisfactionDBItem {
-  chatId: number;
-  satisfactionId: number;
-}
+const CHAT_HISTORY_STORE = "ChatHistoryStore"; // 채팅 전체 이력
+const CHAT_SAVED_STORE = "ChatSavedStore"; // 사용자가 저장한 채팅
+const CHAT_SATISFACTION_STORE = "ChatSatisfactionStore"; // 만족도 기록
+const CHAT_SHARED_STORE = "ChatSharedStore"; // 공유된 채팅
 
 // ✅ IDBRequest -> Promise 래퍼
 const wrapRequest = <T>(request: IDBRequest<T>): Promise<T> => {
@@ -32,15 +30,21 @@ export const openDatabase = async (): Promise<IDBDatabase> => {
       // 각 스토어는 keyPath로 id를 사용
       if (!db.objectStoreNames.contains(CHAT_HISTORY_STORE)) {
         // 채팅 기록 스토어 생성
-        db.createObjectStore(CHAT_HISTORY_STORE, { keyPath: "id" });
+        db.createObjectStore(CHAT_HISTORY_STORE, { keyPath: "chatGroupId" });
       }
-      if (!db.objectStoreNames.contains(SAVED_CHAT_STORE)) {
+      if (!db.objectStoreNames.contains(CHAT_SAVED_STORE)) {
         // 저장된 채팅 스토어 생성
-        db.createObjectStore(SAVED_CHAT_STORE, { keyPath: "id" });
+        db.createObjectStore(CHAT_SAVED_STORE, { keyPath: "chatGroupId" });
       }
-      if (!db.objectStoreNames.contains(SATISFACTION_STORE)) {
+      if (!db.objectStoreNames.contains(CHAT_SATISFACTION_STORE)) {
         // 만족도 스토어 생성
-        db.createObjectStore(SATISFACTION_STORE, { keyPath: "chatId" });
+        db.createObjectStore(CHAT_SATISFACTION_STORE, {
+          keyPath: "chatGroupId",
+        });
+      }
+      if (!db.objectStoreNames.contains(CHAT_SHARED_STORE)) {
+        // 공유된 채팅 스토어 생성
+        db.createObjectStore(CHAT_SHARED_STORE, { keyPath: "chatGroupId" });
       }
     };
 
@@ -58,6 +62,7 @@ const getStore = async (
   return tx.objectStore(storeName);
 };
 
+// 채팅 히스토리
 export const getAllChatGroups = async (): Promise<IndexedDBItem[]> => {
   const store = await getStore(CHAT_HISTORY_STORE, "readonly");
   const request = store.getAll();
@@ -69,31 +74,68 @@ export const saveChatGroup = async (item: IndexedDBItem): Promise<void> => {
   await wrapRequest(store.put(item));
 };
 
-export const savedChatGroup = async (item: IndexedDBItem): Promise<void> => {
-  const store = await getStore(SAVED_CHAT_STORE, "readwrite");
-  await wrapRequest(store.put(item));
+export const deleteChatGroup = async (id: number): Promise<void> => {
+  const store = await getStore(CHAT_HISTORY_STORE, "readwrite");
+  await wrapRequest(store.delete(id));
 };
 
 export const updateChatGroup = async (item: IndexedDBItem): Promise<void> => {
   await saveChatGroup(item);
 };
 
-export const deleteChatGroup = async (id: number): Promise<void> => {
-  const store = await getStore(CHAT_HISTORY_STORE, "readwrite");
-  await wrapRequest(store.delete(id));
+// 보관 된 채팅
+export const getSavedChatGroups = async (): Promise<IndexedDBItem[]> => {
+  const store = await getStore(CHAT_SAVED_STORE, "readonly");
+  const request = store.getAll();
+  return (await wrapRequest(request)) ?? [];
+};
+
+export const updateSavedChatGroup = async (
+  item: IndexedDBItem
+): Promise<void> => {
+  const store = await getStore(CHAT_SAVED_STORE, "readwrite");
+  await wrapRequest(store.put(item));
+};
+
+// 만족도 메모 된 채팅
+export const getSatisfactionChatGroups = async (): Promise<
+  SatisfactionDBItem[]
+> => {
+  const store = await getStore(CHAT_SATISFACTION_STORE, "readonly");
+  const request = store.getAll();
+  return (await wrapRequest(request)) ?? [];
 };
 
 export const getSatisfactionId = async (
   chatId: number
 ): Promise<number | undefined> => {
-  const store = await getStore(SATISFACTION_STORE, "readonly");
+  const store = await getStore(CHAT_SATISFACTION_STORE, "readonly");
   const item = await wrapRequest(store.get(chatId));
   return (item && item.satisfactionId) ?? undefined;
 };
 
-export const saveSatisfactionId = async (
+export const updateSatisfactionGroups = async (
   item: SatisfactionDBItem
 ): Promise<void> => {
-  const store = await getStore(SATISFACTION_STORE, "readwrite");
+  const store = await getStore(CHAT_SATISFACTION_STORE, "readwrite");
   await wrapRequest(store.put(item));
+};
+
+//공유 된 채팅
+export const getShareChatGroups = async (): Promise<ShareDBItem[]> => {
+  const store = await getStore(CHAT_SHARED_STORE, "readonly");
+  const request = store.getAll();
+  return (await wrapRequest(request)) ?? [];
+};
+
+export const updateShareChatGroups = async (
+  item: ShareDBItem
+): Promise<void> => {
+  const store = await getStore(CHAT_SHARED_STORE, "readwrite");
+  await wrapRequest(store.put(item));
+};
+
+export const deleteShareChatGroups = async (id: number): Promise<void> => {
+  const store = await getStore(CHAT_SHARED_STORE, "readwrite");
+  await wrapRequest(store.delete(id));
 };

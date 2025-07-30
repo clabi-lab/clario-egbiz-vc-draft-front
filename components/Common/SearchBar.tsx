@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { SearchBoxConfig } from "@/config/common";
+import { CommonConfig } from "@/config/common";
 
 import { useSpeechRecognition } from "react-speech-recognition";
 import posthog from "posthog-js";
 
 import VoiceSearch from "./VoiceSearch";
 import VoiceVisualizer from "./VoiceVisualizer";
-import { InputAdornment, TextField, styled } from "@mui/material";
+import RoundedTextField from "./RoundedTextField";
+import { InputAdornment, styled } from "@mui/material";
 
-import SendIcon from "@/public/icons/SendIcon";
+import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 
 interface SearchBarProps {
   className?: string;
@@ -18,28 +19,22 @@ interface SearchBarProps {
   onSearch: (searchText: string) => void;
 }
 
-const GradientWrapper = styled("div")({
-  padding: "1px",
-  borderRadius: "32px",
-  background: "linear-gradient(0deg, #005CA4 0%, #CEE2FF 100%)",
-});
-
-const InnerField = styled(TextField)({
-  borderRadius: "30px",
-  backgroundColor: "white",
-  width: "100%",
+const CustomField = styled(RoundedTextField)({
+  "& label.Mui-focused": {
+    color: "var(--point)",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "var(--point)",
+  },
   "& .MuiOutlinedInput-root": {
-    borderRadius: "30px",
-    backgroundColor: "white",
-    padding: "12px",
     "& fieldset": {
-      borderColor: "transparent",
+      borderColor: "var(--point)",
     },
     "&:hover fieldset": {
-      borderColor: "transparent",
+      borderColor: "var(--point)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "transparent",
+      borderColor: "var(--point)",
     },
   },
 });
@@ -66,48 +61,45 @@ const SearchBar = ({
   };
 
   return (
-    <div className={`relative flex items-end ${className} `}>
+    <div className={`relative flex items-center w-full ${className}`}>
       <div className="flex-1">
-        <GradientWrapper>
-          <InnerField
-            fullWidth
-            multiline
-            maxRows={5}
-            placeholder={listening ? "" : placeholder}
-            value={listening ? "" : searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(searchText);
-              }
-            }}
-            slotProps={{
-              input: {
-                endAdornment: !listening && (
-                  <InputAdornment position="end">
-                    <div onClick={() => handleSubmit(searchText)}>
-                      <SendIcon />
-                    </div>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-        </GradientWrapper>
+        <CustomField
+          fullWidth
+          multiline
+          maxRows={5}
+          placeholder={listening ? "" : placeholder}
+          value={listening ? "" : searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(searchText);
+            }
+          }}
+          slotProps={{
+            input: {
+              endAdornment: !listening && (
+                <InputAdornment position="end">
+                  <SendOutlinedIcon
+                    sx={{ cursor: "pointer", color: "var(--point)" }}
+                    onClick={() => handleSubmit(searchText)}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
       </div>
 
       <div
-        className={`absolute top-[8px] left-[16px] w-[calc(100%-62px)] ${
+        className={`absolute top-[8px] left-[16px] w-[calc(100%-60px)] ${
           listening ? "" : "hidden"
         }`}
       >
         <VoiceVisualizer />
       </div>
 
-      {SearchBoxConfig.isVoiceSearch && (
-        <VoiceSearch onSearch={setSearchText} className="ml-2" />
-      )}
+      {CommonConfig.isVoiceSearch && <VoiceSearch onSearch={setSearchText} />}
     </div>
   );
 };

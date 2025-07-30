@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import SafeHTML from "@/utils/SafeHTML";
+import SafeHTML from "@/lib/SafeHTML";
 
 interface QuestionViewProps {
   question: string;

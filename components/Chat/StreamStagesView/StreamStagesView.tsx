@@ -127,10 +127,10 @@ const StreamStagesView = ({
           {isFinished && (
             <ExpandMoreOutlinedIcon
               sx={{
-                ml: 2,
                 color: "#bbbbbb",
                 transition: "transform 0.3s ease",
-                transform: isOpen ? "rotate(180deg)" : "none",
+                transform: isOpen ? "none" : "rotate(180deg)",
+                ml: 0.75,
               }}
             />
           )}

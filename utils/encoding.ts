@@ -32,7 +32,8 @@ export const base64Decode = (str: string): string => {
     const binary = window.atob(sanitized);
     const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
 
-    return new TextDecoder("utf-8").decode(bytes);
+    const decoded = new TextDecoder("utf-8").decode(bytes);
+    return JSON.parse(decoded);
   } catch (error) {
     console.error("base64 디코딩 실패:", error);
     return "";

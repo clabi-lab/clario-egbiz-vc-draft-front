@@ -35,17 +35,35 @@ export interface ChatResponse {
 }
 
 export interface Reference {
-  id: string;
-  type: string;
-  index_code: string;
+  // 필수 필드
   title: string;
   title_nm: string;
-  text: string;
-  publication_year: string;
-  page_no: string;
   code: string;
-  host: string[];
-  [key: string]: unknown;
+  page_no: string;
+  type: string;
+  context: string;
+  index_code?: string; //list title로 사용
+
+  // 기본 응답 필드
+  id?: string;
+  code_nm?: string;
+  publication_year?: string;
+  depth1?: string;
+  depth2?: string;
+  depth3?: string;
+  depth4?: string;
+  depth5?: string;
+  depth1_nm?: string;
+  depth2_nm?: string;
+  depth3_nm?: string;
+  depth4_nm?: string;
+  depth5_nm?: string;
+  host?: string[];
+
+  // c1 응답 필드
+  subject?: string;
+  inquery?: string;
+  no?: number;
 }
 
 export interface RecommendedQuestions {

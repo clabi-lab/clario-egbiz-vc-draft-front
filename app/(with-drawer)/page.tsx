@@ -9,10 +9,7 @@ import { useCreateChatGroup } from "@/hooks/useChatData";
 import Image from "next/image";
 import SearchBar from "@/components/Common/SearchBar";
 import Greeting from "@/components/Common/Greeting";
-import AiDisclaimer from "@/components/Common/AiDisclaimer";
 import FiltersView from "@/components/Common/FiltersView";
-
-import { homeConfig } from "@/config/home.config";
 
 const HomePage = () => {
   const router = useRouter();
@@ -33,6 +30,7 @@ const HomePage = () => {
   return (
     <div className="h-full w-full p-[1rem] flex flex-col items-center">
       <div className="flex-1 overflow-auto flex flex-col items-center justify-center w-full md:max-w-[640px]">
+<<<<<<<< HEAD:app/home/page.tsx
         {settingData.greeting.light_logo_url && (
           <Image
             src={settingData.greeting.light_logo_url || homeConfig.logo}
@@ -40,16 +38,28 @@ const HomePage = () => {
             height={100}
             alt="logo"
           />
+========
+        {settingData && (
+          <>
+            {settingData?.greeting?.light_logo_url && (
+              <Image
+                src={settingData.greeting.light_logo_url}
+                width={300}
+                height={100}
+                alt="logo"
+              />
+            )}
+            <Greeting className="mt-4" />
+            <SearchBar
+              className="mt-8"
+              placeholder={settingData.prompt.input}
+              onSearch={handleSearch}
+            />
+            <FiltersView></FiltersView>
+          </>
+>>>>>>>> 969eeabc5c596715aac95ac5081c221c767e0d2d:app/(with-drawer)/page.tsx
         )}
-        <Greeting className="mt-4" />
-        <SearchBar
-          className="mt-8 w-full"
-          placeholder={settingData.prompt.input}
-          onSearch={handleSearch}
-        />
-        <FiltersView></FiltersView>
       </div>
-      <AiDisclaimer className="mt-2" />
     </div>
   );
 };

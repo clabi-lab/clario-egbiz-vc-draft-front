@@ -11,8 +11,6 @@ import SearchBar from "@/components/Common/SearchBar";
 import FiltersView from "@/components/Common/FiltersView";
 import Image from "next/image";
 
-import { homeConfig } from "@/config/home.config";
-
 const ChatPage = () => {
   const router = useRouter();
 
@@ -30,18 +28,18 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center md:max-w-[640px] m-auto">
-      {settingData.greeting.light_logo_url && (
+    <div className="h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto">
+      {settingData?.greeting?.light_logo_url && (
         <Image
-          src={settingData.greeting.light_logo_url || homeConfig.logo}
-          width={250}
+          src={settingData.greeting.light_logo_url}
+          width={300}
           height={100}
           alt="logo"
         />
       )}
       <Greeting className="mt-4" />
       <SearchBar
-        className="mt-8 mx-2 w-full"
+        className="mt-8 mx-2"
         placeholder={settingData.prompt.input}
         onSearch={handleSearch}
       />

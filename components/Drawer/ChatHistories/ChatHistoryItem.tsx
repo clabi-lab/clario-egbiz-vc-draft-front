@@ -4,7 +4,7 @@ import { ListItemButton, ListItemIcon, styled } from "@mui/material";
 import {
   deleteChatGroup,
   getAllChatGroups,
-  savedChatGroup,
+  updateSavedChatGroup,
   updateChatGroup,
 } from "@/lib/indexedDB";
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
@@ -21,6 +21,7 @@ import {
 } from "@mui/icons-material";
 
 import { History } from "@/types/ChatHistory";
+import { CommonConfig } from "@/config/common";
 
 const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: (prop) => prop !== "isEditing",
@@ -79,8 +80,9 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
     try {
       if (!editedTitle.trim()) return;
       await updateChatGroup({
-        id: Number(item.id),
+        chatGroupId: Number(item.id),
         title: editedTitle,
+        createdDate: new Date().toISOString(),
       });
       setIsEditing(false);
       refreshHistory();
@@ -94,9 +96,10 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
 
   const handleArchive = async () => {
     try {
-      await savedChatGroup({
-        id: Number(item.id),
+      await updateSavedChatGroup({
+        chatGroupId: Number(item.id),
         title: item.title,
+        createdDate: new Date().toISOString(),
       });
       closeMenu();
     } catch (error) {
@@ -119,6 +122,28 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
       });
     }
   };
+
+  const actions = [
+    {
+      icon: <RenameIcon fontSize="small" />,
+      label: "제목 변경",
+      onClick: handleRename,
+    },
+    ...(CommonConfig.isChatSetting && CommonConfig.isChatSave
+      ? [
+          {
+            icon: <BookmarkIcon fontSize="small" />,
+            label: "이력 보관",
+            onClick: handleArchive,
+          },
+        ]
+      : []),
+    {
+      icon: <DeleteIcon fontSize="small" />,
+      label: "삭제",
+      onClick: handleDelete,
+    },
+  ];
 
   return (
     <>
@@ -151,23 +176,7 @@ const ChatHistoryItem = ({ item }: { item: History }) => {
         anchorEl={menuAnchorEl}
         open={isMenuOpen}
         onClose={closeMenu}
-        actions={[
-          {
-            icon: <RenameIcon fontSize="small" />,
-            label: "제목 변경",
-            onClick: handleRename,
-          },
-          {
-            icon: <BookmarkIcon fontSize="small" />,
-            label: "이력 보관",
-            onClick: handleArchive,
-          },
-          {
-            icon: <DeleteIcon fontSize="small" />,
-            label: "삭제",
-            onClick: handleDelete,
-          },
-        ]}
+        actions={actions}
       />
     </>
   );

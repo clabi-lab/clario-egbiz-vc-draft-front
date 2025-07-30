@@ -1,5 +1,5 @@
 import { useFetchSetting } from "@/hooks/useHomeData";
-import SafeHTML from "@/utils/SafeHTML";
+import SafeHTML from "@/lib/SafeHTML";
 
 const Greeting = ({ className }: { className?: string }) => {
   const { data: settingData } = useFetchSetting();
