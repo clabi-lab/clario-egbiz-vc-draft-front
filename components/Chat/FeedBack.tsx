@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getSatisfactionId, updateSatisfactionGroups } from "@/lib/indexedDB";
 import { useAlertStore } from "@/store/useAlertStore";
 
@@ -10,6 +10,7 @@ import ChatVoiceIcon from "@/public/icons/ChatVoiceIcon";
 import ChatDislikeIcon from "@/public/icons/ChatDislikeIcon";
 import ChatlikeIcon from "@/public/icons/ChatlikeIcon";
 import ChatCopyIcon from "@/public/icons/ChatCopyIcon";
+import { StopCircleOutlined } from "@mui/icons-material";
 
 import { updateSatisfaction } from "@/services/chatService";
 
@@ -26,8 +27,15 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
     null
   );
   const [feedBack, setFeedBack] = useState<string>("");
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
   const handleLikeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,6 +58,32 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
       severity: "success",
       message: "클립보드에 복사되었습니다.",
     });
+  };
+
+  const handleSpeak = useCallback(() => {
+    if (!streamText) return;
+
+    window.speechSynthesis.cancel(); // 기존 재생 중단
+
+    const utterance = new SpeechSynthesisUtterance(streamText);
+    utterance.lang = "ko-KR";
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }, [streamText]);
+
+  const handleStop = () => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
   };
 
   const handleSubmit = async () => {
@@ -88,7 +122,7 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
   };
 
   return (
-    <div className="flex items-center mt-2">
+    <div className="flex items-center mt-2 gap-[4px]">
       <IconButton sx={{ padding: "2px" }} onClick={handleCopy}>
         <ChatCopyIcon />
       </IconButton>
@@ -105,9 +139,16 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
         />
       </IconButton>
 
-      {/* <IconButton sx={{ padding: "2px" }}>
-        <ChatVoiceIcon />
-      </IconButton> */}
+      <IconButton
+        sx={{ padding: "2px" }}
+        onClick={isSpeaking ? handleStop : handleSpeak}
+      >
+        {isSpeaking ? (
+          <StopCircleOutlined sx={{ fontSize: "20px" }} />
+        ) : (
+          <ChatVoiceIcon />
+        )}
+      </IconButton>
 
       <Menu
         anchorEl={anchorEl}
