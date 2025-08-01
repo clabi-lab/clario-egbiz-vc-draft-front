@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import posthog from "posthog-js";
 
 import { useFilterStore } from "@/store/useFilterStore";
-import { useFetchFilters } from "@/hooks/useHomeData";
 
 import {
   Collapse,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+import { fetchFilters } from "@/services/homeService";
 
 import {
   SelectAllListItemButton,
@@ -25,29 +26,77 @@ import {
 import { Filter } from "@/types/Filter";
 
 const SearchFilter = () => {
-  const { data: filters = [], mutateAsync: updateFilters } = useFetchFilters();
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [searchText, setSearchText] = useState("");
+  const [isFilterVisible, setIsFilterVisible] = useState(true);
+  const [expandedMap, setExpandedMap] = useState<Record<number, boolean>>({});
 
   const selectedFilters = useFilterStore((state) => state.selectedFilters);
   const setSelectedFilters = useFilterStore(
     (state) => state.setSelectedFilters
   );
 
-  const [searchText, setSearchText] = useState("");
-  const [isFilterVisible, setIsFilterVisible] = useState(true);
-  const [expandedMap, setExpandedMap] = useState<Record<number, boolean>>({});
-
   useEffect(() => {
-    updateFilters({});
-  }, [updateFilters]);
+    updateFilters();
+  }, []);
+
+  const updateFilters = async (searchText?: string) => {
+    try {
+      const filters = await fetchFilters({ search: searchText });
+      setFilters(filters);
+    } catch (error) {
+      console.error("Failed to fetch filters", error);
+    }
+  };
+
+  const childMap = useMemo(() => {
+    const map = new Map<number, Filter[]>();
+    filters.forEach((filter) => {
+      if (filter.parent_id == null) return;
+      if (!map.has(filter.parent_id)) map.set(filter.parent_id, []);
+      map.get(filter.parent_id)!.push(filter);
+    });
+    return map;
+  }, [filters]);
+
+  const getChildFilters = useCallback(
+    (parentId: number) => childMap.get(parentId) ?? [],
+    [childMap]
+  );
+
+  const getDescendants = useCallback(
+    (parent: Filter): Filter[] => {
+      const descendants: Filter[] = [];
+      const queue: Filter[] = [parent];
+      while (queue.length > 0) {
+        const current = queue.shift()!;
+        const children = getChildFilters(current.id);
+        descendants.push(...children);
+        queue.push(...children);
+      }
+      return descendants;
+    },
+    [getChildFilters]
+  );
+
+  const getAncestors = useCallback(
+    (child: Filter): Filter[] => {
+      const ancestors: Filter[] = [];
+      let current = child;
+      while (current.parent_id !== null) {
+        const parent = filters.find((f) => f.id === current.parent_id);
+        if (!parent) break;
+        ancestors.push(parent);
+        current = parent;
+      }
+      return ancestors;
+    },
+    [filters]
+  );
 
   const isFilterSelected = useCallback(
     (filter: Filter) => selectedFilters.some((f) => f.id === filter.id),
     [selectedFilters]
-  );
-
-  const getChildFilters = useCallback(
-    (parentId: number) => filters.filter((f) => f.parent_id === parentId),
-    [filters]
   );
 
   const toggleExpand = (id: number) => {
@@ -79,40 +128,41 @@ const SearchFilter = () => {
 
     if (checked) {
       newSelected.push(filter);
-      for (let i = idx + 1; i < filters.length; i++) {
-        const child = filters[i];
-        if (child.depth <= filter.depth) break;
-        newSelected.push(child);
-      }
+      newSelected.push(...getDescendants(filter));
+      getAncestors(filter).forEach((ancestor) => {
+        const allChildrenSelected = getChildFilters(ancestor.id).every(
+          (child) => newSelected.some((f) => f.id === child.id)
+        );
+        if (allChildrenSelected) newSelected.push(ancestor);
+      });
     } else {
-      newSelected = newSelected.filter((f) => f.id !== filter.id);
-      for (let i = idx + 1; i < filters.length; i++) {
-        const child = filters[i];
-        if (child.depth <= filter.depth) break;
-        newSelected = newSelected.filter((f) => f.id !== child.id);
-      }
+      const descendantIds = new Set(getDescendants(filter).map((f) => f.id));
+      newSelected = newSelected.filter(
+        (f) => f.id !== filter.id && !descendantIds.has(f.id)
+      );
+      getAncestors(filter).forEach((ancestor) => {
+        newSelected = newSelected.filter((f) => f.id !== ancestor.id);
+      });
     }
 
-    newSelected = Array.from(new Set(newSelected));
+    const uniqueSelected = Array.from(
+      new Map(newSelected.map((f) => [f.id, f])).values()
+    );
+
     posthog.capture("filters", {
-      keyword: newSelected.map((f) => f.division).join(", "),
+      keyword: uniqueSelected.map((f) => f.division).join(", "),
       source: "filters",
     });
 
-    setSelectedFilters(newSelected);
+    setSelectedFilters(uniqueSelected);
   };
 
   const handleSearchFilter = async () => {
-    try {
-      await updateFilters({ search: searchText });
-    } catch (error) {
-      console.error(error);
-    }
+    await updateFilters(searchText);
   };
 
   const renderFilterTree = (filter: Filter) => {
     const children = getChildFilters(filter.id);
-    const hasChildren = children.length > 0;
     const isExpanded = expandedMap[filter.id];
 
     return (
@@ -132,7 +182,7 @@ const SearchFilter = () => {
               />
             }
           />
-          {hasChildren && (
+          {children.length > 0 && (
             <ListItemIcon
               sx={{ color: "inherit", minWidth: 32 }}
               onClick={() => toggleExpand(filter.id)}
@@ -147,9 +197,9 @@ const SearchFilter = () => {
           )}
         </FilterListItemButton>
 
-        {hasChildren && (
+        {children.length > 0 && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit sx={{ ml: 1 }}>
-            {children.map((child) => renderFilterTree(child))}
+            {children.map(renderFilterTree)}
           </Collapse>
         )}
       </div>

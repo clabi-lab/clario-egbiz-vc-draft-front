@@ -21,7 +21,7 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
           {chatList.map((chat, index) => {
             return (
               <div
-                className={index !== 0 ? "mt-12 text-inherit" : "text-inherit"}
+                className={index !== 0 ? "mt-12" : ""}
                 key={`${chat.question}_${index}`}
               >
                 {chat.question && (
@@ -31,13 +31,13 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 )}
                 {chat.selectedItems && chat.selectedItems.length > 0 && (
                   <SelectedItemsView
-                    className="my-4"
+                    className="my-3"
                     selectItems={chat.selectedItems}
                   />
                 )}
                 {chat.streamStages && (
                   <StreamStagesView
-                    className="my-4 border border-gray-300 py-3 px-6 rounded"
+                    className="my-4 border border-gray-300 py-2 px-4 rounded"
                     question={chat.question}
                     streamStages={chat.streamStages}
                     isFinished={true}
@@ -58,7 +58,11 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 {chat.recommendedQuestions &&
                   chat.recommendedQuestions.length > 0 && (
                     <RecommendedQuestionsView
-                      className="mt-8"
+                      className={`mt-6 ${
+                        index === chatList.length
+                          ? "animate-fade-in-scale [animation-delay:300ms]"
+                          : ""
+                      }`}
                       questions={chat.recommendedQuestions}
                       onClick={(question) => onSearch?.(question, true)}
                     />

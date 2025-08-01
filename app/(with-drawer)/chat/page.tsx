@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { useFetchSetting } from "@/hooks/useHomeData";
+import { useProjectStore } from "@/store/useProjectStore";
 import { useCreateChatGroup } from "@/hooks/useChatData";
 
 import Greeting from "@/components/Common/Greeting";
@@ -14,8 +14,8 @@ import Image from "next/image";
 const ChatPage = () => {
   const router = useRouter();
 
-  const { data: settingData } = useFetchSetting();
   const { mutateAsync: createGroup } = useCreateChatGroup();
+  const projectInfo = useProjectStore((state) => state.projectInfo);
 
   const handleSearch = async (searchText: string) => {
     try {
@@ -29,21 +29,25 @@ const ChatPage = () => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto">
-      {settingData?.greeting?.light_logo_url && (
-        <Image
-          src={settingData.greeting.light_logo_url}
-          width={300}
-          height={100}
-          alt="logo"
-        />
+      {projectInfo && (
+        <>
+          {projectInfo?.greeting?.light_logo_url && (
+            <Image
+              src={projectInfo.greeting.light_logo_url}
+              width={250}
+              height={100}
+              alt="logo"
+            />
+          )}
+          <Greeting className="mt-4" />
+          <SearchBar
+            className="mt-8 mx-2"
+            placeholder={projectInfo.prompt.input}
+            onSearch={handleSearch}
+          />
+          <FiltersView></FiltersView>
+        </>
       )}
-      <Greeting className="mt-4" />
-      <SearchBar
-        className="mt-8 mx-2"
-        placeholder={settingData.prompt.input}
-        onSearch={handleSearch}
-      />
-      <FiltersView></FiltersView>
     </div>
   );
 };

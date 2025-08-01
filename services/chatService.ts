@@ -1,27 +1,34 @@
-import { baseService } from "./baseService";
+import { apiClient } from "./apiClient";
 
 import {
   Chat,
   ChatGroupResponse,
   ChatResponse,
   Satisfaction,
+  SavedChats,
 } from "@/types/Chat";
 
 export const createChatGroup = async (
   title: string
 ): Promise<ChatGroupResponse> => {
-  const response = await baseService.post(`/chat/group`, { title });
-  return response.data;
+  return apiClient(`/chat/group`, {
+    method: "POST",
+    data: { title },
+  });
 };
 
 export const saveChat = async (chatData: Chat): Promise<ChatResponse> => {
-  const response = await baseService.post(`/chat`, chatData);
-  return response.data;
+  return apiClient(`/chat`, {
+    method: "POST",
+    data: chatData,
+  });
 };
 
 export const updateChat = async (chatData: Chat): Promise<ChatResponse> => {
-  const response = await baseService.put(`/chat`, chatData);
-  return response.data;
+  return apiClient(`/chat`, {
+    method: "PUT",
+    data: chatData,
+  });
 };
 
 export const createShareCode = async (
@@ -29,25 +36,24 @@ export const createShareCode = async (
 ): Promise<{
   encoded_data: string;
 }> => {
-  const response = await baseService.get(
-    `/chat/group/share?groupId=${groupId}`
-  );
-  return response.data;
+  return apiClient(`/chat/group/share?groupId=${groupId}`, {
+    method: "GET",
+  });
 };
 
 export const fetchSavedChat = async (
   encodedData: string
-): Promise<{
-  chat_group_id: number;
-  chats: Chat[];
-}> => {
-  const response = await baseService.get(`/chat/group/share/${encodedData}`);
-  return response.data;
+): Promise<SavedChats> => {
+  return apiClient(`/chat/group/share/${encodedData}`, {
+    method: "GET",
+  });
 };
 
 export const updateSatisfaction = async (
   satisfaction: Satisfaction
 ): Promise<Satisfaction> => {
-  const response = await baseService.post(`/chat/satisfaction`, satisfaction);
-  return response.data;
+  return apiClient(`/chat/satisfaction`, {
+    method: "POST",
+    data: satisfaction,
+  });
 };

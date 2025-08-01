@@ -1,4 +1,4 @@
-export interface Setting {
+export interface ProjectInfo {
   greeting: {
     id: number;
     main_greeting: string;

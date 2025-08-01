@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 
 import { useDrawerStore } from "../../store/useDrawerStore";
 import { useChatHistoryStore } from "../../store/useChatHistoryStore";
+import { useProjectStore } from "@/store/useProjectStore";
 import { drawerConfig, drawerMenuList } from "../../config/drawer.config";
 import { getAllChatGroups } from "@/lib/indexedDB";
-import { useFetchSetting } from "@/hooks/useHomeData";
 
 import Image from "next/image";
 import Link from "next/link";
-
 import {
   Drawer,
   IconButton,
@@ -24,18 +23,15 @@ import DrawerStandardItem from "./DrawerMenu/DrawerStandardItem";
 import { DrawerItem } from "../../types/Drawer";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import Logo from "@/public/images/drawer-logo.png";
 
 const CustomDrawer = () => {
   const router = useRouter();
 
-  const { data: settingData } = useFetchSetting();
-
   const isOpen = useDrawerStore((state) => state.isOpen);
   const setOpen = useDrawerStore((state) => state.setOpen);
-
   const histories = useChatHistoryStore((state) => state.histories);
   const setHistories = useChatHistoryStore((state) => state.setHistories);
+  const projectInfo = useProjectStore((state) => state.projectInfo);
 
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
 
@@ -132,10 +128,10 @@ const CustomDrawer = () => {
           >
             <MenuIcon></MenuIcon>
           </IconButton>
-          {drawerConfig.showLogo && settingData.greeting.light_logo_url && (
+          {drawerConfig.showLogo && projectInfo?.greeting?.light_logo_url && (
             <Link href="/" className="h-[27px] ml-6">
               <Image
-                src={settingData.greeting.light_logo_url || Logo}
+                src={projectInfo.greeting.light_logo_url}
                 alt="logo"
                 width={60}
                 height={10}
@@ -169,7 +165,7 @@ const CustomDrawer = () => {
               <DrawerStandardItem
                 key={menu.key}
                 item={menu}
-                isOpen={isOpen}
+                isOpen={toggleStates[menu.key] ?? false}
                 onClick={handleListItemClick}
               />
             );

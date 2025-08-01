@@ -12,10 +12,9 @@ const QuestionView = ({ question, type, className }: QuestionViewProps) => {
     <div
       className={clsx(
         className,
-        "",
         type === "bold" && "text-xl font-bold",
         type === "border" && "px-4 py-1 border rounded-lg border-gray-400",
-        type === "contained" && "bg-gray-100 py-2 px-4 rounded inline-block"
+        type === "contained" && "bg-gray-200 py-2 px-4 rounded inline-block"
       )}
     >
       <SafeHTML html={question.replace(/\n/g, "<br />")} />

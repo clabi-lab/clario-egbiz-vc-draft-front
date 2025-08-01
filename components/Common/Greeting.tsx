@@ -1,13 +1,17 @@
-import { useFetchSetting } from "@/hooks/useHomeData";
 import SafeHTML from "@/lib/SafeHTML";
+import { useProjectStore } from "@/store/useProjectStore";
 
 const Greeting = ({ className }: { className?: string }) => {
-  const { data: settingData } = useFetchSetting();
+  const projectInfo = useProjectStore((state) => state.projectInfo);
 
   return (
     <SafeHTML
       className={`text-center ${className}`}
-      html={settingData.greeting.main_greeting.replace(/\n/g, "<br />")}
+      html={
+        projectInfo
+          ? projectInfo.greeting.main_greeting.replace(/\n/g, "<br />")
+          : ""
+      }
     />
   );
 };

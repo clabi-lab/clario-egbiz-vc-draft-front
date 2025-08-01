@@ -20,8 +20,9 @@ import {
   MoreHoriz as MoreIcon,
 } from "@mui/icons-material";
 
-import { History } from "@/types/ChatHistory";
 import { CommonConfig } from "@/config/common";
+
+import type { ChatHistoryItem } from "@/types/Chat";
 
 const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: (prop) => prop !== "isEditing",
@@ -47,7 +48,7 @@ const StyledListItemButton = styled(ListItemButton, {
       }),
 }));
 
-const ChatHistoryItem = ({ item }: { item: History }) => {
+const ChatHistoryItem = ({ item }: { item: ChatHistoryItem }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(item.title);

@@ -1,13 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 
-import {
-  createChatGroup,
-  createShareCode,
-  fetchSavedChat,
-} from "@/services/chatService";
+import { createChatGroup } from "@/services/chatService";
 
 import { queryClient } from "@/lib/queryClient";
 
+// POST 요청 결과를 캐싱하기 위해 React Query 사용
 export const useCreateChatGroup = () => {
   return useMutation({
     mutationFn: ({ title }: { title: string }) => createChatGroup(title),
@@ -20,18 +17,5 @@ export const useCreateChatGroup = () => {
         gcTime: 1000 * 60 * 1,
       });
     },
-  });
-};
-
-export const useCreateShareCode = () => {
-  return useMutation({
-    mutationFn: ({ groupId }: { groupId: number }) => createShareCode(groupId),
-  });
-};
-
-export const useFetchSavedChat = () => {
-  return useMutation({
-    mutationFn: ({ encodedData }: { encodedData: string }) =>
-      fetchSavedChat(encodedData),
   });
 };

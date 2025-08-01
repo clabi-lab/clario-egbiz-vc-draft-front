@@ -1,22 +1,22 @@
 import { create } from "zustand";
-import { History } from "../types/ChatHistory";
 import { IndexedDBItem } from "@/types/indexedDB";
+import { ChatHistoryItem } from "@/types/Chat";
 
 interface ChatHistoryState {
-  histories: History[];
+  histories: ChatHistoryItem[];
   setHistories: (histories: IndexedDBItem[]) => void;
-  addHistory: (history: History) => void;
+  addHistory: (history: ChatHistoryItem) => void;
 }
 
 export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
   histories: [],
   setHistories: (items: IndexedDBItem[]) => {
-    const mappedHistories: History[] = items.map((item) => ({
+    const mappedHistories: ChatHistoryItem[] = items.map((item) => ({
       id: item.chatGroupId,
       title: item.title,
     }));
     set({ histories: mappedHistories.reverse() }); // 최신순으로 정렬
   },
-  addHistory: (history: History) =>
+  addHistory: (history: ChatHistoryItem) =>
     set((state) => ({ histories: [history, ...state.histories] })),
 }));

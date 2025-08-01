@@ -23,10 +23,9 @@ const SelectedItemsView = ({
               key={`${item}_${index}`}
               label={item}
               sx={{
-                fontSize: "var(--text-chat-sm)",
                 backgroundColor: "var(--tag-bg)",
                 color: "var(--tag-text)",
-                px: 1.25,
+                px: 0.75,
                 py: 0.5,
                 "& .MuiChip-label": {
                   display: "block",
@@ -40,10 +39,9 @@ const SelectedItemsView = ({
           <Chip
             label={`외 ${selectItems.length - VIEWCOUNT}개`}
             sx={{
-              fontSize: "var(--text-chat-sm)",
               backgroundColor: "#7EBAEB",
               color: "var(--tag-text)",
-              px: 1.25,
+              px: 0.75,
               py: 0.5,
               "& .MuiChip-label": {
                 display: "block",

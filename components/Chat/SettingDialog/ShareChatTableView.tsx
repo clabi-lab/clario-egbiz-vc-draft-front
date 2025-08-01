@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
+import { useAlertStore } from "@/store/useAlertStore";
 import { deleteShareChatGroups, getShareChatGroups } from "@/lib/indexedDB";
-import { ShareDBItem } from "@/types/indexedDB";
+
 import {
   Table,
   TableBody,
@@ -9,8 +12,9 @@ import {
   TableRow,
   Button,
 } from "@mui/material";
-import dayjs from "dayjs";
-import { useAlertStore } from "@/store/useAlertStore";
+import Link from "next/link";
+
+import { ShareDBItem } from "@/types/indexedDB";
 
 type ShareColumnKey = keyof ShareDBItem | "delete";
 
@@ -90,6 +94,10 @@ const ShareChatTableView = () => {
                     </Button>
                   ) : key === "createdDate" ? (
                     dayjs(item.createdDate).format("YYYY-MM-DD HH:mm:ss")
+                  ) : item.encodedData ? (
+                    <Link href={`/share/${item.encodedData}`} target="_blank">
+                      {item[key]}
+                    </Link>
                   ) : (
                     item[key]
                   )}

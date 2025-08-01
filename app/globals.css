@@ -28,15 +28,10 @@ body {
   --history-menu-text: #ffffff;
   --history-menu-bg: #004785;
   --tag-bg: #004785;
-  --tag-last-bg: #7EBAEB;
   --tag-text: #ffffff;
 
   /* chat */
   --chat-bg: #fff;
-
-  --chat-base: 18px;
-  --chat-sm: 16px;
-  --chat-xs: 14px;
 }
 
 .dark {
@@ -51,11 +46,25 @@ body {
   --history-menu-text: #ffffff;
   --history-menu-bg: #004785;
   --tag-bg: #004785;
-  --tag-last-bg: #7EBAEB;
   --tag-text: #ffffff;
 
   /* chat */
   --chat-bg: #fff;
+}
+
+@keyframes fade-in-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.3s ease-out forwards;
 }
 
 @theme {
@@ -68,9 +77,5 @@ body {
   --color-history-menu-bg: var(--history-menu-bg);
   --color-chat-bg: var(--chat-bg);
   --color-tag-bg: var(--tag-bg);
-  --color-tag-last-bg: var(--tag-last-bg);
   --color-tag-text: var(--tag-text);
-  --text-chat-base: var(--chat-base);
-  --text-chat-sm: var(--chat-sm);
-  --text-chat-xs: var(--chat-xs);
 }

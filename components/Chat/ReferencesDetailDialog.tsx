@@ -78,7 +78,7 @@ const ReferencesDetailDialog = ({
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
-      <DialogTitle sx={{ padding: "16px 24px" }}>
+      <DialogTitle>
         상세보기
         <IconButton
           aria-label="close"
