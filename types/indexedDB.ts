@@ -15,4 +15,5 @@ export interface ShareDBItem {
   chatGroupId: number;
   title: string;
   createdDate: string;
+  encodedData: string;
 }

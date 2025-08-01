@@ -1,26 +1,67 @@
 import { useEffect, useState } from "react";
-import { getSavedChatGroups } from "@/lib/indexedDB";
-import { IndexedDBItem } from "@/types/indexedDB";
+
+import dayjs from "dayjs";
+import { base64Encode } from "@/utils/encoding";
+import { useAlertStore } from "@/store/useAlertStore";
+import { deleteSavedChatGroup, getSavedChatGroups } from "@/lib/indexedDB";
+
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
 } from "@mui/material";
-import dayjs from "dayjs";
+import Link from "next/link";
 
-const columns: { label: string; key: keyof IndexedDBItem }[] = [
+import { IndexedDBItem } from "@/types/indexedDB";
+
+type ColumnKey = keyof IndexedDBItem | "delete";
+
+const columns: { label: string; key: ColumnKey }[] = [
   { label: "채팅 그룹명", key: "title" },
   { label: "생성 일자", key: "createdDate" },
+  { label: "삭제", key: "delete" },
 ];
 
 const SavedChatTableView = () => {
+  const openAlert = useAlertStore((state) => state.openAlert);
+
   const [data, setData] = useState<IndexedDBItem[]>([]);
 
   useEffect(() => {
     getSavedChatGroups().then(setData);
   }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteSavedChatGroup(id);
+      await fetchData();
+
+      openAlert({
+        severity: "success",
+        message: "성공적으로 삭제되었습니다.",
+      });
+    } catch {
+      openAlert({
+        severity: "error",
+        message: "잠시 후 다시 시도해주세요",
+      });
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const result = await getSavedChatGroups();
+      setData(result);
+    } catch {
+      openAlert({
+        severity: "error",
+        message: "데이터를 불러오는 데 실패했습니다.",
+      });
+    }
+  };
 
   return (
     <Table>
@@ -43,9 +84,26 @@ const SavedChatTableView = () => {
             <TableRow key={rowIdx}>
               {columns.map(({ key }, colIdx) => (
                 <TableCell key={colIdx}>
-                  {key === "createdDate"
-                    ? dayjs(item.createdDate).format("YYYY-MM-DD HH:mm:ss")
-                    : item[key]}
+                  {key === "delete" ? (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => handleDelete(item.chatGroupId)}
+                    >
+                      삭제
+                    </Button>
+                  ) : key === "createdDate" ? (
+                    dayjs(item.createdDate).format("YYYY-MM-DD HH:mm:ss")
+                  ) : (
+                    <Link
+                      href={`/chat/${base64Encode(
+                        JSON.stringify(item.chatGroupId)
+                      )}`}
+                    >
+                      {item[key]}
+                    </Link>
+                  )}
                 </TableCell>
               ))}
             </TableRow>

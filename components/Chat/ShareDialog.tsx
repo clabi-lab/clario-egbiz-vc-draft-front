@@ -46,7 +46,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
         message: "링크가 복사되었습니다.",
       });
 
-      updateIndexedDB(parsed);
+      updateIndexedDB(parsed, encoded_data);
     } catch (error) {
       openAlert({
         severity: "error",
@@ -55,7 +55,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
     }
   };
 
-  const updateIndexedDB = async (chatGroupId: string) => {
+  const updateIndexedDB = async (chatGroupId: string, encodedData: string) => {
     try {
       const chat = await histories.find(
         (item) => item.id === Number(chatGroupId)
@@ -67,6 +67,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
         chatGroupId: Number(chatGroupId),
         title: chat.title,
         createdDate: new Date().toISOString(),
+        encodedData,
       });
     } catch (error) {
       console.log("IndexedDB 저장 실패");

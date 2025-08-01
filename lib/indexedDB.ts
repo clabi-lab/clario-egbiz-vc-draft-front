@@ -97,6 +97,11 @@ export const updateSavedChatGroup = async (
   await wrapRequest(store.put(item));
 };
 
+export const deleteSavedChatGroup = async (id: number): Promise<void> => {
+  const store = await getStore(CHAT_SAVED_STORE, "readwrite");
+  await wrapRequest(store.delete(id));
+};
+
 // 만족도 메모 된 채팅
 export const getSatisfactionChatGroups = async (): Promise<
   SatisfactionDBItem[]

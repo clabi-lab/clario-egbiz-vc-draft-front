@@ -11,7 +11,6 @@ interface ChatHistoryState {
 export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
   histories: [],
   setHistories: (items: IndexedDBItem[]) => {
-    console.log(items);
     const mappedHistories: ChatHistoryItem[] = items.map((item) => ({
       id: item.chatGroupId,
       title: item.title,
