@@ -12,6 +12,7 @@ import { InputAdornment } from "@mui/material";
 import GradientRoundedTextField from "./GradientRoundedTextField";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+import SendIcon from "@/public/icons/SendIcon";
 
 interface SearchBarProps {
   className?: string;
@@ -41,7 +42,9 @@ const SearchBar = ({
   };
 
   return (
-    <div className={`relative flex items-center w-full ${className}`}>
+    <div
+      className={`relative flex items-end w-full overflow-hidden ${className}`}
+    >
       <div className="flex-1">
         <GradientRoundedTextField
           fullWidth
@@ -60,10 +63,9 @@ const SearchBar = ({
             input: {
               endAdornment: !listening && (
                 <InputAdornment position="end">
-                  <SendOutlinedIcon
-                    sx={{ cursor: "pointer", color: "var(--point)" }}
-                    onClick={() => handleSubmit(searchText)}
-                  />
+                  <div onClick={() => handleSubmit(searchText)}>
+                    <SendIcon />
+                  </div>
                 </InputAdornment>
               ),
             },
@@ -72,7 +74,7 @@ const SearchBar = ({
       </div>
 
       {listening && (
-        <div className={`absolute top-[8px] left-[16px] w-[calc(100%-60px)]`}>
+        <div className={`absolute top-[8px] left-[16px] w-[calc(100%-62px)]`}>
           <VoiceVisualizer />
         </div>
       )}

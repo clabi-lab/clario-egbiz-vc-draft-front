@@ -4,8 +4,8 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
-import MicIcon from "@mui/icons-material/Mic";
 import { IconButton } from "@mui/material";
+import MicIcon from "@/public/icons/MicIcon";
 
 interface VoiceSearchProps {
   onSearch: (transcript: string) => void;
@@ -43,14 +43,12 @@ const VoiceSearch = ({ onSearch }: VoiceSearchProps) => {
 
   return (
     <div>
-      <IconButton onClick={handleListening} aria-label="음성 검색">
-        <MicIcon
-          fontSize="large"
-          sx={{
-            color: "var(--point)",
-          }}
-          className={listening ? "animate-pulse" : ""}
-        />
+      <IconButton
+        onClick={handleListening}
+        aria-label="음성 검색"
+        className="w-[62px] p-0"
+      >
+        <MicIcon className={listening ? "animate-pulse" : ""} />
       </IconButton>
     </div>
   );

@@ -100,7 +100,7 @@ const StreamStagesView = ({
     (state) => state.setIsProcessesDropdownOpen
   );
 
-  const activeStep = streamStages.length - 1;
+  const activeStep = isFinished ? streamStages.length : streamStages.length - 1;
 
   const handleDropdownOpen = () => {
     setIsOpen(!isOpen);
@@ -139,6 +139,7 @@ const StreamStagesView = ({
                 transition: "transform 0.3s ease",
                 transform: isOpen ? "none" : "rotate(180deg)",
                 ml: 0.75,
+                color: "#bbb",
               }}
             />
           )}

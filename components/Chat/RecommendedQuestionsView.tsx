@@ -15,16 +15,7 @@ const RecommendedQuestionsView = ({
 }: RecommendedQuestionsViewProps) => {
   return (
     <div className={className}>
-      <p className="mb-1">
-        <ModeCommentIcon
-          sx={{
-            verticalAlign: "middle",
-            width: "16px",
-            height: "16px",
-          }}
-        />{" "}
-        추천 질의어
-      </p>
+      <p className="mb-1">🗨️ 추천 질의어</p>
       {questions.map((question, index) => (
         <div
           key={`${question}_${index}`}
