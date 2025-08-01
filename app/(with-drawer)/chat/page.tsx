@@ -31,12 +31,14 @@ const ChatPage = () => {
     <div className="h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto">
       {projectInfo && (
         <>
-          <Image
-            src={projectInfo.greeting.light_logo_url}
-            width={300}
-            height={100}
-            alt="logo"
-          />
+          {projectInfo?.greeting?.light_logo_url && (
+            <Image
+              src={projectInfo.greeting.light_logo_url}
+              width={300}
+              height={100}
+              alt="logo"
+            />
+          )}
           <Greeting className="mt-4" />
           <SearchBar
             className="mt-8 mx-2"

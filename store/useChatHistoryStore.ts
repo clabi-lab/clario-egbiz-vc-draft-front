@@ -11,6 +11,7 @@ interface ChatHistoryState {
 export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
   histories: [],
   setHistories: (items: IndexedDBItem[]) => {
+    console.log(items);
     const mappedHistories: ChatHistoryItem[] = items.map((item) => ({
       id: item.chatGroupId,
       title: item.title,
@@ -18,5 +19,5 @@ export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
     set({ histories: mappedHistories.reverse() }); // 최신순으로 정렬
   },
   addHistory: (history: ChatHistoryItem) =>
-    set((state) => ({ histories: [...state.histories, history] })),
+    set((state) => ({ histories: [history, ...state.histories] })),
 }));
