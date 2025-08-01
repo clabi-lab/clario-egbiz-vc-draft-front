@@ -91,7 +91,7 @@ const VoiceVisualizer = () => {
       } catch (error) {
         openAlert({
           severity: "error",
-          message: "잠시 후 다시 시도해주세요",
+          message: "마이크에 대한 권한이 없습니다 ",
         });
       }
     };
@@ -129,7 +129,7 @@ const VoiceVisualizer = () => {
   }, [listening]);
 
   return (
-    <div style={{ width: "100%", height: "30px" }}>
+    <div style={{ width: "90%", height: "40px" }}>
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );

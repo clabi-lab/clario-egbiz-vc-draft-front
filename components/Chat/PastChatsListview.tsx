@@ -58,7 +58,11 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                 {chat.recommendedQuestions &&
                   chat.recommendedQuestions.length > 0 && (
                     <RecommendedQuestionsView
-                      className="mt-6"
+                      className={`mt-6 ${
+                        index === chatList.length
+                          ? "animate-fade-in-scale [animation-delay:300ms]"
+                          : ""
+                      }`}
                       questions={chat.recommendedQuestions}
                       onClick={(question) => onSearch?.(question, true)}
                     />

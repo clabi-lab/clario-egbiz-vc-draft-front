@@ -3,12 +3,13 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { useFetchSavedChat } from "@/hooks/useChatData";
 import { useAlertStore } from "@/store/useAlertStore";
 
 import PastChatsListview from "@/components/Chat/PastChatsListview";
 
 import { ChatListItem } from "@/types/Chat";
+
+import { fetchSavedChat } from "@/services/chatService";
 
 const ShareDetailPage = ({
   params,
@@ -19,8 +20,6 @@ const ShareDetailPage = ({
   const router = useRouter();
   const openAlert = useAlertStore((state) => state.openAlert);
 
-  const { mutateAsync: fetchSavedChat } = useFetchSavedChat();
-
   const [pastChats, setPastChats] = useState<ChatListItem[]>([]);
 
   useEffect(() => {
@@ -28,9 +27,7 @@ const ShareDetailPage = ({
 
     const init = async () => {
       try {
-        const { chats } = await fetchSavedChat({
-          encodedData: shareCode,
-        });
+        const { chats } = await fetchSavedChat(shareCode);
 
         setPastChats(
           chats.map((chat) => ({

@@ -2,7 +2,6 @@ import QuestionView from "@/components/Chat/QuestionView";
 import StreamStagesView from "@/components/Chat/StreamStagesView/StreamStagesView";
 import AnswerView from "@/components/Chat/AnswerView";
 import ReferencesView from "@/components/Chat/ReferencesView";
-import RecommendedQuestionsView from "@/components/Chat/RecommendedQuestionsView";
 
 import { RecommendedQuestions, Reference } from "@/types/Chat";
 import { StreamStage } from "@/types/Stream";
@@ -25,8 +24,6 @@ const CurrentChatView = ({
   streamText,
   isFinished,
   references,
-  recommendedQuestions,
-  onSearch,
 }: CurrentChatViewProps) => {
   return (
     <div className={className}>
@@ -46,13 +43,6 @@ const CurrentChatView = ({
       {streamText && <AnswerView streamText={streamText} />}
       {references && references.length > 0 && (
         <ReferencesView references={references} className="mt-2" />
-      )}
-      {recommendedQuestions.length > 0 && (
-        <RecommendedQuestionsView
-          className="mt-4"
-          questions={recommendedQuestions}
-          onClick={(question) => onSearch(question, true)}
-        />
       )}
     </div>
   );

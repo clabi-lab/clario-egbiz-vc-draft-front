@@ -8,8 +8,8 @@ import posthog from "posthog-js";
 
 import VoiceSearch from "./VoiceSearch";
 import VoiceVisualizer from "./VoiceVisualizer";
-import RoundedTextField from "./RoundedTextField";
-import { InputAdornment, styled } from "@mui/material";
+import { InputAdornment } from "@mui/material";
+import GradientRoundedTextField from "./GradientRoundedTextField";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 
@@ -18,26 +18,6 @@ interface SearchBarProps {
   placeholder?: string;
   onSearch: (searchText: string) => void;
 }
-
-const CustomField = styled(RoundedTextField)({
-  "& label.Mui-focused": {
-    color: "var(--point)",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "var(--point)",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "var(--point)",
-    },
-    "&:hover fieldset": {
-      borderColor: "var(--point)",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "var(--point)",
-    },
-  },
-});
 
 const SearchBar = ({
   className = "",
@@ -63,7 +43,7 @@ const SearchBar = ({
   return (
     <div className={`relative flex items-center w-full ${className}`}>
       <div className="flex-1">
-        <CustomField
+        <GradientRoundedTextField
           fullWidth
           multiline
           maxRows={5}
@@ -91,13 +71,11 @@ const SearchBar = ({
         />
       </div>
 
-      <div
-        className={`absolute top-[8px] left-[16px] w-[calc(100%-60px)] ${
-          listening ? "" : "hidden"
-        }`}
-      >
-        <VoiceVisualizer />
-      </div>
+      {listening && (
+        <div className={`absolute top-[8px] left-[16px] w-[calc(100%-60px)]`}>
+          <VoiceVisualizer />
+        </div>
+      )}
 
       {CommonConfig.isVoiceSearch && <VoiceSearch onSearch={setSearchText} />}
     </div>

@@ -3,79 +3,51 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { useAiStreaming } from "@/hooks/useAiStreaming";
-import { useFetchSavedChat } from "@/hooks/useChatData";
-import { base64Decode } from "@/utils/encoding";
-import { useFetchSetting } from "@/hooks/useHomeData";
 import { useAlertStore } from "@/store/useAlertStore";
+import { useProjectStore } from "@/store/useProjectStore";
 
-import { createShareCode } from "@/services/chatService";
-
-import type { ChatGroupResponse, ChatListItem } from "@/types/Chat";
+import type { ChatGroupResponse, ChatListItem, SavedChats } from "@/types/Chat";
 
 /**
  * 공유된 chatGroupIdEncoded를 기반으로 채팅 데이터를 가져오고,
  * AI 스트리밍을 제어하며, 질문 처리 및 상태 관리를 수행하는 컨트롤러 훅
  */
 export const useChatPageController = (
-  chatGroupIdEncoded: string | undefined
+  groupId: number,
+  initialChatGroupData: SavedChats
 ) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const openAlert = useAlertStore((state) => state.openAlert);
+  const projectInfo = useProjectStore((state) => state.projectInfo);
 
-  const { mutateAsync: fetchSavedChat } = useFetchSavedChat();
-  const { data: settingData } = useFetchSetting(); // 환경 설정 데이터
-
-  const [groupId, setGroupId] = useState<number | undefined>(undefined);
   const [pastChats, setPastChats] = useState<ChatListItem[]>([]);
   const [newQuestion, setNewQuestion] = useState<string>("");
   const [isRecommend, setIsRecommend] = useState<boolean>(false); // 추천 질문 여부
-
-  // 인코딩된 chatGroupId 디코딩
-  const parsed = chatGroupIdEncoded ? base64Decode(chatGroupIdEncoded) : null;
 
   /**
    * 페이지 진입 시 디코딩된 groupId를 확인하고
    * 캐시/서버에서 초기 채팅 데이터를 로드
    */
   useEffect(() => {
-    if (!chatGroupIdEncoded) return;
+    if (!groupId) return;
 
-    // 디코딩 실패 시 not-found 페이지로 이동
-    if (!parsed) {
+    if (isNaN(groupId)) {
       router.push("/not-found");
       return;
     }
-
-    const groupIdNum = Number(parsed);
-    if (isNaN(groupIdNum)) {
-      router.push("/not-found");
-      return;
-    }
-
-    setGroupId(groupIdNum);
 
     const init = async () => {
       try {
-        // 서버에서 공유 코드 생성 + 캐시 데이터 가져오기
-        const [shareCodeData, cachedData] = await Promise.all([
-          createShareCode(groupIdNum),
-          Promise.resolve(
-            queryClient.getQueryData<ChatGroupResponse>([
-              "chatGroup",
-              groupIdNum,
-            ])
-          ),
+        // 캐시 데이터 가져오기
+        const cachedData = await queryClient.getQueryData<ChatGroupResponse>([
+          "chatGroup",
+          groupId,
         ]);
-
-        // 서버에서 저장된 채팅 이력 불러오기
-        const { chats } = await fetchSavedChat({
-          encodedData: shareCodeData.encoded_data,
-        });
 
         // 채팅 이력을 포맷팅 후 상태로 저장
         setPastChats(
-          chats.map((chat) => ({
+          initialChatGroupData?.chats.map((chat) => ({
             chatId: chat.chat_id ?? undefined,
             question: chat.chat_question ?? "",
             streamStages: chat.chat_history_list ?? [],
@@ -92,7 +64,7 @@ export const useChatPageController = (
         );
 
         // 새로운 질문이 없다면 title을 초기 질문으로 설정
-        if (chats.length === 0 && cachedData) {
+        if (initialChatGroupData.chats.length === 0 && cachedData) {
           setNewQuestion(cachedData.title);
         }
       } catch (error) {
@@ -105,14 +77,7 @@ export const useChatPageController = (
     };
 
     init();
-  }, [
-    chatGroupIdEncoded,
-    parsed,
-    router,
-    queryClient,
-    fetchSavedChat,
-    openAlert,
-  ]);
+  }, [groupId]);
 
   // AI 스트리밍 훅 사용
   const aiStreaming = useAiStreaming(groupId, newQuestion, isRecommend);
@@ -137,7 +102,7 @@ export const useChatPageController = (
     setIsRecommend(false); // 초기화
 
     // 스트리밍이 끝나지 않았거나 잘못된 그룹 ID일 경우 무시
-    if (!isFinished || !chatGroupIdEncoded) return;
+    if (!isFinished || !groupId) return;
 
     const newChat: ChatListItem = {
       chatId: chatId,
@@ -167,7 +132,7 @@ export const useChatPageController = (
     references,
     selectedItems,
     resetStreaming,
-    chatGroupIdEncoded,
+    groupId,
   ]);
 
   /**
@@ -181,7 +146,7 @@ export const useChatPageController = (
   };
 
   return {
-    settingData, // 사용자 설정
+    projectInfo, // 사용자 설정
     pastChats, // 이전 채팅 목록
     newQuestion, // 현재 입력 중인 질문
     streamStages, // 스트리밍 단계별 결과

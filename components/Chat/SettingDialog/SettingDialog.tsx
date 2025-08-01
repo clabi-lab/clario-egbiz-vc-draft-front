@@ -65,7 +65,9 @@ const SettingDialog = ({ isOpen, onClose }: ShareDialogProps) => {
 
   return (
     <Dialog open={isOpen} onClose={handleClose} fullWidth>
-      <DialogTitle>{renderPageTitle()}</DialogTitle>
+      <DialogTitle sx={{ padding: "16px 24px 0" }}>
+        {renderPageTitle()}
+      </DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}

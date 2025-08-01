@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { base64Encode } from "@/utils/encoding";
-import { useFetchSetting } from "@/hooks/useHomeData";
+import { useProjectStore } from "@/store/useProjectStore";
 import { useCreateChatGroup } from "@/hooks/useChatData";
 
 import Image from "next/image";
@@ -14,8 +14,8 @@ import FiltersView from "@/components/Common/FiltersView";
 const HomePage = () => {
   const router = useRouter();
 
-  const { data: settingData } = useFetchSetting();
   const { mutateAsync: createGroup } = useCreateChatGroup();
+  const projectInfo = useProjectStore((state) => state.projectInfo);
 
   const handleSearch = async (searchText: string) => {
     try {
@@ -30,12 +30,12 @@ const HomePage = () => {
   return (
     <div className="h-full w-full p-[1rem] flex flex-col items-center">
       <div className="flex-1 overflow-auto flex flex-col items-center justify-center w-full md:max-w-[640px]">
-        {settingData && (
+        {projectInfo && (
           <>
-            {settingData?.greeting?.light_logo_url && (
+            {projectInfo?.greeting?.light_logo_url && (
               <Image
-                src={settingData.greeting.light_logo_url}
-                width={300}
+                src={projectInfo.greeting.light_logo_url}
+                width={250}
                 height={100}
                 alt="logo"
               />
@@ -43,7 +43,7 @@ const HomePage = () => {
             <Greeting className="mt-4" />
             <SearchBar
               className="mt-8"
-              placeholder={settingData.prompt.input}
+              placeholder={projectInfo.prompt.input}
               onSearch={handleSearch}
             />
             <FiltersView></FiltersView>

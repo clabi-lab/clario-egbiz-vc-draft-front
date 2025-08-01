@@ -17,9 +17,10 @@ import { updateSatisfaction } from "@/services/chatService";
 interface FeedBackProps {
   streamText: string;
   chatId: number;
+  disabled?: boolean;
 }
 
-const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
+const FeedBack = ({ streamText, chatId, disabled = false }: FeedBackProps) => {
   const openAlert = useAlertStore((state) => state.openAlert);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -122,7 +123,11 @@ const FeedBack = ({ streamText, chatId }: FeedBackProps) => {
   };
 
   return (
-    <div className="flex items-center mt-2 gap-[4px]">
+    <div
+      className={`flex items-center mt-2 gap-[4px] ${
+        disabled ? "pointer-events-none" : ""
+      }`}
+    >
       <IconButton sx={{ padding: "2px" }} onClick={handleCopy}>
         <ChatCopyIcon />
       </IconButton>

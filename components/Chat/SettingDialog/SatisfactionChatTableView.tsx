@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
+import { base64Encode } from "@/utils/encoding";
 import { getSatisfactionChatGroups } from "@/lib/indexedDB";
-import { SatisfactionDBItem } from "@/types/indexedDB";
+
 import {
   Table,
   TableBody,
@@ -8,7 +11,9 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import dayjs from "dayjs";
+import Link from "next/link";
+
+import { SatisfactionDBItem } from "@/types/indexedDB";
 
 const columns: { label: string; key: keyof SatisfactionDBItem }[] = [
   { label: "메모 내용", key: "memo" },
@@ -43,9 +48,17 @@ const SatisfactionChatTableView = () => {
             <TableRow key={rowIdx}>
               {columns.map(({ key }, colIdx) => (
                 <TableCell key={colIdx}>
-                  {key === "createdDate"
-                    ? dayjs(item.createdDate).format("YYYY-MM-DD HH:mm:ss")
-                    : item[key]}
+                  {key === "createdDate" ? (
+                    dayjs(item.createdDate).format("YYYY-MM-DD HH:mm:ss")
+                  ) : (
+                    <Link
+                      href={`/chat/${base64Encode(
+                        JSON.stringify(item.chatGroupId)
+                      )}`}
+                    >
+                      {item[key]}
+                    </Link>
+                  )}
                 </TableCell>
               ))}
             </TableRow>

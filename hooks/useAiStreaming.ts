@@ -8,8 +8,6 @@ import { handleStream } from "@/lib/streamHandler";
 import { useUserActionStore } from "@/store/useChatStore";
 import { useFilterStore } from "@/store/useFilterStore";
 
-import { saveChat } from "@/services/chatService";
-
 import {
   StreamEndEvent,
   StreamStage,
@@ -17,6 +15,7 @@ import {
   UserActionFormData,
 } from "@/types/Stream";
 import { ChatResponse, RecommendedQuestions, Reference } from "@/types/Chat";
+import { saveChatAction } from "@/app/(with-drawer)/chat/[chatGroupId]/actions/saveChat";
 
 /**
  * AI 스트리밍 챗 기능을 위한 커스텀 훅
@@ -202,7 +201,7 @@ export const useAiStreaming = (
     setReferences(chatData.references);
     setSelectedItems(chatData.select_items);
 
-    const data: ChatResponse = await saveChat(chatData);
+    const data: ChatResponse = await saveChatAction(chatData);
     setChatId(data.chat_id);
 
     await saveChatGroup({
@@ -232,10 +231,10 @@ export const useAiStreaming = (
       console.log("스트림이 중단되었습니다."); // 정상 중단
     } else {
       console.error("예상치 못한 에러:", error);
+      setIsStreaming(false);
     }
 
     setHasError(true);
-    setIsStreaming(false);
   };
 
   // 스트리밍 완료 표시

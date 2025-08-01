@@ -6,6 +6,8 @@ import AppInitializer from "@/components/AppInitializer";
 import { GlobalAlert } from "@/components/Common/GlobalAlert";
 import PostHogProvider from "@/components/PostHogProvider";
 
+import { fetchProjectInfo, saveIp } from "@/services/commonService";
+
 import { ThemeProvider } from "@mui/material";
 
 import "./globals.css";
@@ -15,16 +17,19 @@ export const metadata: Metadata = {
   title: "KEPIC Alde",
 };
 
-const RootLayout = ({
+const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
+  await saveIp();
+  const ProjectInfo = await fetchProjectInfo();
+
   return (
     <html lang="ko">
       <body>
           <Providers>
-            <AppInitializer />
+            <AppInitializer projectinfo={ProjectInfo} />
             <PostHogProvider>
               <ThemeProvider theme={theme}>
                 <GlobalAlert />
