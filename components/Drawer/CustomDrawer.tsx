@@ -23,7 +23,6 @@ import DrawerStandardItem from "./DrawerMenu/DrawerStandardItem";
 import { DrawerItem } from "../../types/Drawer";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import Logo from "@/public/images/drawer-logo.png";
 
 const CustomDrawer = () => {
   const router = useRouter();
@@ -129,10 +128,10 @@ const CustomDrawer = () => {
           >
             <MenuIcon></MenuIcon>
           </IconButton>
-          {drawerConfig.showLogo && projectInfo.greeting.light_logo_url && (
+          {drawerConfig.showLogo && projectInfo?.greeting?.light_logo_url && (
             <Link href="/" className="h-[27px] ml-6">
               <Image
-                src={projectInfo.greeting.light_logo_url || Logo}
+                src={projectInfo.greeting.light_logo_url}
                 alt="logo"
                 width={60}
                 height={10}

@@ -7,7 +7,11 @@ const Greeting = ({ className }: { className?: string }) => {
   return (
     <SafeHTML
       className={`text-center ${className}`}
-      html={projectInfo.greeting.main_greeting.replace(/\n/g, "<br />")}
+      html={
+        projectInfo
+          ? projectInfo.greeting.main_greeting.replace(/\n/g, "<br />")
+          : ""
+      }
     />
   );
 };

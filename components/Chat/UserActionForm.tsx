@@ -11,29 +11,8 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
-  styled,
-  TextField,
 } from "@mui/material";
-
-const CustomField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "var(--point)",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "var(--point)",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "var(--point)",
-    },
-    "&:hover fieldset": {
-      borderColor: "var(--point)",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "var(--point)",
-    },
-  },
-});
+import GradientRoundedTextField from "../Common/GradientRoundedTextField";
 
 interface UserActionFormProps {
   title?: string;
@@ -124,16 +103,13 @@ const UserActionForm = ({
             ))}
         </Stack>
         {isInput && (
-          <CustomField
+          <GradientRoundedTextField
             fullWidth
             variant="outlined"
             placeholder={inputPlaceholder}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             size="small"
-            sx={{
-              mt: 2,
-            }}
           />
         )}
       </DialogContent>

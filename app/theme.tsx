@@ -31,15 +31,7 @@ const theme = createTheme({
     },
   },
 
-  components: {
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          padding: "16px 24px 0",
-        },
-      },
-    },
-  },
+  components: {},
 });
 
 export default theme;

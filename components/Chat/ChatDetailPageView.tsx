@@ -116,7 +116,7 @@ const ChatDetailPageView = ({
         {/* 검색 입력창 */}
         <SearchBar
           className="md:mx-auto md:max-w-[640px] md:px-0 max-w-full px-2"
-          placeholder={projectInfo.prompt.input}
+          placeholder={projectInfo?.prompt.input}
           onSearch={handleSearch}
         />
       </div>

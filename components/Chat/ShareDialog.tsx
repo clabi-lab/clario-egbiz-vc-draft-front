@@ -77,7 +77,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>채팅 링크 공유</DialogTitle>
+      <DialogTitle sx={{ padding: "16px 24px 0" }}>채팅 링크 공유</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={onClose}
