@@ -5,8 +5,10 @@ export const fetchFilters = async (params?: {
   year?: string;
   search?: string;
 }): Promise<Filter[]> => {
-  return apiClient(`/chat/filter/tree`, {
-    method: "GET",
-    data: params,
-  });
+  return apiClient(
+    `/chat/filter/tree${params?.search ? `?search=${params?.search}` : ""}`,
+    {
+      method: "GET",
+    }
+  );
 };
