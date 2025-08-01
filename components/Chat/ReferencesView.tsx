@@ -40,12 +40,7 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
               }`}
             >
               <div className="shrink-0">
-                <SearchIcon
-                  sx={{
-                    fontSize: "16px",
-                  }}
-                />
-                <span className="whitespace-normal">출처 :</span>
+                <span className="whitespace-normal">🔍 출처 :</span>
               </div>
               <span className="ml-1">
                 {reference.index_code}{" "}

@@ -106,9 +106,3 @@ Next.js App Router 구조를 기반으로 하며, 채팅 기능, 스타일 변�
 - [msw](https://mswjs.io/)
 
 ---
-
-## 추후 개발
-
-- history 순서 변경 기능 개발
-- 스타일 변경 기능 개발
-- msw 적용
