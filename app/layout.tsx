@@ -28,15 +28,15 @@ const RootLayout = async ({
   return (
     <html lang="ko">
       <body>
-          <Providers>
+        <Providers>
+          <PostHogProvider>
             <AppInitializer projectinfo={ProjectInfo} />
-            <PostHogProvider>
-              <ThemeProvider theme={theme}>
-                <GlobalAlert />
-                <main>{children}</main>
-              </ThemeProvider>
-            </PostHogProvider>
-          </Providers>
+            <ThemeProvider theme={theme}>
+              <GlobalAlert />
+              <main>{children}</main>
+            </ThemeProvider>
+          </PostHogProvider>
+        </Providers>
       </body>
     </html>
   );
