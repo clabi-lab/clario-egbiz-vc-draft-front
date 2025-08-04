@@ -3,13 +3,14 @@ import { createShareCode, fetchSavedChat } from "@/services/chatService";
 import { base64Decode } from "@/utils/encoding";
 
 interface ChatDetailPageProps {
-  params: { chatGroupId: string };
+  params: Promise<{ chatGroupId: string }>;
 }
 
 const ChatDetailPage = async ({ params }: ChatDetailPageProps) => {
   const { chatGroupId } = await params;
 
   if (!chatGroupId) {
+    console.log("not chatGroupId");
     throw new Error("Not found");
   }
 
