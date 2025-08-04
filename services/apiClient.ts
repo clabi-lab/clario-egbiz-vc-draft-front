@@ -2,9 +2,7 @@ import { ApiError } from "./errorHandler";
 
 const isServer = typeof window === "undefined";
 
-const BASE_URL = isServer
-  ? process.env.BACKEND_SERVER
-  : process.env.NEXT_PUBLIC_BACKEND_SERVER;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_SERVER;
 
 if (!BASE_URL) {
   throw new Error("Missing BASE_URL environment variable.");
