@@ -16,7 +16,7 @@ const VoiceVisualizer = () => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
+  const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
   const historyRef = useRef<number[]>([]);
 
   useEffect(() => {
@@ -77,7 +77,9 @@ const VoiceVisualizer = () => {
         const source = audioCtx.createMediaStreamSource(stream);
         const analyser = audioCtx.createAnalyser();
         analyser.fftSize = 128;
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const dataArray = new Uint8Array(
+          analyser.frequencyBinCount
+        ) as Uint8Array<ArrayBuffer>;
 
         audioCtxRef.current = audioCtx;
         analyserRef.current = analyser;
