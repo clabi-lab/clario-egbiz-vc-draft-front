@@ -77,7 +77,9 @@ const VoiceVisualizer = () => {
         const source = audioCtx.createMediaStreamSource(stream);
         const analyser = audioCtx.createAnalyser();
         analyser.fftSize = 128;
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const dataArray: Uint8Array = new Uint8Array(
+          analyser.frequencyBinCount
+        );
 
         audioCtxRef.current = audioCtx;
         analyserRef.current = analyser;
