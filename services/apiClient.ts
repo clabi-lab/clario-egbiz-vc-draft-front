@@ -1,7 +1,5 @@
 import { ApiError } from "./errorHandler";
 
-const isServer = typeof window === "undefined";
-
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_SERVER;
 
 if (!BASE_URL) {
