@@ -6,7 +6,7 @@ import AppInitializer from "@/components/AppInitializer";
 import { GlobalAlert } from "@/components/Common/GlobalAlert";
 import PostHogProvider from "@/components/PostHogProvider";
 
-import { fetchProjectInfo, saveIp } from "@/services/commonService";
+import { fetchProjectInfo } from "@/services/commonService";
 
 import { ThemeProvider } from "@mui/material";
 
@@ -22,7 +22,6 @@ const RootLayout = async ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  await saveIp();
   const ProjectInfo = await fetchProjectInfo();
 
   return (
