@@ -80,7 +80,6 @@ export const useChatPageController = (
   }, [groupId]);
 
   // AI 스트리밍 훅 사용
-  const aiStreaming = useAiStreaming(groupId, newQuestion, isRecommend);
   const {
     chatId,
     streamStages,
@@ -92,7 +91,7 @@ export const useChatPageController = (
     isFinished,
     abortStreaming,
     resetStreaming,
-  } = aiStreaming;
+  } = useAiStreaming(groupId, newQuestion, isRecommend);
 
   /**
    * AI 응답이 완료되면 새로운 채팅을 pastChats에 추가
