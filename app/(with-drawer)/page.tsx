@@ -40,7 +40,7 @@ const HomePage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto",
+        "h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto px-4",
         isScrollable ? "justify-start py-6" : "justify-center"
       )}
     >
@@ -58,7 +58,7 @@ const HomePage = () => {
         placeholder={projectInfo.prompt.input}
         onSearch={handleSearch}
       />
-      <ExampleQuestions className="mt-4" />
+      <ExampleQuestions className="mt-4" onSearch={handleSearch} />
       <FiltersView></FiltersView>
     </div>
   );

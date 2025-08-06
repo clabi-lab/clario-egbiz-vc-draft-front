@@ -5,6 +5,8 @@ import { useProjectStore } from "@/store/useProjectStore";
 const Greeting = ({ className }: { className?: string }) => {
   const projectInfo = useProjectStore((state) => state.projectInfo);
 
+  if (!projectInfo?.greeting?.main_greeting) return null;
+
   return (
     <SafeHTML
       className={mergeClassNames(className, "text-center")}
