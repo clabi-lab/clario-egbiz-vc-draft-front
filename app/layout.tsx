@@ -8,10 +8,8 @@ import PostHogProvider from "@/components/PostHogProvider";
 
 import { fetchProjectInfo } from "@/services/commonService";
 
-import { ThemeProvider } from "@mui/material";
-
 import "./globals.css";
-import theme from "./theme";
+import ThemeProviderClient from "@/components/ThemeProviderClient";
 
 export const metadata: Metadata = {
   title: "KEPIC Alde",
@@ -30,10 +28,10 @@ const RootLayout = async ({
         <Providers>
           <PostHogProvider>
             <AppInitializer projectinfo={ProjectInfo} />
-            <ThemeProvider theme={theme}>
+            <ThemeProviderClient>
               <GlobalAlert />
               <main>{children}</main>
-            </ThemeProvider>
+            </ThemeProviderClient>
           </PostHogProvider>
         </Providers>
       </body>

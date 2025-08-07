@@ -9,11 +9,12 @@ import {
 } from "@/types/Chat";
 
 export const createChatGroup = async (
-  title: string
+  title: string,
+  ip_address: string
 ): Promise<ChatGroupResponse> => {
   return apiClient(`/chat/group`, {
     method: "POST",
-    data: { title },
+    data: { title, ip_address },
   });
 };
 

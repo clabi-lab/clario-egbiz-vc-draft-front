@@ -13,12 +13,17 @@ const ExampleQuestions = ({ className, onSearch }: ExampleQuestionsProps) => {
   if (!exampleQuestions || exampleQuestions.length === 0) return null;
 
   return (
-    <div className={mergeClassNames(className, "w-full")}>
+    <div
+      className={mergeClassNames(
+        className,
+        "flex flex-wrap md:inline-flex w-full"
+      )}
+    >
       {exampleQuestions.map((question) => {
         return (
           <div
             key={question.id}
-            className="w-full mb-2 border border-neutral-300 rounded-lg py-2 px-6 text-neutral-500 truncate cursor-pointer"
+            className="m-1 border border-neutral-300 rounded-lg px-4 py-2 text-neutral-500 truncate cursor-pointer text-sm w-full md:w-auto"
             onClick={() => {
               onSearch(question.question);
             }}

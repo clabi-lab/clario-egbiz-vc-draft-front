@@ -4,7 +4,7 @@ import { useDrawerStore } from "@/store/useDrawerStore";
 import { drawerConfig } from "../../config/drawer.config";
 
 import AiDisclaimer from "@/components/Common/AiDisclaimer";
-import { useMediaQuery, Backdrop } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import theme from "../theme";
 
 type TemplateProps = {

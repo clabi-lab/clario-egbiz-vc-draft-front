@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import theme from "@/app/theme";
 
-import { Button, useMediaQuery } from "@mui/material";
+import { Button } from "@mui/material";
 import ReferencesDetailDialog from "./ReferencesDetailDialog";
 
-import SearchIcon from "@mui/icons-material/Search";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import { Reference } from "@/types/Chat";

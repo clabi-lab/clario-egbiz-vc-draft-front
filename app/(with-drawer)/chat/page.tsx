@@ -21,12 +21,13 @@ const ChatPage = () => {
 
   const { mutateAsync: createGroup } = useCreateChatGroup();
   const projectInfo = useProjectStore((state) => state.projectInfo);
+  const ip = useProjectStore((state) => state.ip);
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrollable = useScrollCheck(containerRef);
 
   const handleSearch = async (searchText: string) => {
     try {
-      const chatGroup = await createGroup({ title: searchText });
+      const chatGroup = await createGroup({ title: searchText, ipAddress: ip });
 
       router.push(
         `/chat/${base64Encode(JSON.stringify(chatGroup.chat_group_id))}`
@@ -38,7 +39,7 @@ const ChatPage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto px-3",
+        "h-full w-full flex flex-col items-center justify-center max-w-[840px] m-auto px-3",
         isScrollable ? "justify-start py-6" : "justify-center"
       )}
     >

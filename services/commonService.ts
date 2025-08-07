@@ -8,8 +8,10 @@ export const fetchProjectInfo = async (): Promise<ProjectInfo> => {
   });
 };
 
-export const saveIp = async (): Promise<{ message: string }> => {
-  return apiClient(`/ip`, {
+export const saveIp = async (
+  deviceType: "mobile" | "desktop"
+): Promise<{ created: boolean; ip_address: string }> => {
+  return apiClient(`/ip?device_type=${deviceType}`, {
     method: "POST",
   });
 };

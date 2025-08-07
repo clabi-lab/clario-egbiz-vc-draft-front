@@ -2,7 +2,11 @@ import { useFilterStore } from "@/store/useFilterStore";
 
 import { Chip, Stack } from "@mui/material";
 
-const FiltersView = () => {
+interface FiltersViewProps {
+  className?: string;
+}
+
+const FiltersView = ({ className }: FiltersViewProps) => {
   const filterTags = useFilterStore((state) => state.filterTags);
 
   return (

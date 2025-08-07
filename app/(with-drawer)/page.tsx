@@ -21,12 +21,13 @@ const HomePage = () => {
 
   const { mutateAsync: createGroup } = useCreateChatGroup();
   const projectInfo = useProjectStore((state) => state.projectInfo);
+  const ip = useProjectStore((state) => state.ip);
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrollable = useScrollCheck(containerRef);
 
   const handleSearch = async (searchText: string) => {
     try {
-      const chatGroup = await createGroup({ title: searchText });
+      const chatGroup = await createGroup({ title: searchText, ipAddress: ip });
 
       router.push(
         `/chat/${base64Encode(JSON.stringify(chatGroup.chat_group_id))}`
@@ -40,7 +41,7 @@ const HomePage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center max-w-[640px] m-auto px-4",
+        "h-full w-full flex flex-col items-center justify-center m-auto px-4",
         isScrollable ? "justify-start py-6" : "justify-center"
       )}
     >
@@ -54,12 +55,15 @@ const HomePage = () => {
       )}
       <Greeting className="mt-4" />
       <SearchBar
-        className="mt-4 min-h-[65px]"
+        className="mt-4 min-h-[65px] max-w-[800px]"
         placeholder={projectInfo.prompt.input}
         onSearch={handleSearch}
       />
-      <ExampleQuestions className="mt-4" onSearch={handleSearch} />
-      <FiltersView></FiltersView>
+      <ExampleQuestions
+        className="mt-4 max-w-[900px]"
+        onSearch={handleSearch}
+      />
+      <FiltersView className="max-w-[800px]"></FiltersView>
     </div>
   );
 };
