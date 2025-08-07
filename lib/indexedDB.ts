@@ -5,7 +5,7 @@ import {
 } from "@/types/indexedDB";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Kea";
-const DB_VERSION = 2;
+const DB_VERSION = 1;
 
 const CHAT_HISTORY_STORE = "ChatHistoryStore"; // 채팅 전체 이력
 const CHAT_SAVED_STORE = "ChatSavedStore"; // 사용자가 저장한 채팅
