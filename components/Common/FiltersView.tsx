@@ -1,3 +1,4 @@
+import { mergeClassNames } from "@/lib/mergeClassNames";
 import { useFilterStore } from "@/store/useFilterStore";
 
 import { Chip, Stack } from "@mui/material";
@@ -14,7 +15,7 @@ const FiltersView = ({ className }: FiltersViewProps) => {
       spacing={{ xs: 1, sm: 1 }}
       direction="row"
       useFlexGap
-      className="mt-4 w-full"
+      className={mergeClassNames("mt-4 w-full", className)}
       sx={{
         justifyContent: "center",
         alignItems: "center",

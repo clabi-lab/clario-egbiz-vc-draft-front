@@ -39,7 +39,7 @@ const ChatPage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center max-w-[840px] m-auto px-3 py-6",
+        "h-full w-full flex flex-col items-center justify-center m-auto px-4 py-6",
         isScrollable ? "justify-start" : "justify-center"
       )}
     >
@@ -55,12 +55,12 @@ const ChatPage = () => {
           )}
           <Greeting className="mt-4" />
           <SearchBar
-            className="mt-4 mx-2 min-h-[65px]"
+            className="mt-4 mx-2 min-h-[65px] max-w-[800px]"
             placeholder={projectInfo.prompt.input}
             onSearch={handleSearch}
           />
           <ExampleQuestions className="mt-4" onSearch={handleSearch} />
-          <FiltersView></FiltersView>
+          <FiltersView className="max-w-[800px]"></FiltersView>
         </>
       )}
     </div>
