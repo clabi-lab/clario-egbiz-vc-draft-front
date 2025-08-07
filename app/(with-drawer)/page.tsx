@@ -41,8 +41,8 @@ const HomePage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center m-auto px-4",
-        isScrollable ? "justify-start py-6" : "justify-center"
+        "h-full w-full flex flex-col items-center justify-center m-auto px-4 py-6 ",
+        isScrollable ? "justify-start " : "justify-center"
       )}
     >
       {projectInfo.greeting?.light_logo_url && (

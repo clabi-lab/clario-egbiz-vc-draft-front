@@ -131,7 +131,7 @@ const VoiceVisualizer = () => {
   }, [listening]);
 
   return (
-    <div style={{ width: "90%", height: "40px" }}>
+    <div style={{ width: "90%", height: "63px" }}>
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );

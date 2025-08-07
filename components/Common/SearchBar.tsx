@@ -11,7 +11,6 @@ import VoiceVisualizer from "./VoiceVisualizer";
 import { InputAdornment } from "@mui/material";
 import GradientRoundedTextField from "./GradientRoundedTextField";
 
-import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import SendIcon from "@/public/icons/SendIcon";
 
 interface SearchBarProps {

@@ -39,8 +39,8 @@ const ChatPage = () => {
     <div
       ref={containerRef}
       className={mergeClassNames(
-        "h-full w-full flex flex-col items-center justify-center max-w-[840px] m-auto px-3",
-        isScrollable ? "justify-start py-6" : "justify-center"
+        "h-full w-full flex flex-col items-center justify-center max-w-[840px] m-auto px-3 py-6",
+        isScrollable ? "justify-start" : "justify-center"
       )}
     >
       {projectInfo && (

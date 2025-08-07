@@ -12,6 +12,7 @@ type TemplateProps = {
 };
 
 const Template = ({ children }: TemplateProps) => {
+  const setOpen = useDrawerStore((state) => state.setOpen);
   const isDrawerOpen = useDrawerStore((state) => state.isOpen);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -26,10 +27,13 @@ const Template = ({ children }: TemplateProps) => {
         transition: "all 0.225s ease-in-out",
       }}
     >
-      <div className="flex flex-col h-full bg-chat-bg relative">
+      <div className="flex flex-col h-full bg-chat-bg relative h-svh">
         {/* 모바일일 때 Drawer가 열려있으면 블러 배경 */}
         {isMobile && isDrawerOpen && (
-          <div className="absolute inset-0 bg-black opacity-50 z-50" />
+          <div
+            className="absolute inset-0 bg-black opacity-50 z-50"
+            onClick={() => setOpen(false)}
+          />
         )}
 
         <section className="flex-1 overflow-x-hidden overflow-y-auto">
