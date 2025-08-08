@@ -35,7 +35,7 @@ const ShareDetailPage = ({
             question: chat.chat_question ?? "",
             streamStages: chat.chat_history_list ?? [],
             streamText: chat.chat_answer ?? "",
-            recommendedQuestions: chat.recommended_questions ?? [],
+            recommendedQuestions: [],
             references: chat.references ?? [],
             selectedItems: chat.select_items
               ? chat.select_items
