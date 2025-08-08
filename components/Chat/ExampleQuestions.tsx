@@ -16,7 +16,7 @@ const ExampleQuestions = ({ className, onSearch }: ExampleQuestionsProps) => {
     <div
       className={mergeClassNames(
         className,
-        "flex flex-wrap md:inline-flex w-full"
+        "flex flex-wrap md:inline-flex w-full justify-center"
       )}
     >
       {exampleQuestions.map((question) => {

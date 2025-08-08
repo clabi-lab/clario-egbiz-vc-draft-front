@@ -8,16 +8,11 @@ import { useChatHistoryStore } from "../../store/useChatHistoryStore";
 import { useProjectStore } from "@/store/useProjectStore";
 import { drawerConfig, drawerMenuList } from "../../config/drawer.config";
 import { getAllChatGroups } from "@/lib/indexedDB";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Drawer,
-  IconButton,
-  List,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Drawer, IconButton, List } from "@mui/material";
 import DrawerButtonItem from "./DrawerMenu/DrawerButtonItem";
 import DrawerStandardItem from "./DrawerMenu/DrawerStandardItem";
 import { DrawerItem } from "../../types/Drawer";
@@ -26,6 +21,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 const CustomDrawer = () => {
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const isOpen = useDrawerStore((state) => state.isOpen);
   const setOpen = useDrawerStore((state) => state.setOpen);
@@ -34,9 +30,6 @@ const CustomDrawer = () => {
   const projectInfo = useProjectStore((state) => state.projectInfo);
 
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
-
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // 보통 sm = 600px
 
   // drawerConfig.activeMenu에 있는 메뉴만 필터링
   const filteredMenuList: DrawerItem[] = drawerConfig.activeMenu
@@ -73,9 +66,22 @@ const CustomDrawer = () => {
   }, [router]);
 
   // Drawer 메뉴 항목 클릭 핸들러
+  const handleButtonItemClick = (drawerItem: DrawerItem) => {
+    if (drawerItem.link) {
+      router.push(drawerItem.link);
+      if (isMobile) {
+        setOpen(false);
+      }
+      return;
+    }
+  };
+
   const handleListItemClick = (drawerItem: DrawerItem) => {
     if (drawerItem.link) {
       router.push(drawerItem.link);
+      if (isMobile) {
+        setOpen(false);
+      }
       return;
     }
 
@@ -156,7 +162,7 @@ const CustomDrawer = () => {
                 <DrawerButtonItem
                   key={menu.key}
                   item={menu}
-                  onClick={handleListItemClick}
+                  onClick={handleButtonItemClick}
                 />
               );
             }

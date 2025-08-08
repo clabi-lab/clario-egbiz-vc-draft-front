@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 import { mergeClassNames } from "@/lib/mergeClassNames";
@@ -12,9 +14,13 @@ import ShareIcon from "@mui/icons-material/Share";
 
 interface ChatNavigationProps {
   className?: string;
+  isChatHistories: boolean;
 }
 
-const ChatNavigation = ({ className }: ChatNavigationProps) => {
+const ChatNavigation = ({
+  className,
+  isChatHistories,
+}: ChatNavigationProps) => {
   const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
   const [settingDialogOpen, setSettingDialogOpen] = useState<boolean>(false);
 
@@ -22,10 +28,10 @@ const ChatNavigation = ({ className }: ChatNavigationProps) => {
     <div
       className={mergeClassNames(
         className,
-        "flex justify-end items-center mt-3 mb-1 mx-2"
+        "flex justify-end items-center my-1 mx-2 min-h-[40px]"
       )}
     >
-      {CommonConfig.isChatShare && (
+      {CommonConfig.isChatShare && isChatHistories && (
         <>
           <Button
             color="basic"

@@ -39,7 +39,27 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
       const parsed = base64Decode(chatGroupId.toString());
       const { encoded_data } = await createShareCode(Number(parsed));
       const shareUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/share/${encoded_data}`;
-      await navigator.clipboard.writeText(shareUrl);
+
+      // 복사 유틸 함수
+      const copyToClipboard = async (text: string) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          // 최신 브라우저 & HTTPS 환경
+          await navigator.clipboard.writeText(text);
+        } else {
+          // 구형 브라우저나 iOS Safari 대응
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed"; // 화면 안보이게
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+      };
+
+      await copyToClipboard(shareUrl);
 
       openAlert({
         severity: "success",

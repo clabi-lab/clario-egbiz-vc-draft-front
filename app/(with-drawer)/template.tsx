@@ -2,10 +2,9 @@
 
 import { useDrawerStore } from "@/store/useDrawerStore";
 import { drawerConfig } from "../../config/drawer.config";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 import AiDisclaimer from "@/components/Common/AiDisclaimer";
-import { useMediaQuery } from "@mui/material";
-import theme from "../theme";
 
 type TemplateProps = {
   children: React.ReactNode;
@@ -14,20 +13,20 @@ type TemplateProps = {
 const Template = ({ children }: TemplateProps) => {
   const setOpen = useDrawerStore((state) => state.setOpen);
   const isDrawerOpen = useDrawerStore((state) => state.isOpen);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useIsMobile();
 
   const drawerWidth = !isMobile && isDrawerOpen ? drawerConfig.drawerWidth : 0;
 
   return (
     <section
-      className="h-[100vh]"
+      className="h-svh"
       style={{
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: `${drawerWidth}px`,
         transition: "all 0.225s ease-in-out",
       }}
     >
-      <div className="flex flex-col h-full bg-chat-bg relative h-svh overflow-y-hidden">
+      <div className="flex flex-col h-full bg-chat-bg relative">
         {/* 모바일일 때 Drawer가 열려있으면 블러 배경 */}
         {isMobile && isDrawerOpen && (
           <div

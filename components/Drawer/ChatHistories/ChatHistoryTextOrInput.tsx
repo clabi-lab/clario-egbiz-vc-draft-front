@@ -2,9 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
+import { base64Encode } from "@/utils/encoding";
+import { useDrawerStore } from "@/store/useDrawerStore";
+import { useIsMobile } from "@/hooks/useIsMobile";
+
 import { TextField, ListItemText, TextFieldProps } from "@mui/material";
 import Link from "next/link";
-import { base64Encode } from "@/utils/encoding";
 
 interface Props {
   isEditing: boolean;
@@ -34,6 +37,8 @@ export const ChatHistoryTextOrInput = ({
   onSubmit,
 }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const setOpen = useDrawerStore((state) => state.setOpen);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -84,6 +89,11 @@ export const ChatHistoryTextOrInput = ({
   return (
     <Link
       href={`/chat/${base64Encode(JSON.stringify(id))}`}
+      onClick={() => {
+        if (isMobile) {
+          setOpen(false);
+        }
+      }}
       className="w-[calc(100%-32px)] flex items-center"
       passHref
     >

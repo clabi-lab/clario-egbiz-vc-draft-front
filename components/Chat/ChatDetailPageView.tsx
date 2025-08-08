@@ -64,7 +64,7 @@ const ChatDetailPageView = ({
   return (
     <div className="h-full w-full flex flex-col justify-between">
       {/* 과거 채팅이 있을 경우 상단 네비게이션 노출 */}
-      {hasPastChats && <ChatNavigation />}
+      <ChatNavigation isChatHistories={hasPastChats} />
 
       {/* 채팅 영역: 자동 스크롤 대상 영역 */}
       <div

@@ -46,7 +46,7 @@ const Connector = styled(StepConnector)(() => ({
   [`& .${stepConnectorClasses.line}`]: {
     borderColor: "#bbbbbb",
     borderRadius: 1,
-    margin: "-5px 0 -5px -3px",
+    margin: "-5px 0 -5px -2px",
   },
 }));
 

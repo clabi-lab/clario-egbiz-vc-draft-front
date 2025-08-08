@@ -1,5 +1,4 @@
 import AnswerView from "./AnswerView";
-import FeedBack from "./FeedBack";
 import QuestionView from "./QuestionView";
 import RecommendedQuestionsView from "./RecommendedQuestionsView";
 import ReferencesView from "./ReferencesView";
@@ -7,6 +6,7 @@ import StreamStagesView from "./StreamStagesView/StreamStagesView";
 import SelectedItemsView from "./SelectedItemsView";
 
 import { ChatListItem } from "@/types/Chat";
+import FeedBack from "./FeedBack/FeedBack";
 
 interface PastChatsListviewProps {
   chatList: ChatListItem[];

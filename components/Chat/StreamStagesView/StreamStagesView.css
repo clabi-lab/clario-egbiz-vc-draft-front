@@ -16,6 +16,9 @@
 
 .MuiStepLabel-labelContainer > .MuiStepLabel-label {
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .MuiStepLabel-labelContainer > .MuiStepLabel-label.Mui-completed {

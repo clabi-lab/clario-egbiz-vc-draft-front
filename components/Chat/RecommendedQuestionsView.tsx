@@ -1,3 +1,6 @@
+"use client";
+
+import SafeHTML from "@/lib/SafeHTML";
 import type { RecommendedQuestions } from "@/types/Chat";
 
 interface RecommendedQuestionsViewProps {
@@ -20,7 +23,7 @@ const RecommendedQuestionsView = ({
           className="border-b border-solid border-gray-300 py-[3px] cursor-pointer"
           onClick={() => onClick?.(question.question)}
         >
-          {question.question}
+          <SafeHTML html={question.question.replace(/\n/g, "<br />")} />
         </div>
       ))}
     </div>
