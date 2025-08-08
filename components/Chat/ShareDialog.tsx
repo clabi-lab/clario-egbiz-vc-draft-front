@@ -50,7 +50,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
     } catch (error) {
       openAlert({
         severity: "error",
-        message: "잠시 후 다시 시도해주세요",
+        message: `${error} 잠시 후 다시 시도해주세요`,
       });
     }
   };
