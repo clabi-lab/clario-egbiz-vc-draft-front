@@ -32,6 +32,58 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
   const openAlert = useAlertStore((state) => state.openAlert);
   const histories = useChatHistoryStore((state) => state.histories);
 
+  // 클립보드 복사를 위한 fallback 함수들
+  const fallbackCopyToClipboard = (text: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      // 텍스트 영역을 만들어서 선택 후 복사
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textArea);
+        if (successful) {
+          resolve();
+        } else {
+          reject(new Error("document.execCommand failed"));
+        }
+      } catch (err) {
+        document.body.removeChild(textArea);
+        reject(err);
+      }
+    });
+  };
+
+  const copyToClipboard = async (text: string): Promise<void> => {
+    // Clipboard API 시도
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return;
+      } catch (err) {
+        console.warn("Clipboard API failed, trying fallback:", err);
+      }
+    }
+
+    // Fallback: document.execCommand 사용
+    try {
+      await fallbackCopyToClipboard(text);
+    } catch (err) {
+      // 최후 수단: 사용자에게 수동 복사 안내
+      openAlert({
+        severity: "error",
+        message: `클립보드 복사에 실패했습니다. 링크를 직접 복사해주세요. Share URL : ${text}`,
+        openTime: 10000,
+      });
+    }
+  };
+
   const handleCopy = async () => {
     if (!chatGroupId) return;
 
@@ -39,7 +91,8 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
       const parsed = base64Decode(chatGroupId.toString());
       const { encoded_data } = await createShareCode(Number(parsed));
       const shareUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/share/${encoded_data}`;
-      await navigator.clipboard.writeText(shareUrl);
+
+      await copyToClipboard(shareUrl);
 
       openAlert({
         severity: "success",
@@ -50,7 +103,7 @@ const ShareDialog = ({ isOpen, onClose }: ShareDialogProps) => {
     } catch (error) {
       openAlert({
         severity: "error",
-        message: `${error}. 잠시 후 다시 시도해주세요`,
+        message: `잠시 후 다시 시도해주세요`,
       });
     }
   };
