@@ -99,7 +99,7 @@ const CustomDrawer = () => {
   };
 
   return (
-    <>
+    <aside>
       {/* 상단 좌측 toggle button (Drawer 열기용) */}
       <div className="px-2 pt-1 fixed z-100">
         <IconButton
@@ -140,7 +140,9 @@ const CustomDrawer = () => {
                 src={projectInfo.greeting.light_logo_url}
                 alt="logo"
                 width={60}
-                height={10}
+                height={30}
+                style={{ width: 60, height: 30 }}
+                priority
                 className="h-full w-auto"
               />
             </Link>
@@ -178,7 +180,7 @@ const CustomDrawer = () => {
           })}
         </List>
       </Drawer>
-    </>
+    </aside>
   );
 };
 

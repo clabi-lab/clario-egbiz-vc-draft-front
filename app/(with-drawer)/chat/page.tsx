@@ -49,8 +49,10 @@ const ChatPage = () => {
             <Image
               src={projectInfo.greeting.light_logo_url}
               width={250}
-              height={100}
+              height={190}
               alt="logo"
+              style={{ width: 250, height: 190 }}
+              priority
             />
           )}
           <Greeting className="mt-4" />
