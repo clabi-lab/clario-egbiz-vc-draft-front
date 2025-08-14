@@ -159,6 +159,28 @@ const SearchFilter = () => {
 
   const handleSearchFilter = async () => {
     await updateFilters(searchText);
+    setIsFilterVisible(true);
+  };
+
+  const highlightText = (text: string, keyword: string) => {
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi"); // 대소문자 구분 없이 검색
+    const parts = text.split(regex);
+    return parts.map((part, i) =>
+      regex.test(part) ? (
+        <span
+          key={i}
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--point) 20%, transparent)",
+          }}
+        >
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
   };
 
   const renderFilterTree = (filter: Filter) => {
@@ -178,7 +200,7 @@ const SearchFilter = () => {
                     onChange={(e) => handleFilterToggle(e, filter)}
                   />
                 }
-                label={filter.division}
+                label={highlightText(filter.division, searchText)}
               />
             }
           />
@@ -198,7 +220,12 @@ const SearchFilter = () => {
         </FilterListItemButton>
 
         {children.length > 0 && (
-          <Collapse in={isExpanded} timeout="auto" unmountOnExit sx={{ ml: 1 }}>
+          <Collapse
+            in={isExpanded || !!searchText}
+            timeout="auto"
+            unmountOnExit
+            sx={{ ml: 1 }}
+          >
             {children.map(renderFilterTree)}
           </Collapse>
         )}
