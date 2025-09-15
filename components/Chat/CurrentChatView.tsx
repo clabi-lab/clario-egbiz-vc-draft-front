@@ -26,7 +26,7 @@ const CurrentChatView = ({
   references,
 }: CurrentChatViewProps) => {
   return (
-    <div className={className}>
+    <article className={className} role="article" aria-label="현재 대화">
       {question && (
         <div className="flex items-center justify-end">
           <QuestionView type="contained" question={question} />
@@ -44,7 +44,7 @@ const CurrentChatView = ({
       {references && references.length > 0 && (
         <ReferencesView references={references} className="mt-2" />
       )}
-    </div>
+    </article>
   );
 };
 

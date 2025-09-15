@@ -1,6 +1,16 @@
 import { mergeClassNames } from "@/lib/mergeClassNames";
 
-export default function ChatVoiceIcon({ className }: { className?: string }) {
+interface ChatVoiceIconProps {
+  className?: string;
+  "aria-label"?: string;
+  title?: string;
+}
+
+export default function ChatVoiceIcon({
+  className,
+  "aria-label": ariaLabel = "음성",
+  title = "음성",
+}: ChatVoiceIconProps) {
   return (
     <div className={mergeClassNames(className, "w-[20px] h-[20px]")}>
       <svg
@@ -9,6 +19,9 @@ export default function ChatVoiceIcon({ className }: { className?: string }) {
         height="20"
         viewBox="0 0 20 20"
         fill="none"
+        role="img"
+        aria-label={ariaLabel}
+        title={title}
       >
         <path
           d="M10.2107 16.1666L6.65817 13.1516C6.50764 13.0237 6.31655 12.9534 6.119 12.9533H3.95817C3.51614 12.9533 3.09222 12.7777 2.77966 12.4651C2.4671 12.1526 2.2915 11.7287 2.2915 11.2866V8.71497C2.2915 8.27294 2.4671 7.84902 2.77966 7.53646C3.09222 7.2239 3.51614 7.0483 3.95817 7.0483H6.11984C6.31739 7.04819 6.50847 6.9779 6.659 6.84997L10.2107 3.8333C10.3319 3.73044 10.48 3.6644 10.6375 3.64298C10.7951 3.62155 10.9555 3.64564 11.0998 3.7124C11.244 3.77916 11.3662 3.8858 11.4519 4.01973C11.5375 4.15367 11.5831 4.30932 11.5832 4.4683V15.5333C11.5831 15.6923 11.5375 15.8479 11.4519 15.9819C11.3662 16.1158 11.244 16.2224 11.0998 16.2892C10.9555 16.356 10.7951 16.38 10.6375 16.3586C10.48 16.3372 10.3319 16.2712 10.2107 16.1683V16.1666Z"

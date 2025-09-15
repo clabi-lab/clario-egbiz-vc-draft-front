@@ -38,35 +38,68 @@ const HomePage = () => {
   if (!projectInfo) return null;
 
   return (
-    <div
+    <section
       ref={containerRef}
       className={mergeClassNames(
         "h-full w-full flex flex-col items-center justify-center m-auto px-4 mt-8 md:mt-0",
         isScrollable ? "justify-start" : "justify-center"
       )}
+      aria-label="홈페이지 메인 콘텐츠"
     >
       {projectInfo.greeting?.light_logo_url && (
         <Image
           src={projectInfo.greeting.light_logo_url}
           width={250}
           height={190}
-          alt="logo"
+          alt="서비스 로고"
           style={{ width: 250, height: 190 }}
           priority
         />
       )}
-      <Greeting className="mt-4" />
-      <SearchBar
-        className="mt-4 min-h-[65px] max-w-[800px]"
-        placeholder={projectInfo.prompt.input}
-        onSearch={handleSearch}
-      />
-      <ExampleQuestions
-        className="mt-4 max-w-[900px]"
-        onSearch={handleSearch}
-      />
-      <FiltersView className="max-w-[800px]"></FiltersView>
-    </div>
+      <section aria-labelledby="greeting-section">
+        <h1 id="greeting-section" className="sr-only">
+          서비스 소개
+        </h1>
+        <Greeting className="mt-4" />
+      </section>
+
+      <section
+        aria-labelledby="search-section"
+        className="w-full flex flex-col items-center"
+      >
+        <h2 id="search-section" className="sr-only">
+          질문 검색
+        </h2>
+        <SearchBar
+          className="mt-4 min-h-[65px] max-w-[800px]"
+          placeholder={projectInfo.prompt.input}
+          onSearch={handleSearch}
+        />
+      </section>
+
+      <section
+        aria-labelledby="examples-section"
+        className="w-full flex flex-col items-center"
+      >
+        <h2 id="examples-section" className="sr-only">
+          예시 질문
+        </h2>
+        <ExampleQuestions
+          className="mt-4 max-w-[900px]"
+          onSearch={handleSearch}
+        />
+      </section>
+
+      <section
+        aria-labelledby="filters-section"
+        className="w-full flex flex-col items-center"
+      >
+        <h2 id="filters-section" className="sr-only">
+          필터 태그
+        </h2>
+        <FiltersView className="max-w-[800px]" />
+      </section>
+    </section>
   );
 };
 

@@ -69,13 +69,30 @@ const UserActionForm = ({
   };
 
   return (
-    <Dialog open fullWidth maxWidth="xs">
-      <DialogTitle fontSize="medium">
+    <Dialog
+      open
+      fullWidth
+      maxWidth="xs"
+      aria-labelledby="dialog-title"
+      aria-describedby="dialog-description"
+      role="dialog"
+      aria-modal="true"
+    >
+      <DialogTitle id="dialog-title" fontSize="medium">
         <strong>{title}</strong>
-        <p>{desc}</p>
+        <p id="dialog-description">{desc}</p>
       </DialogTitle>
       <DialogContent>
-        <Stack direction="row" flexWrap="wrap" className="gap-2">
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          className="gap-2"
+          role="group"
+          aria-labelledby="chip-group-label"
+        >
+          <div id="chip-group-label" className="sr-only">
+            문서 선택 옵션들
+          </div>
           {form.items
             .filter((item) => item.title) // title이 없는 항목은 제외
             .map((item, index) => (
@@ -88,6 +105,13 @@ const UserActionForm = ({
                     : item.title
                 }
                 onClick={() => toggleItem(item)}
+                role="checkbox"
+                aria-checked={isSelected(item)}
+                aria-label={`${
+                  item.title_kr
+                    ? `${item.title} (${item.title_kr})`
+                    : item.title
+                } ${isSelected(item) ? "선택됨" : "선택 안됨"}`}
                 sx={{
                   backgroundColor: isSelected(item) ? "var(--tag-bg)" : "#fff",
                   color: isSelected(item) ? "var(--tag-text)" : "#000",
@@ -98,23 +122,38 @@ const UserActionForm = ({
                     display: "block",
                     whiteSpace: "nowrap",
                   },
+                  "&:hover": {
+                    color: "var(--tag-text)",
+                  },
                 }}
               />
             ))}
         </Stack>
         {isInput && (
-          <GradientRoundedTextField
-            fullWidth
-            variant="outlined"
-            placeholder={inputPlaceholder}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            size="small"
-          />
+          <div>
+            <label htmlFor="additional-input" className="sr-only">
+              {inputPlaceholder}
+            </label>
+            <GradientRoundedTextField
+              id="additional-input"
+              fullWidth
+              variant="outlined"
+              placeholder={inputPlaceholder}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              size="small"
+              aria-label={inputPlaceholder}
+            />
+          </div>
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={handleClose} className="w-1/2">
+        <Button
+          variant="outlined"
+          onClick={handleClose}
+          className="w-1/2"
+          aria-label="대화상자 닫기"
+        >
           닫기
         </Button>
         <Button
@@ -122,6 +161,7 @@ const UserActionForm = ({
           onClick={handleSubmit}
           disabled={selectedItems.length === 0 && !searchText}
           className="w-1/2"
+          aria-label="선택한 항목으로 검색 실행"
         >
           확인
         </Button>

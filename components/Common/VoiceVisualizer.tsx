@@ -131,9 +131,21 @@ const VoiceVisualizer = () => {
   }, [listening]);
 
   return (
-    <div style={{ width: "90%", height: "63px" }}>
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
-    </div>
+    <figure
+      style={{ width: "90%", height: "63px" }}
+      role="img"
+      aria-label="음성 인식 시각화"
+      aria-describedby="voice-visualizer-desc"
+    >
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "100%" }}
+        aria-hidden="true"
+      />
+      <figcaption id="voice-visualizer-desc" className="sr-only">
+        실시간 음성 입력 레벨을 시각적으로 표시하는 그래프
+      </figcaption>
+    </figure>
   );
 };
 

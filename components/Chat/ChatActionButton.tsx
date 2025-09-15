@@ -19,21 +19,34 @@ const ChatActionButton = ({
   onClickScroll,
 }: ChatActionButtonProps) => {
   return (
-    <div className="absolute top-[-50px] left-[50%] translate-x-[-50%]">
+    <div
+      className="absolute top-[-50px] left-[50%] translate-x-[-50%]"
+      role="toolbar"
+      aria-label="채팅 액션 버튼"
+    >
       {isStreaming && (
-        <IconButton onClick={onClickStop}>
+        <IconButton
+          onClick={onClickStop}
+          aria-label="스트리밍 중단"
+          title="스트리밍 중단"
+        >
           <StopCircleOutlinedIcon
             fontSize="large"
             sx={{
               backgroundColor: "var(--chat-bg)",
               borderRadius: "50%",
             }}
+            aria-hidden="true"
           />
         </IconButton>
       )}
 
       {!isStreaming && showScrollButton && (
-        <IconButton onClick={onClickScroll}>
+        <IconButton
+          onClick={onClickScroll}
+          aria-label={isUserScrolling ? "맨 아래로 스크롤" : "맨 위로 스크롤"}
+          title={isUserScrolling ? "맨 아래로 스크롤" : "맨 위로 스크롤"}
+        >
           <ArrowCircleDownIcon
             fontSize="large"
             sx={{
@@ -42,6 +55,7 @@ const ChatActionButton = ({
               transition: "transform 0.3s ease",
               transform: isUserScrolling ? "none" : "rotate(180deg)",
             }}
+            aria-hidden="true"
           />
         </IconButton>
       )}

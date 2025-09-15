@@ -42,16 +42,20 @@ const AnswerView = ({ streamText, className }: AnswerViewProps) => {
   }, [streamText]);
 
   return (
-    <div
+    <section
       className={clsx(
         className,
         "prose max-w-full break-words text-neutral-950"
       )}
+      role="region"
+      aria-label="AI 답변"
+      aria-live="polite"
+      aria-busy={streamText.length > visibleText.length}
     >
       <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
         {visibleText}
       </ReactMarkdown>
-    </div>
+    </section>
   );
 };
 
