@@ -9,12 +9,14 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Box,
 } from "@mui/material";
+import Image from "next/image";
 import CloseIcon from "@mui/icons-material/Close";
-import { Reference } from "@/types/Chat";
+import { DocumentReference } from "@/types/Chat";
 
 interface ReferencesDetailDialogProps {
-  reference: Reference;
+  reference: DocumentReference;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -55,17 +57,27 @@ const LABEL_MAP_C1: Record<string, string> = {
 // 원래는 referencesType을 기반으로 라벨을 매핑해야 하나,
 // 일정 등의 이유로 우선 프론트엔드에서 title 값으로 구분 처리함
 // 추후 AI팀에 수정 요청해야함
-const getLabelMap = (reference: Reference) =>
-  reference.title === "C1" ? LABEL_MAP_C1 : LABEL_MAP_DEFAULT;
-
-const getDisplayText = (reference: Reference, key: keyof Reference) => {
-  const value = reference[key];
-  if (!value) return "-";
-  return `${value}`;
-};
 
 const cellBorderStyle = {
   border: "1px solid #e0e0e0",
+};
+
+const tableMarkupStyles = {
+  "& table": {
+    width: "100%",
+    borderCollapse: "collapse",
+    margin: "8px 0",
+  },
+  "& table th": {
+    fontWeight: 600,
+    backgroundColor: "#f5f5f5",
+  },
+  "& table th, & table td": {
+    border: "1px solid #e0e0e0",
+    padding: "8px",
+    textAlign: "left",
+    fontSize: "0.875rem",
+  },
 };
 
 const ReferencesDetailDialog = ({
@@ -73,11 +85,54 @@ const ReferencesDetailDialog = ({
   isOpen,
   onClose,
 }: ReferencesDetailDialogProps) => {
+  const getLabelMap = (reference: DocumentReference) =>
+    reference.title === "C1" ? LABEL_MAP_C1 : LABEL_MAP_DEFAULT;
+
+  const getDisplayText = (
+    reference: DocumentReference,
+    key: keyof DocumentReference
+  ) => {
+    const value = reference[key];
+
+    if (!value) return "-";
+
+    return `${value}`;
+  };
+
+  const renderCell = (
+    reference: DocumentReference,
+    key: keyof DocumentReference
+  ) => {
+    if (key === "context" && reference.type === "image") {
+      return (
+        reference.host &&
+        reference.host.length > 0 &&
+        reference.host.map((host: string, idx: number) => (
+          <Image key={idx} src={host} alt="image" width={500} height={500} />
+        ))
+      );
+    }
+
+    if (key === "context" && reference.type === "table") {
+      return (
+        <Box sx={tableMarkupStyles}>
+          <SafeHTML html={getDisplayText(reference, key).trim()} />
+        </Box>
+      );
+    }
+
+    return (
+      <SafeHTML
+        html={getDisplayText(reference, key).replace(/\n/g, "<br />")}
+      />
+    );
+  };
+
   const labelMap = getLabelMap(reference);
-  const keys = Object.keys(labelMap) as (keyof Reference)[];
+  const keys = Object.keys(labelMap) as (keyof DocumentReference)[];
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth>
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
         상세보기
         <IconButton
@@ -102,7 +157,9 @@ const ReferencesDetailDialog = ({
                 sx={{
                   fontWeight: 600,
                   backgroundColor: "#ccc",
-                  width: "30%",
+                  width: "120px",
+                  wordBreak: "keep-all",
+                  whiteSpace: "nowrap",
                   ...cellBorderStyle,
                 }}
               >
@@ -112,7 +169,7 @@ const ReferencesDetailDialog = ({
                 sx={{
                   fontWeight: 600,
                   backgroundColor: "#ccc",
-                  width: "70%",
+                  width: "calc(100% - 120px)",
                   ...cellBorderStyle,
                 }}
               >
@@ -128,14 +185,7 @@ const ReferencesDetailDialog = ({
                   <TableCell sx={cellBorderStyle}>
                     {labelMap[key] ?? key}
                   </TableCell>
-                  <TableCell>
-                    <SafeHTML
-                      html={getDisplayText(reference, key).replace(
-                        /\n/g,
-                        "<br />"
-                      )}
-                    />
-                  </TableCell>
+                  <TableCell>{renderCell(reference, key)}</TableCell>
                 </TableRow>
               ))
             ) : (

@@ -26,7 +26,7 @@ interface BaseReference {
 }
 
 // 일반 문서 Reference
-interface DocumentReference extends BaseReference {
+export interface DocumentReference extends BaseReference {
   id?: string;
   code_nm?: string;
   publication_year?: string;
