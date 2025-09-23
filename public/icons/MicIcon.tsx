@@ -3,13 +3,11 @@ import { mergeClassNames } from "@/lib/mergeClassNames";
 interface MicIconProps {
   className?: string;
   "aria-label"?: string;
-  title?: string;
 }
 
 export default function MicIcon({
   className,
   "aria-label": ariaLabel = "마이크",
-  title = "마이크",
 }: MicIconProps) {
   return (
     <div className={mergeClassNames(className, "w-[54px] h-[54px]")}>
@@ -21,7 +19,6 @@ export default function MicIcon({
         fill="none"
         role="img"
         aria-label={ariaLabel}
-        title={title}
       >
         <g filter="url(#filter0_d_1626_12633)">
           <circle

@@ -4,10 +4,11 @@ import { createApiHandler } from "@/lib/apiUtils";
 // 채팅 조회
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   return createApiHandler({
-    endpoint: `/chat/${params.id}`,
+    endpoint: `/chat/${id}`,
     method: "GET",
     request,
   });
@@ -19,7 +20,6 @@ export async function POST(request: NextRequest) {
     endpoint: `/chat`,
     method: "POST",
     request,
-    transformBody: (body) => ({ ...body }),
   });
 }
 
@@ -29,6 +29,5 @@ export async function PUT(request: NextRequest) {
     endpoint: `/chat`,
     method: "PUT",
     request,
-    transformBody: (body) => ({ ...body }),
   });
 }
