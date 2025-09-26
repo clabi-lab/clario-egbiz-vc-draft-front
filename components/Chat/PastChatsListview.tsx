@@ -6,9 +6,12 @@ import RecommendedQuestionsView from "./RecommendedQuestionsView";
 import ReferencesView from "./ReferencesView";
 import StreamStagesView from "./StreamStagesView/StreamStagesView";
 import SelectedItemsView from "./SelectedItemsView";
+import FeedBack from "./FeedBack/FeedBack";
+
+import { Button } from "@mui/material";
 
 import { ChatListItem } from "@/types/Chat";
-import FeedBack from "./FeedBack/FeedBack";
+import ChatlikeIcon from "@/public/icons/ChatlikeIcon";
 
 interface PastChatsListviewProps {
   chatList: ChatListItem[];
@@ -78,6 +81,22 @@ const PastChatsListview = ({ chatList, onSearch }: PastChatsListviewProps) => {
                     />
                   </section>
                 )}
+
+                <a
+                  className="block mt-6"
+                  href="https://naver.me/GcKNUUDl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="contained"
+                    className="w-full"
+                    color="warning"
+                  >
+                    더 나은 서비스를 위해 여러분의 소중한 의견을 남겨주세요!{" "}
+                    <ChatlikeIcon className="ml-2"></ChatlikeIcon>
+                  </Button>
+                </a>
 
                 {chat.recommendedQuestions &&
                   chat.recommendedQuestions.length > 0 && (
