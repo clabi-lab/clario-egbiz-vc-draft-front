@@ -1,6 +1,14 @@
 import { mergeClassNames } from "@/lib/mergeClassNames";
 
-export default function MicIcon({ className }: { className?: string }) {
+interface MicIconProps {
+  className?: string;
+  "aria-label"?: string;
+}
+
+export default function MicIcon({
+  className,
+  "aria-label": ariaLabel = "마이크",
+}: MicIconProps) {
   return (
     <div className={mergeClassNames(className, "w-[54px] h-[54px]")}>
       <svg
@@ -9,6 +17,8 @@ export default function MicIcon({ className }: { className?: string }) {
         height="62"
         viewBox="0 0 62 62"
         fill="none"
+        role="img"
+        aria-label={ariaLabel}
       >
         <g filter="url(#filter0_d_1626_12633)">
           <circle

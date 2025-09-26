@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 type AnswerViewProps = {
   streamText: string;
@@ -39,14 +42,20 @@ const AnswerView = ({ streamText, className }: AnswerViewProps) => {
   }, [streamText]);
 
   return (
-    <div
+    <section
       className={clsx(
         className,
         "prose max-w-full break-words text-neutral-950"
       )}
+      role="region"
+      aria-label="AI 답변"
+      aria-live="polite"
+      aria-busy={streamText.length > visibleText.length}
     >
-      <ReactMarkdown>{visibleText}</ReactMarkdown>
-    </div>
+      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+        {visibleText}
+      </ReactMarkdown>
+    </section>
   );
 };
 

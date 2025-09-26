@@ -11,6 +11,14 @@ export interface SatisfactionDBItem {
   createdDate: string;
 }
 
+export interface MemoDBItem {
+  chatGroupId: number;
+  chatId: number;
+  memoId: number;
+  memo: string;
+  createdDate: string;
+}
+
 export interface ShareDBItem {
   chatGroupId: number;
   title: string;

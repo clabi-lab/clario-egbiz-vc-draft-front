@@ -41,11 +41,21 @@ const SearchBar = ({
   };
 
   return (
-    <div
+    <form
       className={`relative flex items-end w-full overflow-hidden ${className}`}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(searchText);
+      }}
+      role="search"
+      aria-label="질문 검색"
     >
       <div className="flex-1">
+        <label htmlFor="search-input" className="sr-only">
+          질문을 입력하세요
+        </label>
         <GradientRoundedTextField
+          id="search-input"
           fullWidth
           multiline
           maxRows={5}
@@ -58,13 +68,20 @@ const SearchBar = ({
               handleSubmit(searchText);
             }
           }}
+          aria-label="질문 입력"
+          aria-describedby={listening ? "voice-status" : undefined}
           slotProps={{
             input: {
               endAdornment: !listening && (
                 <InputAdornment position="end">
-                  <div onClick={() => handleSubmit(searchText)}>
+                  <button
+                    type="submit"
+                    onClick={() => handleSubmit(searchText)}
+                    aria-label="질문 전송"
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
                     <SendIcon />
-                  </div>
+                  </button>
                 </InputAdornment>
               ),
             },
@@ -74,12 +91,15 @@ const SearchBar = ({
 
       {listening && (
         <div className={`absolute top-[8px] left-[16px] w-[calc(100%-62px)]`}>
+          <div id="voice-status" aria-live="polite" className="sr-only">
+            음성 인식 중입니다
+          </div>
           <VoiceVisualizer />
         </div>
       )}
 
       {CommonConfig.isVoiceSearch && <VoiceSearch onSearch={setSearchText} />}
-    </div>
+    </form>
   );
 };
 

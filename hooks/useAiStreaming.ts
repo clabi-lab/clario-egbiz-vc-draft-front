@@ -15,7 +15,7 @@ import {
   UserActionFormData,
 } from "@/types/Stream";
 import { ChatResponse, RecommendedQuestions, Reference } from "@/types/Chat";
-import { saveChatAction } from "@/app/(with-drawer)/chat/[chatGroupId]/actions/saveChat";
+import { saveChat } from "@/services/chatService";
 
 /**
  * AI 스트리밍 챗 기능을 위한 커스텀 훅
@@ -201,7 +201,7 @@ export const useAiStreaming = (
     setReferences(chatData.references);
     setSelectedItems(chatData.select_items);
 
-    const data: ChatResponse = await saveChatAction(chatData);
+    const data: ChatResponse = await saveChat(chatData);
     setChatId(data.chat_id);
 
     await saveChatGroup({

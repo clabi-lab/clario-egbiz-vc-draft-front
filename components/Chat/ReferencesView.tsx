@@ -25,10 +25,17 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
   };
 
   return (
-    <>
-      <div className={clsx(className, "bg-gray-100 px-4 py-3")}>
+    <section
+      className={clsx(className, "bg-gray-100 px-4 py-3")}
+      role="region"
+      aria-labelledby="references-title"
+    >
+      <h4 id="references-title" className="sr-only">
+        참고 자료
+      </h4>
+      <ul>
         {references.map((reference, index) => (
-          <div
+          <li
             key={`${reference.index_code}_${index}`}
             className="flex items-start justify-between"
           >
@@ -53,6 +60,7 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
                   }}
                   endIcon={<OpenInNewIcon sx={{ width: "16px" }} />}
                   onClick={() => setSelectedReference(reference)}
+                  aria-label={`${reference.index_code} 상세보기`}
                 >
                   <span className="underline">상세보기</span>
                 </Button>
@@ -70,12 +78,13 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
               }}
               endIcon={<OpenInNewIcon sx={{ width: "16px" }} />}
               onClick={() => setSelectedReference(reference)}
+              aria-label={`${reference.index_code} 상세보기`}
             >
               <span className="underline">상세보기</span>
             </Button>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
       {selectedReference && (
         <ReferencesDetailDialog
@@ -84,7 +93,7 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
           onClose={handleCloseDialog}
         />
       )}
-    </>
+    </section>
   );
 };
 

@@ -6,6 +6,8 @@ interface ChatHistoryState {
   histories: ChatHistoryItem[];
   setHistories: (histories: IndexedDBItem[]) => void;
   addHistory: (history: ChatHistoryItem) => void;
+  selectedId: number | null;
+  setSelectedId: (id: number | null) => void;
 }
 
 export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
@@ -19,4 +21,6 @@ export const useChatHistoryStore = create<ChatHistoryState>((set) => ({
   },
   addHistory: (history: ChatHistoryItem) =>
     set((state) => ({ histories: [history, ...state.histories] })),
+  selectedId: null,
+  setSelectedId: (id: number | null) => set({ selectedId: id }),
 }));

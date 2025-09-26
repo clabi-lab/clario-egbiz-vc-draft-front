@@ -1,15 +1,17 @@
 import {
   IndexedDBItem,
+  MemoDBItem,
   SatisfactionDBItem,
   ShareDBItem,
 } from "@/types/indexedDB";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DATABASE_NAME || "Kea";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const CHAT_HISTORY_STORE = "ChatHistoryStore"; // 채팅 전체 이력
 const CHAT_SAVED_STORE = "ChatSavedStore"; // 사용자가 저장한 채팅
 const CHAT_SATISFACTION_STORE = "ChatSatisfactionStore"; // 만족도 기록
+const CHAT_MEMO_STORE = "ChatMemoStore"; // 메모된 채팅
 const CHAT_SHARED_STORE = "ChatSharedStore"; // 공유된 채팅
 
 // ✅ IDBRequest -> Promise 래퍼
@@ -40,6 +42,12 @@ export const openDatabase = async (): Promise<IDBDatabase> => {
         // 만족도 스토어 생성
         db.createObjectStore(CHAT_SATISFACTION_STORE, {
           keyPath: "chatGroupId",
+        });
+      }
+      if (!db.objectStoreNames.contains(CHAT_MEMO_STORE)) {
+        // 매모 스토어 생성
+        db.createObjectStore(CHAT_MEMO_STORE, {
+          keyPath: "chatId",
         });
       }
       if (!db.objectStoreNames.contains(CHAT_SHARED_STORE)) {
@@ -102,7 +110,7 @@ export const deleteSavedChatGroup = async (id: number): Promise<void> => {
   await wrapRequest(store.delete(id));
 };
 
-// 만족도 메모 된 채팅
+// 만족도 채팅
 export const getSatisfactionChatGroups = async (): Promise<
   SatisfactionDBItem[]
 > => {
@@ -124,6 +132,37 @@ export const updateSatisfactionGroups = async (
 ): Promise<void> => {
   const store = await getStore(CHAT_SATISFACTION_STORE, "readwrite");
   await wrapRequest(store.put(item));
+};
+
+//메모 된 채팅
+export const getMemoChatGroups = async (): Promise<MemoDBItem[]> => {
+  const store = await getStore(CHAT_MEMO_STORE, "readonly");
+  const request = store.getAll();
+  return (await wrapRequest(request)) ?? [];
+};
+
+export const getMemoId = async (
+  chatId: number
+): Promise<number | undefined> => {
+  const store = await getStore(CHAT_MEMO_STORE, "readonly");
+  const item = await wrapRequest(store.get(chatId));
+  return (item && item.memoId) ?? undefined;
+};
+
+export const getMemo = async (chatId: number): Promise<string> => {
+  const store = await getStore(CHAT_MEMO_STORE, "readonly");
+  const item = await wrapRequest(store.get(chatId));
+  return (item && item.memo) ?? "";
+};
+
+export const updateMemoGroups = async (item: MemoDBItem): Promise<void> => {
+  const store = await getStore(CHAT_MEMO_STORE, "readwrite");
+  await wrapRequest(store.put(item));
+};
+
+export const deleteMemoGroup = async (id: number): Promise<void> => {
+  const store = await getStore(CHAT_MEMO_STORE, "readwrite");
+  await wrapRequest(store.delete(id));
 };
 
 //공유 된 채팅

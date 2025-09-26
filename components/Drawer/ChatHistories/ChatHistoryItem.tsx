@@ -1,183 +1,69 @@
 import { useState } from "react";
-import { ListItemButton, ListItemIcon, styled } from "@mui/material";
 
-import {
-  deleteChatGroup,
-  getAllChatGroups,
-  updateSavedChatGroup,
-  updateChatGroup,
-} from "@/lib/indexedDB";
+import { getAllChatGroups } from "@/lib/indexedDB";
 import { useChatHistoryStore } from "@/store/useChatHistoryStore";
-import { useAlertStore } from "@/store/useAlertStore";
 
-import { ChatHistoryTextOrInput } from "./ChatHistoryTextOrInput";
 import ChatHistoryMenu from "./ChatHistoryMenu";
-
-import {
-  DeleteOutline as DeleteIcon,
-  BookmarkBorder as BookmarkIcon,
-  DriveFileRenameOutline as RenameIcon,
-  MoreHoriz as MoreIcon,
-} from "@mui/icons-material";
-
-import { CommonConfig } from "@/config/common";
+import EditingInput from "./InputItem";
+import ListItemContainer from "./ButtonItem";
 
 import type { ChatHistoryItem } from "@/types/Chat";
 
-const StyledListItemButton = styled(ListItemButton, {
-  shouldForwardProp: (prop) => prop !== "isEditing",
-})<{ isEditing: boolean }>(({ isEditing, theme }) => ({
-  paddingLeft: theme.spacing(4),
-  paddingTop: "2px",
-  paddingBottom: "2px",
-  "&:hover .more-icon": {
-    display: "inline-flex",
-  },
-  "&.Mui-focusVisible": {
-    backgroundColor: "transparent",
-  },
-  ...(isEditing
-    ? {
-        "&:hover": { backgroundColor: "transparent" },
-      }
-    : {
-        "&:hover": {
-          backgroundColor: "var(--drawer-hover-bg)",
-          color: "var(--drawer-hover-text)",
-        },
-      }),
-}));
+interface ChatHistoryItemProps {
+  item: ChatHistoryItem;
+}
 
-const ChatHistoryItem = ({ item }: { item: ChatHistoryItem }) => {
-  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+const ChatHistoryItem = ({ item }: ChatHistoryItemProps) => {
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(item.title);
+
+  const setHistories = useChatHistoryStore((state) => state.setHistories);
 
   const isMenuOpen = Boolean(menuAnchorEl);
-  const setHistories = useChatHistoryStore((state) => state.setHistories);
-  const openAlert = useAlertStore((state) => state.openAlert);
 
-  const openMenu = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setMenuAnchorEl(event.currentTarget);
+  const startEditing = () => {
+    setIsEditing(true);
   };
-  const closeMenu = () => setMenuAnchorEl(null);
 
-  const refreshHistory = async () => {
+  const handleMenu = (event?: React.MouseEvent<HTMLElement>) => {
+    if (event) {
+      event.stopPropagation();
+      setMenuAnchorEl(event.currentTarget);
+    } else {
+      setMenuAnchorEl(null);
+    }
+  };
+
+  const handleRefreshHistory = async () => {
     try {
       const list = await getAllChatGroups();
       setHistories(list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleRename = () => {
-    setIsEditing(true);
-    closeMenu();
-  };
-
-  const handleSubmitRename = async () => {
-    try {
-      if (!editedTitle.trim()) return;
-      await updateChatGroup({
-        chatGroupId: Number(item.id),
-        title: editedTitle,
-        createdDate: new Date().toISOString(),
-      });
       setIsEditing(false);
-      refreshHistory();
     } catch (error) {
-      openAlert({
-        severity: "error",
-        message: "잠시 후 다시 시도해주세요",
-      });
+      console.error("Failed to refresh history:", error);
     }
   };
-
-  const handleArchive = async () => {
-    try {
-      await updateSavedChatGroup({
-        chatGroupId: Number(item.id),
-        title: item.title,
-        createdDate: new Date().toISOString(),
-      });
-      closeMenu();
-    } catch (error) {
-      openAlert({
-        severity: "error",
-        message: "잠시 후 다시 시도해주세요",
-      });
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteChatGroup(Number(item.id));
-      refreshHistory();
-      closeMenu();
-    } catch (error) {
-      openAlert({
-        severity: "error",
-        message: "잠시 후 다시 시도해주세요",
-      });
-    }
-  };
-
-  const actions = [
-    {
-      icon: <RenameIcon fontSize="small" />,
-      label: "제목 변경",
-      onClick: handleRename,
-    },
-    ...(CommonConfig.isChatSetting && CommonConfig.isChatSave
-      ? [
-          {
-            icon: <BookmarkIcon fontSize="small" />,
-            label: "이력 보관",
-            onClick: handleArchive,
-          },
-        ]
-      : []),
-    {
-      icon: <DeleteIcon fontSize="small" />,
-      label: "삭제",
-      onClick: handleDelete,
-    },
-  ];
 
   return (
     <>
-      <StyledListItemButton isEditing={isEditing}>
-        <ChatHistoryTextOrInput
-          isEditing={isEditing}
-          editedTitle={editedTitle}
-          id={Number(item.id)}
-          onChange={setEditedTitle}
-          onSubmit={handleSubmitRename}
-          itemId={item.id}
+      {isEditing ? (
+        <EditingInput item={item} onClose={handleRefreshHistory} />
+      ) : (
+        <ListItemContainer
+          item={item}
+          editedTitle={item.title}
+          isMenuOpen={isMenuOpen}
+          onMenuClick={handleMenu}
         />
-
-        {!isEditing && (
-          <ListItemIcon
-            className="more-icon ml-2"
-            sx={{
-              minWidth: 24,
-              display: "none",
-              cursor: "pointer",
-            }}
-            onClick={openMenu}
-          >
-            <MoreIcon sx={{ color: "white" }} />
-          </ListItemIcon>
-        )}
-      </StyledListItemButton>
+      )}
 
       <ChatHistoryMenu
         anchorEl={menuAnchorEl}
         open={isMenuOpen}
-        onClose={closeMenu}
-        actions={actions}
+        onClose={() => handleMenu()}
+        item={item}
+        startEditing={startEditing}
+        refreshHistory={handleRefreshHistory}
       />
     </>
   );

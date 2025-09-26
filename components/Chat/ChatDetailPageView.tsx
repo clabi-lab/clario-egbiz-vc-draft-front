@@ -62,15 +62,18 @@ const ChatDetailPageView = ({
   const hasPastChats = pastChats.length > 0;
 
   return (
-    <div className="h-full w-full flex flex-col justify-between">
-      {/* 과거 채팅이 있을 경우 상단 네비게이션 노출 */}
+    <section className="h-full w-full flex flex-col justify-between">
+      {/* 상단 네비게이션 영역 */}
       <ChatNavigation isChatHistories={hasPastChats} />
 
-      {/* 채팅 영역: 자동 스크롤 대상 영역 */}
-      <div
+      {/* 메인 채팅 콘텐츠 영역 */}
+      <section
         id="chatwrap"
         ref={containerRef}
         className="flex-1 overflow-y-auto p-4"
+        role="log"
+        aria-live="polite"
+        aria-label="채팅 대화 내용"
       >
         <div className="max-w-[640px] m-auto mb-[60px]">
           {/* 응답 중간 유저 액션 UI */}
@@ -78,27 +81,33 @@ const ChatDetailPageView = ({
 
           {/* 과거 채팅 목록 렌더링 */}
           {hasPastChats && (
-            <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
+            <section aria-label="이전 대화 기록">
+              <PastChatsListview chatList={pastChats} onSearch={handleSearch} />
+            </section>
           )}
 
           {/* 실시간 질문 스트리밍 UI */}
           {newQuestion && (
-            <CurrentChatView
-              className={pastChats.length === 0 ? "" : "mt-10"} // 과거 채팅이 있으면 간격 추가
-              question={newQuestion}
-              streamStages={streamStages}
-              streamText={streamText}
-              isFinished={isFinished}
-              references={references}
-              recommendedQuestions={recommendedQuestions}
-              onSearch={handleSearch}
-            />
+            <article
+              className={pastChats.length === 0 ? "" : "mt-10"}
+              aria-label="현재 진행 중인 대화"
+            >
+              <CurrentChatView
+                question={newQuestion}
+                streamStages={streamStages}
+                streamText={streamText}
+                isFinished={isFinished}
+                references={references}
+                recommendedQuestions={recommendedQuestions}
+                onSearch={handleSearch}
+              />
+            </article>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* 하단 고정 영역 (버튼 + 검색창) */}
-      <div className="relative">
+      {/* 하단 입력 영역 */}
+      <section className="relative" role="contentinfo">
         <ChatActionButton
           isStreaming={isStreaming}
           isUserScrolling={isUserScrolling}
@@ -116,13 +125,15 @@ const ChatDetailPageView = ({
         />
 
         {/* 검색 입력창 */}
-        <SearchBar
-          className="md:mx-auto md:max-w-[640px] md:px-0 max-w-full px-2"
-          placeholder={projectInfo?.prompt.input}
-          onSearch={handleSearch}
-        />
-      </div>
-    </div>
+        <div role="search" aria-label="새 질문 입력">
+          <SearchBar
+            className="md:mx-auto md:max-w-[640px] md:px-0 max-w-full px-2"
+            placeholder={projectInfo?.prompt.input}
+            onSearch={handleSearch}
+          />
+        </div>
+      </section>
+    </section>
   );
 };
 

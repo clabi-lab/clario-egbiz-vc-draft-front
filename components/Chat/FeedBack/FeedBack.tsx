@@ -10,6 +10,7 @@ import ChatVoiceIcon from "@/public/icons/ChatVoiceIcon";
 import ChatDislikeIcon from "@/public/icons/ChatDislikeIcon";
 import ChatlikeIcon from "@/public/icons/ChatlikeIcon";
 import ChatCopyIcon from "@/public/icons/ChatCopyIcon";
+import ChatMemoIcon from "@/public/icons/ChatMemoIcon";
 import { StopCircleOutlined } from "@mui/icons-material";
 
 interface FeedBackProps {
@@ -21,9 +22,9 @@ interface FeedBackProps {
 const FeedBack = ({ streamText, chatId, disabled = false }: FeedBackProps) => {
   const openAlert = useAlertStore((state) => state.openAlert);
 
-  const [activeButton, setActiveButton] = useState<"like" | "dislike" | null>(
-    null
-  );
+  const [activeButton, setActiveButton] = useState<
+    "like" | "dislike" | "memo" | null
+  >(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -40,6 +41,11 @@ const FeedBack = ({ streamText, chatId, disabled = false }: FeedBackProps) => {
 
   const handleDislikeClick = () => {
     setActiveButton("dislike");
+    setIsDialogOpen(true);
+  };
+
+  const handleMemoClick = () => {
+    setActiveButton("memo");
     setIsDialogOpen(true);
   };
 
@@ -101,6 +107,10 @@ const FeedBack = ({ streamText, chatId, disabled = false }: FeedBackProps) => {
             isDialogOpen && activeButton === "dislike" ? "text-point" : ""
           }
         />
+      </IconButton>
+
+      <IconButton sx={{ padding: "2px" }} onClick={handleMemoClick}>
+        <ChatMemoIcon />
       </IconButton>
 
       <IconButton

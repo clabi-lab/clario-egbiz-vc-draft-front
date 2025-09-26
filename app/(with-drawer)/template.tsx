@@ -26,7 +26,7 @@ const Template = ({ children }: TemplateProps) => {
         transition: "all 0.225s ease-in-out",
       }}
     >
-      <div className="flex flex-col h-full bg-chat-bg relative">
+      <div className="flex flex-col h-full bg-chat-bg relative overflow-hidden">
         {/* 모바일일 때 Drawer가 열려있으면 블러 배경 */}
         {isMobile && isDrawerOpen && (
           <div

@@ -3,7 +3,8 @@ import posthog from "posthog-js";
 export const initPostHog = () => {
   if (typeof window === "undefined") return;
 
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     capture_pageview: true,

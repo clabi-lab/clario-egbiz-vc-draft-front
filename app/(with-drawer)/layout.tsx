@@ -8,7 +8,7 @@ const ChatLayout = ({
   return (
     <>
       <PersistentDrawer></PersistentDrawer>
-      {children}
+      <main>{children}</main>
     </>
   );
 };

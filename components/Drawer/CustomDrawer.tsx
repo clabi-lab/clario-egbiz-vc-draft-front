@@ -99,13 +99,16 @@ const CustomDrawer = () => {
   };
 
   return (
-    <>
+    <aside role="complementary">
       {/* 상단 좌측 toggle button (Drawer 열기용) */}
       <div className="px-2 pt-1 fixed z-100">
         <IconButton
           onClick={() => {
             setOpen(true);
           }}
+          aria-label="네비게이션 메뉴 열기"
+          aria-expanded={isOpen}
+          aria-controls="main-navigation"
         >
           <MenuIcon></MenuIcon>
         </IconButton>
@@ -123,6 +126,8 @@ const CustomDrawer = () => {
         variant="persistent"
         anchor="left"
         open={isOpen}
+        role="navigation"
+        aria-label="메인 네비게이션"
       >
         {/* Drawer 상단 영역: 메뉴 아이콘 + 로고 */}
         <div className="p-2 bg-drawer-bg text-drawer-text flex items-center">
@@ -131,16 +136,20 @@ const CustomDrawer = () => {
             onClick={() => {
               setOpen(false);
             }}
+            aria-label="네비게이션 메뉴 닫기"
+            aria-expanded={isOpen}
           >
             <MenuIcon></MenuIcon>
           </IconButton>
           {drawerConfig.showLogo && projectInfo?.greeting?.light_logo_url && (
-            <Link href="/" className="h-[27px] ml-6">
+            <Link href="/" className="h-[27px] ml-6" aria-label="홈으로 이동">
               <Image
                 src={projectInfo.greeting.light_logo_url}
-                alt="logo"
+                alt="서비스 로고"
                 width={60}
-                height={10}
+                height={30}
+                style={{ width: 60, height: 30 }}
+                priority
                 className="h-full w-auto"
               />
             </Link>
@@ -178,7 +187,7 @@ const CustomDrawer = () => {
           })}
         </List>
       </Drawer>
-    </>
+    </aside>
   );
 };
 

@@ -14,44 +14,61 @@ const SelectedItemsView = ({
   selectItems,
 }: SelectedItemsViewProps) => {
   return (
-    <div className={clsx(className, "flex items-center")}>
-      <span className="shrink-0 whitespace-nowrap">선택한 항목 : </span>
-      <div className="flex items-center gap-1 ml-2 flex-wrap">
+    <section
+      className={clsx(className, "flex items-center")}
+      role="region"
+      aria-labelledby="selected-items-title"
+    >
+      <h4 id="selected-items-title" className="shrink-0 whitespace-nowrap">
+        선택한 항목 :
+      </h4>
+      <ul
+        className="flex items-center gap-1 ml-2 flex-wrap"
+        role="list"
+        aria-label="선택된 항목 목록"
+      >
         {selectItems.map((item, index) =>
           index > VIEWCOUNT - 1 ? null : (
+            <li key={`${item}_${index}`}>
+              <Chip
+                label={item}
+                sx={{
+                  backgroundColor: "var(--tag-bg)",
+                  color: "var(--tag-text)",
+                  px: 0.75,
+                  py: 0.5,
+                  "& .MuiChip-label": {
+                    display: "block",
+                    whiteSpace: "nowrap",
+                  },
+                }}
+                aria-label={`선택된 항목: ${item}`}
+              />
+            </li>
+          )
+        )}
+        {selectItems.length > VIEWCOUNT && (
+          <li>
             <Chip
-              key={`${item}_${index}`}
-              label={item}
+              label={`외 ${selectItems.length - VIEWCOUNT}개`}
               sx={{
-                backgroundColor: "var(--tag-bg)",
+                backgroundColor: "#7EBAEB",
                 color: "var(--tag-text)",
                 px: 0.75,
                 py: 0.5,
                 "& .MuiChip-label": {
                   display: "block",
-                  whiteSpace: "nowrap",
+                  whiteSpace: "normal",
                 },
               }}
+              aria-label={`외 ${
+                selectItems.length - VIEWCOUNT
+              }개 항목이 더 있습니다`}
             />
-          )
+          </li>
         )}
-        {selectItems.length > VIEWCOUNT && (
-          <Chip
-            label={`외 ${selectItems.length - VIEWCOUNT}개`}
-            sx={{
-              backgroundColor: "#7EBAEB",
-              color: "var(--tag-text)",
-              px: 0.75,
-              py: 0.5,
-              "& .MuiChip-label": {
-                display: "block",
-                whiteSpace: "normal",
-              },
-            }}
-          />
-        )}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 };
 

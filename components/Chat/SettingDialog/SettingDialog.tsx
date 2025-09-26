@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 
 import MenuPageView from "./MenuPageView";
 import SavedChatTableView from "./SavedChatTableView";
-import SatisfactionChatTableView from "./SatisfactionChatTableView";
+import MemoChatTableView from "./MemoChatTableView";
 import ShareChatTableView from "./ShareChatTableView";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -55,7 +55,7 @@ const SettingDialog = ({ isOpen, onClose }: ShareDialogProps) => {
       case PageType.SAVE:
         return <SavedChatTableView />;
       case PageType.MEMO:
-        return <SatisfactionChatTableView />;
+        return <MemoChatTableView />;
       case PageType.SHARE:
         return <ShareChatTableView />;
       default:

@@ -13,12 +13,17 @@ const ExampleQuestions = ({ className, onSearch }: ExampleQuestionsProps) => {
   if (!exampleQuestions || exampleQuestions.length === 0) return null;
 
   return (
-    <div
+    <section
       className={mergeClassNames(
         className,
         "flex flex-wrap md:inline-flex w-full justify-center"
       )}
+      role="region"
+      aria-labelledby="example-questions-title"
     >
+      <h3 id="example-questions-title" className="sr-only">
+        예시 질문 목록
+      </h3>
       {exampleQuestions.map((question) => {
         return (
           <div
@@ -32,7 +37,7 @@ const ExampleQuestions = ({ className, onSearch }: ExampleQuestionsProps) => {
           </div>
         );
       })}
-    </div>
+    </section>
   );
 };
 
