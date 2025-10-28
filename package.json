@@ -1,6 +1,6 @@
 {
   "name": "kea-front",
-  "version": "0.0.51",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 8080",
