@@ -123,7 +123,6 @@ const SearchFilter = () => {
         source: "filters",
       });
 
-      console.log(filters);
       setSelectedFilters(filters);
     }
   };
