@@ -204,12 +204,6 @@ export const useAiStreaming = (
     const data: ChatResponse = await saveChat(chatData);
     setChatId(data.chat_id);
 
-    await saveChatGroup({
-      chatGroupId: chatGroupId,
-      title: question,
-      createdDate: new Date().toISOString(),
-    });
-
     // 새 히스토리인 경우 저장
     const hasHistory = await histories.some(
       (history) => history.id === chatGroupId
@@ -219,6 +213,12 @@ export const useAiStreaming = (
       await addHistory({
         id: chatGroupId,
         title: question,
+      });
+
+      await saveChatGroup({
+        chatGroupId: chatGroupId,
+        title: question,
+        createdDate: new Date().toISOString(),
       });
     }
 

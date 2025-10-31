@@ -46,16 +46,22 @@ const ChatDetailPageView = ({
   } = useChatPageController(groupId, initialChatGroupData);
 
   // 자동 스크롤 및 스크롤 위치 감지를 위한 커스텀 훅
+  const hasInitialChats = initialChatGroupData?.chats?.length > 0;
   const {
     containerRef,
     isUserScrolling,
     showScrollButton,
     scrollToBottom,
     scrollToTop,
-  } = useAutoScroll<HTMLDivElement>();
+  } = useAutoScroll<HTMLDivElement>(isStreaming, hasInitialChats);
 
   // 콘텐츠 변화 시 자동 스크롤
   useEffect(() => {
+    // 초기 채팅 데이터가 있는 경우 자동 스크롤 로직 건너뛰기
+    if (hasInitialChats && !newQuestion && !isStreaming) {
+      return;
+    }
+
     if (!isUserScrolling) {
       // recommendedQuestions까지 DOM에 그려질 시간을 살짝 기다렸다가 스크롤
       const timeout = setTimeout(() => {
@@ -64,7 +70,16 @@ const ChatDetailPageView = ({
 
       return () => clearTimeout(timeout);
     }
-  }, [streamStages, newQuestion, streamText, references, recommendedQuestions]);
+  }, [
+    streamStages,
+    newQuestion,
+    streamText,
+    references,
+    recommendedQuestions,
+    scrollToBottom,
+    hasInitialChats,
+    isStreaming,
+  ]);
 
   const hasPastChats = pastChats.length > 0;
 
