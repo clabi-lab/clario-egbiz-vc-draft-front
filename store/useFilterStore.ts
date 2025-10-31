@@ -11,8 +11,12 @@ export const useFilterStore = create<FilterState>((set) => ({
   selectedFilters: [],
   filterTags: [],
   setSelectedFilters: (filters) => {
+    // 가장 큰 depth를 동적으로 찾기
+    const maxDepth =
+      filters.length > 0 ? Math.max(...filters.map((f) => f.depth)) : 0;
+
     const tags = filters
-      .filter((f) => f.depth === 3 && f.division)
+      .filter((f) => f.depth === maxDepth && f.division)
       .map((f) => f.division);
 
     set({

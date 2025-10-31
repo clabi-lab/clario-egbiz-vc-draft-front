@@ -122,6 +122,8 @@ const SearchFilter = () => {
         keyword: allKeywords,
         source: "filters",
       });
+
+      console.log(filters);
       setSelectedFilters(filters);
     }
   };
