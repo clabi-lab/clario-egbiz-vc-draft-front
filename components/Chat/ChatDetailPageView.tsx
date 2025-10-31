@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useChatPageController } from "@/hooks/useChatPageController";
+import { useProjectStore } from "@/store/useProjectStore";
 
 import SearchBar from "@/components/Common/SearchBar";
 import UserActionForm from "@/components/Chat/UserActionForm";
@@ -11,7 +14,6 @@ import CurrentChatView from "@/components/Chat/CurrentChatView";
 import ChatNavigation from "@/components/Chat/ChatNavigation";
 import ChatActionButton from "@/components/Chat/ChatActionButton";
 import { SavedChats } from "@/types/Chat";
-import { useProjectStore } from "@/store/useProjectStore";
 
 interface ChatDetailPageViewProps {
   initialChatGroupData: SavedChats;
@@ -23,6 +25,11 @@ const ChatDetailPageView = ({
   groupId,
 }: ChatDetailPageViewProps) => {
   const projectInfo = useProjectStore((state) => state.projectInfo);
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh(); // 파라미터 바뀔 때마다 서버 새로고침
+  }, [groupId]);
 
   // 채팅 그룹(chatGroupId)에 대한 상태와 로직을 제공하는 커스텀 훅
   const {
