@@ -10,6 +10,7 @@ import { ListItemIcon } from "@mui/material";
 import { MoreHoriz as MoreIcon } from "@mui/icons-material";
 
 import type { ChatHistoryItem } from "@/types/Chat";
+import { useRouter } from "next/navigation";
 
 const CONSTANTS = {
   MAX_TITLE_WIDTH: 200,
@@ -59,11 +60,20 @@ const ButtonItem = ({
   const setDrawerOpen = useDrawerStore((state) => state.setOpen);
   const isMobile = useIsMobile();
   const selectedId = useChatHistoryStore((state) => state.selectedId);
+  const encodedId = base64Encode(JSON.stringify(item.id));
+  const router = useRouter();
 
   const handleLinkClick = () => {
     if (isMobile) {
       setDrawerOpen(false);
     }
+  };
+
+  const handleClick = () => {
+    // 이동 직후 서버 데이터 새로고침
+    setTimeout(() => {
+      router.refresh();
+    }, 0);
   };
 
   return (
@@ -74,7 +84,8 @@ const ButtonItem = ({
       selected={selectedId === item.id}
     >
       <Link
-        href={`/chat/${base64Encode(JSON.stringify(item.id))}`}
+        href={`/chat/${encodedId}`}
+        onClick={handleClick}
         target="_self"
         className={`w-[calc(100%-32px)] flex items-center`}
         passHref

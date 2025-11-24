@@ -6,20 +6,30 @@ import { useChatScrollStore } from "@/store/useChatScrollStore";
 import {
   Collapse,
   Step,
-  StepConnector,
   StepLabel,
   Stepper,
   styled,
-  stepConnectorClasses,
   StepIconProps,
+  StepContent,
 } from "@mui/material";
 import { Check } from "@mui/icons-material";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 
 import { StreamStage } from "@/types/Stream";
 
-import "./StreamStagesView.css";
+// 상수 정의
+const THEME_COLORS = {
+  primary: "#005CA4",
+  primaryDark: "#004785",
+  secondary: "#b0c2d7",
+  disabled: "#bbb",
+} as const;
 
+const ICON_SIZE = 14;
+
+/**
+ * StreamStagesView 컴포넌트의 Props 인터페이스
+ */
 interface StreamStagesViewProps {
   question: string;
   streamStages: StreamStage[];
@@ -28,59 +38,38 @@ interface StreamStagesViewProps {
   defaultOpen?: boolean;
 }
 
-const Connector = styled(StepConnector)(() => ({
-  [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    padding: 0,
-    backgroundColor: "#000",
-  },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: "#bbbbbb",
-    },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: "#bbbbbb",
-    },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
-    borderColor: "#bbbbbb",
-    borderRadius: 1,
-    margin: "-5px 0 -5px -2px",
-  },
-}));
-
 const StepIconRoot = styled("div")<{ ownerState: { active?: boolean } }>(
   () => ({
     display: "flex",
     alignItems: "center",
     "& .completedIcon": {
-      width: 8,
-      height: 8,
+      width: ICON_SIZE,
+      height: ICON_SIZE,
       borderRadius: "50%",
       backgroundColor: "currentColor",
-      color: "#bbbbbb",
+      color: THEME_COLORS.disabled,
     },
     "& .circleIcon": {
-      width: 8,
-      height: 8,
+      width: ICON_SIZE,
+      height: ICON_SIZE,
       borderRadius: "50%",
       backgroundColor: "currentColor",
-      keyframes: {
-        blink: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0" },
-        },
+      "&.animate-blink": {
+        animation: `blink 2s ease-in-out infinite`,
       },
-      animation: {
-        blink: "blink 1s step-start infinite",
+      "@keyframes blink": {
+        "0%": { color: THEME_COLORS.primaryDark },
+        "35%": { color: THEME_COLORS.secondary },
+        "50%": { color: THEME_COLORS.disabled },
+        "65%": { color: THEME_COLORS.secondary },
+        "100%": { color: THEME_COLORS.primaryDark },
       },
     },
     variants: [
       {
         props: ({ ownerState }) => ownerState.active,
         style: {
-          color: "#005CA4",
+          color: THEME_COLORS.primary,
         },
       },
     ],
@@ -90,7 +79,7 @@ const StepIconRoot = styled("div")<{ ownerState: { active?: boolean } }>(
 const StreamStagesView = ({
   question,
   streamStages,
-  isFinished,
+  isFinished = false,
   className,
   defaultOpen = true,
 }: StreamStagesViewProps) => {
@@ -100,22 +89,28 @@ const StreamStagesView = ({
     (state) => state.setIsProcessesDropdownOpen
   );
 
+  // 현재 활성 단계 계산 (완료되면 모든 단계, 아니면 마지막 단계까지)
   const activeStep = isFinished ? streamStages.length : streamStages.length - 1;
 
-  const handleDropdownOpen = () => {
-    setIsOpen(!isOpen);
-    setIsProcessesDropdownOpen(!isOpen);
+  const handleToggleDropdown = () => {
+    const newOpenState = !isOpen;
+    setIsOpen(newOpenState);
+    setIsProcessesDropdownOpen(newOpenState);
   };
 
-  const StepIcon = (props: StepIconProps) => {
+  const renderStepIcon = (props: StepIconProps) => {
     const { active, completed, className } = props;
+    const isCompleted = completed || isFinished;
+    const shouldAnimate = active && !isCompleted;
 
     return (
       <StepIconRoot ownerState={{ active }} className={className}>
-        {completed || isFinished ? (
+        {isCompleted ? (
           <Check className="completedIcon" />
         ) : (
-          <div className={`circleIcon ${active ? "animate-pulse" : ""}`} />
+          <div
+            className={`circleIcon ${shouldAnimate ? "animate-blink" : ""}`}
+          />
         )}
       </StepIconRoot>
     );
@@ -123,45 +118,57 @@ const StreamStagesView = ({
 
   return (
     <div className={clsx(className)}>
-      {question && (
-        <div
-          className={`flex items-start justify-between ml-[-3px] cursor-pointer  ${
-            isOpen ? "mb-2" : ""
-          }`}
-          onClick={() => handleDropdownOpen()}
-        >
-          <p className="text-sm">
-            💡 {question}에 대해 더 자세한 정보를 찾아보겠습니다.
-          </p>
-          {isFinished && (
-            <ExpandMoreOutlinedIcon
-              sx={{
-                transition: "transform 0.3s ease",
-                transform: isOpen ? "none" : "rotate(180deg)",
-                ml: 0.75,
-                color: "#bbb",
-              }}
-            />
-          )}
-        </div>
-      )}
+      <div
+        className={`flex items-start justify-between ml-[-3px] cursor-pointer ${
+          isOpen ? "mb-2" : ""
+        }`}
+        onClick={handleToggleDropdown}
+      >
+        <p className="text-sm">
+          {question
+            ? `💡 ${question}에 대해 더 자세한 정보를 찾아보겠습니다.`
+            : "정보를 찾아보겠습니다."}
+        </p>
+        {isFinished && (
+          <ExpandMoreOutlinedIcon
+            sx={{
+              transition: `transform 2s ease`,
+              transform: isOpen ? "none" : "rotate(180deg)",
+              ml: 0.75,
+              color: THEME_COLORS.disabled,
+            }}
+          />
+        )}
+      </div>
       <Collapse in={isOpen} timeout="auto" unmountOnExit>
         <Stepper
           activeStep={activeStep}
           orientation="vertical"
-          connector={<Connector />}
+          sx={{
+            "& .MuiStepConnector-root": {
+              marginLeft: "6px",
+              height: "3px",
+            },
+          }}
         >
-          {streamStages.map((stage, index) => {
-            return (
-              <Step key={`streamStage_${index}`}>
-                <StepLabel StepIconComponent={StepIcon}>{stage.text}</StepLabel>
-              </Step>
-            );
-          })}
+          {streamStages.map((stage, index) => (
+            <Step key={`streamStage_${index}`} expanded={true}>
+              <StepLabel StepIconComponent={renderStepIcon} />
+              <StepContent
+                sx={{
+                  display: "block",
+                  fontSize: "13px",
+                  marginTop: "-23px",
+                  marginLeft: "6px",
+                }}
+              >
+                {stage.text}
+              </StepContent>
+            </Step>
+          ))}
         </Stepper>
       </Collapse>
     </div>
   );
 };
-
 export default StreamStagesView;

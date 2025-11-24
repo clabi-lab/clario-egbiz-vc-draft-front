@@ -4,6 +4,7 @@ import { base64Decode } from "@/utils/encoding";
 
 // 페이지 캐시 완전 비활성화
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 export const dynamicParams = true;
 
 interface ChatDetailPageProps {

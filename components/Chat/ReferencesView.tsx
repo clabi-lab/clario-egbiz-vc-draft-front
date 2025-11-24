@@ -19,10 +19,14 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
   const [selectedReference, setSelectedReference] = useState<Reference | null>(
     null
   );
+  const [showAll, setShowAll] = useState(false);
 
   const handleCloseDialog = () => {
     setSelectedReference(null);
   };
+
+  const displayedReferences = showAll ? references : references.slice(0, 5);
+  const hasMore = references.length > 5;
 
   return (
     <section
@@ -34,7 +38,7 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
         참고 자료
       </h4>
       <ul>
-        {references.map((reference, index) => (
+        {displayedReferences.map((reference, index) => (
           <li
             key={`${reference.index_code}_${index}`}
             className="flex items-start justify-between"
@@ -45,7 +49,7 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
               }`}
             >
               <div className="shrink-0">
-                <span className="whitespace-normal">🔍 출처 :</span>
+                <span className="whitespace-normal">🔍 참고 문서 :</span>
               </div>
               <span className="ml-1">
                 {reference.index_code}{" "}
@@ -85,6 +89,22 @@ const ReferencesView = ({ references, className }: ReferencesViewProps) => {
           </li>
         ))}
       </ul>
+
+      {hasMore && (
+        <div className="mt-2 text-center">
+          <Button
+            onClick={() => setShowAll(!showAll)}
+            sx={{
+              py: 0.5,
+              px: 2,
+              fontSize: "0.875rem",
+              textTransform: "none",
+            }}
+          >
+            {showAll ? "접기" : `더보기 (${references.length - 5}개)`}
+          </Button>
+        </div>
+      )}
 
       {selectedReference && (
         <ReferencesDetailDialog

@@ -104,11 +104,21 @@ const ReferencesDetailDialog = ({
     key: keyof DocumentReference
   ) => {
     if (key === "context" && reference.type === "image") {
+      console.log(reference.host);
       return (
         reference.host &&
         reference.host.length > 0 &&
-        reference.host.map((host: string, idx: number) => (
-          <Image key={idx} src={host} alt="image" width={500} height={500} />
+        (Array.isArray(reference.host) ? (
+          reference.host?.map((host: string, idx: number) => (
+            <Image key={idx} src={host} alt="image" width={500} height={500} />
+          ))
+        ) : (
+          <Image
+            src={reference.host as string}
+            alt="image"
+            width={500}
+            height={500}
+          />
         ))
       );
     }

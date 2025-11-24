@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useChatPageController } from "@/hooks/useChatPageController";
@@ -25,11 +24,6 @@ const ChatDetailPageView = ({
   groupId,
 }: ChatDetailPageViewProps) => {
   const projectInfo = useProjectStore((state) => state.projectInfo);
-  const router = useRouter();
-
-  useEffect(() => {
-    router.refresh(); // 파라미터 바뀔 때마다 서버 새로고침
-  }, [groupId]);
 
   // 채팅 그룹(chatGroupId)에 대한 상태와 로직을 제공하는 커스텀 훅
   const {

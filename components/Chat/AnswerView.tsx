@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
@@ -52,8 +53,11 @@ const AnswerView = ({ streamText, className }: AnswerViewProps) => {
       aria-live="polite"
       aria-busy={streamText.length > visibleText.length}
     >
-      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-        {visibleText}
+      <ReactMarkdown
+        remarkPlugins={[remarkMath, remarkGfm]}
+        rehypePlugins={[rehypeKatex]}
+      >
+        {streamText}
       </ReactMarkdown>
     </section>
   );
