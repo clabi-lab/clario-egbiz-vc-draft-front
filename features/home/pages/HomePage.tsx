@@ -26,7 +26,20 @@ const HomePage = () => {
   const { openCustomDialog } = useDialogStore();
 
   const [totalCount, setTotalCount] = useState(0);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      id: "1",
+      title: "프로젝트 1",
+      createdAt: "2025-01-01",
+      updatedAt: "2025-01-01",
+    },
+    {
+      id: "2",
+      title: "프로젝트 2",
+      createdAt: "2025-01-01",
+      updatedAt: "2025-01-01",
+    },
+  ]);
 
   const handleOpenDialog = () => {
     openCustomDialog(CreateProjectDialog, {
@@ -50,8 +63,11 @@ const HomePage = () => {
     <section>
       <nav className="p-4 font-bold text-xl">소개 자료 관리</nav>
       <section className="border-b border-t border-gray-200 py-4">
-        <Container maxWidth="lg" className="flex items-center gap-4">
-          <div className="flex-1">
+        <Container
+          maxWidth="lg"
+          className="flex items-center gap-4 sm:flex-row flex-col"
+        >
+          <div className="flex-1 w-full">
             <TextField
               className="w-full"
               variant="filled"
@@ -89,6 +105,7 @@ const HomePage = () => {
           </div>
           <p className="text-sm text-gray-500">총 {totalCount}개의 프로젝트</p>
           <Button
+            className="w-full sm:w-auto"
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
@@ -99,36 +116,36 @@ const HomePage = () => {
         </Container>
       </section>
 
-      <Container
-        maxWidth="lg"
-        className="pt-6 bg-slate-50 h-[calc(100svh-134px)]"
-      >
-        {projects.length > 0 ? (
-          <div className="flex gap-6 w-full">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                refetchProjects={fetchProjectsData}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center mt-[150px]">
-            <FileIcon className="text-gray-400" sx={{ fontSize: 40 }} />
-            <p className="mt-2">아직 생성된 프로젝트가 없습니다. </p>
-            <p className="text-gray-400 mb-4">새 초안을 만들어보세요. </p>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleOpenDialog}
-            >
-              새 초안 만들기
-            </Button>
-          </div>
-        )}
-      </Container>
+      <section className="bg-slate-50 h-[calc(100svh-134px)]">
+        <Container maxWidth="lg" className="pt-6">
+          {projects.length > 0 ? (
+            <div className="flex gap-6 w-full flex-col sm:flex-row">
+              {projects.map((project) => (
+                <ProjectCard
+                  className="w-full sm:w-1/3"
+                  key={project.id}
+                  project={project}
+                  refetchProjects={fetchProjectsData}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center mt-[150px]">
+              <FileIcon className="text-gray-400" sx={{ fontSize: 40 }} />
+              <p className="mt-2">아직 생성된 프로젝트가 없습니다. </p>
+              <p className="text-gray-400 mb-4">새 초안을 만들어보세요. </p>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleOpenDialog}
+              >
+                새 초안 만들기
+              </Button>
+            </div>
+          )}
+        </Container>
+      </section>
     </section>
   );
 };

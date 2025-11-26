@@ -20,11 +20,16 @@ interface Project {
 }
 
 interface ProjectCardProps {
+  className?: string;
   project: Project;
   refetchProjects: () => void;
 }
 
-const ProjectCard = ({ project, refetchProjects }: ProjectCardProps) => {
+const ProjectCard = ({
+  className,
+  project,
+  refetchProjects,
+}: ProjectCardProps) => {
   const router = useRouter();
   const { openAlert } = useAlertStore();
   const { openDialog } = useDialogStore();
@@ -68,7 +73,7 @@ const ProjectCard = ({ project, refetchProjects }: ProjectCardProps) => {
 
   return (
     <Card
-      className="w-1/3 p-6 border border-gray-200 cursor-pointer group"
+      className={`p-6 border border-gray-200 cursor-pointer group ${className}`}
       sx={{
         boxShadow: "none",
         borderRadius: "16px",
