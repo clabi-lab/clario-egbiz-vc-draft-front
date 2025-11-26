@@ -1,7 +1,7 @@
 "use client";
 
-import { useDrawerStore } from "@/store/useDrawerStore";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useDrawerStore } from "@/shared/store/useDrawerStore";
+import { useIsMobile } from "@/shared/hooks/useIsMobile";
 import { drawerConfig } from "../../config/drawer.config";
 
 type TemplateProps = {

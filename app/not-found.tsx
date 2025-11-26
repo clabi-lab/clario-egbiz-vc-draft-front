@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import Link from "next/link";
 
-import { useDrawerStore } from "../store/useDrawerStore";
+import { useDrawerStore } from "../shared/store/useDrawerStore";
 
 const NotFound = () => {
   const setOpen = useDrawerStore((state) => state.setOpen);

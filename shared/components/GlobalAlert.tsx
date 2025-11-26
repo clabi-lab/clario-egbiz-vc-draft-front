@@ -1,6 +1,6 @@
 "use client";
 
-import { useAlertStore } from "@/store/useAlertStore";
+import { useAlertStore } from "@/shared/store/useAlertStore";
 
 import { Snackbar, Alert } from "@mui/material";
 

@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 
-import { Providers } from "./providers";
+import { Providers } from "./providers/providers";
 
-import AppInitializer from "@/components/AppInitializer";
-import { GlobalAlert } from "@/components/common/GlobalAlert";
-import ThemeProviderClient from "@/components/ThemeProviderClient";
+import AppInitializer from "@/shared/components/AppInitializer";
+import { GlobalAlert } from "@/shared/components/GlobalAlert";
+import GlobalDialog from "@/shared/components/GlobalDialog";
+import ThemeProviderClient from "@/shared/components/ThemeProviderClient";
 
 import "./globals.css";
 
@@ -45,6 +46,7 @@ const RootLayout = async ({
           <AppInitializer projectinfo={null} />
           <ThemeProviderClient>
             <GlobalAlert />
+            <GlobalDialog />
             {children}
           </ThemeProviderClient>
         </Providers>
