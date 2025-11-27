@@ -56,18 +56,18 @@ const CommonDialog = ({
           paddingBottom: "16px",
         }}
       >
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
           {title}
         </Typography>
         {showCloseButton && (
           <IconButton
-            aria-label="close"
+            aria-label="대화상자 닫기"
             onClick={onClose}
             sx={{
               color: (theme) => theme.palette.grey[500],
             }}
           >
-            <CloseIcon />
+            <CloseIcon aria-hidden="true" />
           </IconButton>
         )}
       </DialogTitle>
@@ -80,7 +80,11 @@ const CommonDialog = ({
 
       <DialogActions sx={{ padding: "0 24px 24px 24px", gap: "8px" }}>
         {showCancelButton && (
-          <Button onClick={onClose} color="inherit">
+          <Button
+            onClick={onClose}
+            color="inherit"
+            aria-label={`${cancelButtonText} - 대화상자를 닫습니다`}
+          >
             {cancelButtonText}
           </Button>
         )}
@@ -89,6 +93,7 @@ const CommonDialog = ({
             onClick={handleConfirm}
             variant="contained"
             color={confirmButtonColor}
+            aria-label={`${confirmButtonText} - 작업을 확인하고 실행합니다`}
           >
             {confirmButtonText}
           </Button>

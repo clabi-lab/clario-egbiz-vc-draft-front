@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Dialog as MuiDialog,
   DialogTitle,
@@ -24,7 +23,7 @@ interface DialogProps {
   disableBackdropClick?: boolean;
 }
 
-const Dialog: React.FC<DialogProps> = ({
+const Dialog = ({
   open,
   onClose,
   title,
@@ -35,7 +34,7 @@ const Dialog: React.FC<DialogProps> = ({
   fullWidth = true,
   showCloseButton = true,
   disableBackdropClick = false,
-}) => {
+}: DialogProps) => {
   return (
     <MuiDialog
       open={open}
@@ -58,22 +57,24 @@ const Dialog: React.FC<DialogProps> = ({
           }}
         >
           <div>
-            <Typography variant="h6" component="div">
+            <Typography variant="h6" component="h2">
               {title}
             </Typography>
-            <Typography variant="body2" component="div" color="text.secondary">
-              {subtitle}
-            </Typography>
+            {subtitle && (
+              <Typography variant="body2" component="p" color="text.secondary">
+                {subtitle}
+              </Typography>
+            )}
           </div>
           {showCloseButton && (
             <IconButton
-              aria-label="close"
+              aria-label="대화상자 닫기"
               onClick={onClose}
               sx={{
                 color: (theme) => theme.palette.grey[500],
               }}
             >
-              <CloseIcon />
+              <CloseIcon aria-hidden="true" />
             </IconButton>
           )}
         </DialogTitle>

@@ -7,8 +7,9 @@ interface Project {
   updatedAt: string;
 }
 
-export const fetchProjects = async () => {
-  const response = await apiClient<{ data: Project[] }>("/projects");
+export const fetchProjects = async (searchQuery?: string) => {
+  const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : "";
+  const response = await apiClient<{ data: Project[] }>(`/projects${params}`);
   return response;
 };
 
