@@ -1,11 +1,5 @@
 import { apiClient } from "@/shared/services/apiClient";
-
-interface Project {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Project } from "../types";
 
 export const fetchProjects = async (searchQuery?: string) => {
   const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : "";

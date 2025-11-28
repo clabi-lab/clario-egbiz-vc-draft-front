@@ -11,13 +11,7 @@ import CopyIcon from "@mui/icons-material/ContentCopyOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 
 import { copyProject, deleteProject } from "../services/home";
-
-interface Project {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Project } from "../types";
 
 interface ProjectCardProps {
   className?: string;

@@ -3,23 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button, Container, TextField } from "@mui/material";
+import { Button, Container } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import FileIcon from "@mui/icons-material/DescriptionOutlined";
+import SearchIcon from "@mui/icons-material/Search";
 import ProjectCard from "../components/ProjectCard";
 import CreateProjectDialog from "../components/CreateProjectDialog";
-import SearchIcon from "@mui/icons-material/Search";
+import { CustomTextField } from "@/shared/components/CustomTextField";
 import { useDialogStore } from "@/shared/store/useDialogStore";
 
 import { fetchProjects } from "../services/home";
-
-interface Project {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Project } from "../types";
 
 const HomePage = () => {
   const router = useRouter();
@@ -76,7 +71,7 @@ const HomePage = () => {
           className="flex items-center gap-4 sm:flex-row flex-col"
         >
           <div className="flex-1 w-full">
-            <TextField
+            <CustomTextField
               className="w-full"
               variant="filled"
               size="small"
@@ -101,19 +96,6 @@ const HomePage = () => {
                       aria-hidden="true"
                     />
                   ),
-                },
-              }}
-              sx={{
-                "& .MuiFilledInput-root": {
-                  borderRadius: "8px",
-                  backgroundColor: "oklch(96.7% 0.003 264.542)",
-                  border: "none",
-                  "&:before": {
-                    borderBottom: "none",
-                  },
-                  "&:after": {
-                    borderBottom: "none",
-                  },
                 },
               }}
             />
