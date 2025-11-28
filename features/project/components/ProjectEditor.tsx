@@ -3,16 +3,13 @@
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button, IconButton, Card, CircularProgress } from "@mui/material";
-import { CompanyInfoCard, ChapterItem } from ".";
-import { CustomTextField } from "@/shared/components/CustomTextField";
+import { Button, IconButton, CircularProgress, Card } from "@mui/material";
+import { CompanyInfoCard, ProjectForm, ProjectPreview } from ".";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
 import { useDialogStore } from "@/shared/store/useDialogStore";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import SaveIcon from "@mui/icons-material/SaveOutlined";
-import AddIcon from "@mui/icons-material/AddOutlined";
 
 const ProjectEditor = () => {
   const router = useRouter();
@@ -108,61 +105,11 @@ const ProjectEditor = () => {
             <CompanyInfoCard companyFields={companyFields} className="mb-4" />
           )}
 
-          <form>
-            <fieldset>
-              <legend className="text-sm text-gray-500">문서 제목</legend>
-              <div className="flex items-center justify-between gap-2">
-                <CustomTextField
-                  className="w-full"
-                  size="small"
-                  variant="filled"
-                  hiddenLabel
-                  value={project?.title || ""}
-                  onChange={(e) => updateProjectTitle(e.target.value)}
-                  fullWidth
-                  inputProps={{
-                    "aria-label": "문서 제목",
-                  }}
-                />
-                <Button
-                  className="flex-shrink-0"
-                  variant="outlined"
-                  color="primary"
-                  size="small"
-                  startIcon={<SaveIcon aria-hidden="true" />}
-                  aria-label="문서 제목 저장"
-                >
-                  저장
-                </Button>
-              </div>
-            </fieldset>
-
-            <div className="flex items-center justify-between gap-2 mt-6">
-              <p>챕터 목록</p>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<AddIcon aria-hidden="true" />}
-                size="small"
-                onClick={handleAddChapter}
-                onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
-                  if (e.key === "Enter") {
-                    handleAddChapter();
-                  }
-                }}
-                aria-label="새 챕터 추가"
-              >
-                챕터 추가
-              </Button>
-            </div>
-            {project?.chapters?.map((chapter, index) => (
-              <ChapterItem
-                key={`${chapter.title}-${index}`}
-                chapter={chapter}
-                index={index}
-              />
-            ))}
-          </form>
+          <ProjectForm
+            project={project}
+            onUpdateTitle={updateProjectTitle}
+            onAddChapter={handleAddChapter}
+          />
         </div>
         <div className="flex-1 overflow-auto p-4 bg-slate-200">
           <Card
@@ -176,6 +123,7 @@ const ProjectEditor = () => {
             A4 용지 미리보기
             <p>실제 출력 시 모습을 미리 확인할 수 있습니다</p>
           </Card>
+          <ProjectPreview project={project} className="mt-4" />
         </div>
       </div>
     </section>
