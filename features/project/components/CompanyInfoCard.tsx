@@ -33,6 +33,8 @@ export const CompanyInfoCard = ({
         borderRadius: "16px",
         backgroundColor: "#eff4ff",
       }}
+      role="region"
+      aria-label="기업 정보"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -47,6 +49,7 @@ export const CompanyInfoCard = ({
         <IconButton
           onClick={toggleOpen}
           aria-label={isOpen ? "기업정보 접기" : "기업정보 펼치기"}
+          aria-expanded={isOpen}
           size="small"
         >
           {isOpen ? (

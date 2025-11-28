@@ -193,6 +193,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
           sx={{ cursor: "grab", "&:active": { cursor: "grabbing" } }}
           onMouseDown={() => setIsDraggable(true)}
           onMouseUp={() => setIsDraggable(false)}
+          aria-label="챕터 순서 변경"
         >
           <DragIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
         </IconButton>
@@ -211,6 +212,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             onChange={(e) => updateChapter(index, "title", e.target.value)}
             fullWidth
             disabled={isConfirmed}
+            inputProps={{
+              "aria-label": "챕터 제목",
+            }}
           />
         </div>
 
@@ -218,8 +222,13 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
           size="small"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="flex-shrink-0"
+          aria-label={isCollapsed ? "챕터 펼치기" : "챕터 접기"}
         >
-          {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          {isCollapsed ? (
+            <ExpandMoreIcon aria-hidden="true" />
+          ) : (
+            <ExpandLessIcon aria-hidden="true" />
+          )}
         </IconButton>
       </div>
 
@@ -236,6 +245,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               onChange={(e) => updateChapter(index, "content", e.target.value)}
               fullWidth
               disabled={isConfirmed}
+              inputProps={{
+                "aria-label": "확정된 본문",
+              }}
             />
           </fieldset>
 
@@ -255,6 +267,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               }
               fullWidth
               disabled={isGenerating || isConfirmed}
+              inputProps={{
+                "aria-label": "생성 초안",
+              }}
             />
           </fieldset>
 
@@ -273,6 +288,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={isGenerating || isConfirmed}
+              inputProps={{
+                "aria-label": "AI 생성 프롬프트",
+              }}
             />
           </fieldset>
 
@@ -284,10 +302,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               <Button
                 variant="outlined"
                 color="primary"
-                startIcon={<AutoIcon />}
+                startIcon={<AutoIcon aria-hidden="true" />}
                 size="small"
                 onClick={() => generateContent(aiPrompt)}
                 disabled={isGenerating || !aiPrompt.trim() || isConfirmed}
+                aria-label="AI로 초안 생성"
               >
                 {isGenerating ? "생성 중..." : "기본 생성"}
               </Button>
@@ -295,10 +314,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               <Button
                 variant="outlined"
                 color="primary"
-                startIcon={<ReplayIcon />}
+                startIcon={<ReplayIcon aria-hidden="true" />}
                 size="small"
                 onClick={() => generateContent(aiPrompt)}
                 disabled={isGenerating || !aiPrompt.trim() || isConfirmed}
+                aria-label="AI 초안 재생성"
               >
                 재생성
               </Button>
@@ -306,10 +326,13 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               <Button
                 variant="outlined"
                 color="primary"
-                startIcon={<CheckIcon />}
+                startIcon={<CheckIcon aria-hidden="true" />}
                 size="small"
                 onClick={handleToggleConfirm}
                 disabled={!chapter.draftContent || isGenerating}
+                aria-label={
+                  isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
+                }
               >
                 {isConfirmed ? "확정 해제" : "확정"}
               </Button>
@@ -317,10 +340,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
 
             <Button
               color="error"
-              startIcon={<SaveIcon />}
+              startIcon={<SaveIcon aria-hidden="true" />}
               size="small"
               onClick={handleDeleteDialog}
               disabled={isGenerating}
+              aria-label="챕터 삭제"
             >
               삭제
             </Button>

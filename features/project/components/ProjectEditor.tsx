@@ -31,7 +31,7 @@ const ProjectEditor = () => {
       confirmButtonText: "확인",
       cancelButtonText: "취소",
       onConfirm: () => {
-        router.back();
+        router.push("/");
       },
     });
   };
@@ -69,7 +69,10 @@ const ProjectEditor = () => {
 
   return (
     <section>
-      <nav className="p-4 font-bold text-xl border-b border-gray-200">
+      <nav
+        className="p-4 font-bold text-xl border-b border-gray-200"
+        aria-label="프로젝트 에디터 네비게이션"
+      >
         <div className="flex items-center justify-between">
           <IconButton onClick={handleBack} aria-label="목록으로 돌아가기">
             <ArrowBackIcon sx={{ width: 20, height: 20 }} aria-hidden="true" />
@@ -92,8 +95,12 @@ const ProjectEditor = () => {
 
       <div className="flex h-[calc(100svh-69.5px)] relative">
         {loading && (
-          <div className="absolute top-0 left-0 w-full h-full bg-white opacity-50 flex items-center justify-center z-50">
-            <CircularProgress size={60} color="primary" />
+          <div
+            className="absolute top-0 left-0 w-full h-full bg-white opacity-50 flex items-center justify-center z-50"
+            role="status"
+            aria-live="polite"
+          >
+            <CircularProgress size={60} color="primary" aria-label="로딩 중" />
           </div>
         )}
         <div className="flex-1 overflow-auto p-4" ref={chaptersContainerRef}>
@@ -113,13 +120,17 @@ const ProjectEditor = () => {
                   value={project?.title || ""}
                   onChange={(e) => updateProjectTitle(e.target.value)}
                   fullWidth
+                  inputProps={{
+                    "aria-label": "문서 제목",
+                  }}
                 />
                 <Button
                   className="flex-shrink-0"
                   variant="outlined"
                   color="primary"
                   size="small"
-                  startIcon={<SaveIcon />}
+                  startIcon={<SaveIcon aria-hidden="true" />}
+                  aria-label="문서 제목 저장"
                 >
                   저장
                 </Button>
@@ -131,9 +142,15 @@ const ProjectEditor = () => {
               <Button
                 variant="outlined"
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon aria-hidden="true" />}
                 size="small"
                 onClick={handleAddChapter}
+                onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
+                  if (e.key === "Enter") {
+                    handleAddChapter();
+                  }
+                }}
+                aria-label="새 챕터 추가"
               >
                 챕터 추가
               </Button>
