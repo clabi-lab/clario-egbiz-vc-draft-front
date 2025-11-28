@@ -73,9 +73,11 @@ const CommonDialog = ({
       </DialogTitle>
 
       <DialogContent sx={{ paddingBottom: "24px" }}>
-        <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-          {message}
-        </Typography>
+        <Typography
+          variant="body1"
+          sx={{ lineHeight: 1.6 }}
+          dangerouslySetInnerHTML={{ __html: message }}
+        />
       </DialogContent>
 
       <DialogActions sx={{ padding: "0 24px 24px 24px", gap: "8px" }}>

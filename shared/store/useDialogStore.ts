@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ComponentType, ReactElement } from "react";
+import { ComponentType } from "react";
 
 // 기본 확인 다이얼로그 설정
 interface ConfirmDialogConfig {
