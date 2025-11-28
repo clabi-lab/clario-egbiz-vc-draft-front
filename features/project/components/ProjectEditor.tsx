@@ -7,6 +7,7 @@ import { Button, IconButton, CircularProgress, Card } from "@mui/material";
 import { CompanyInfoCard, ProjectForm, ProjectPreview } from ".";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
 import { useDialogStore } from "@/shared/store/useDialogStore";
+import { useResizer } from "@/features/project/hooks/useResizer";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -14,6 +15,12 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 const ProjectEditor = () => {
   const router = useRouter();
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
+
+  const { containerRef, leftWidth, handleMouseDown } = useResizer({
+    initialWidth: 50,
+    minWidth: 20,
+    maxWidth: 80,
+  });
 
   const { openDialog } = useDialogStore();
 
@@ -90,7 +97,7 @@ const ProjectEditor = () => {
         </div>
       </nav>
 
-      <div className="flex h-[calc(100svh-69.5px)] relative">
+      <div className="flex h-[calc(100svh-69.5px)] relative" ref={containerRef}>
         {loading && (
           <div
             className="absolute top-0 left-0 w-full h-full bg-white opacity-50 flex items-center justify-center z-50"
@@ -100,7 +107,11 @@ const ProjectEditor = () => {
             <CircularProgress size={60} color="primary" aria-label="로딩 중" />
           </div>
         )}
-        <div className="flex-1 overflow-auto p-4" ref={chaptersContainerRef}>
+        <div
+          className="overflow-auto p-4"
+          ref={chaptersContainerRef}
+          style={{ width: `${leftWidth}%`, flexShrink: 0 }}
+        >
           {project?.company && (
             <CompanyInfoCard companyFields={companyFields} className="mb-4" />
           )}
@@ -111,7 +122,24 @@ const ProjectEditor = () => {
             onAddChapter={handleAddChapter}
           />
         </div>
-        <div className="flex-1 overflow-auto p-4 bg-slate-200">
+
+        {/* Resizer */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="w-1 bg-gray-300 hover:bg-blue-500 cursor-col-resize transition-colors flex-shrink-0 relative group"
+          style={{ zIndex: 10 }}
+          role="separator"
+          aria-label="패널 너비 조정"
+          aria-orientation="vertical"
+          aria-valuenow={leftWidth}
+        >
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4" />
+        </div>
+
+        <div
+          className="overflow-auto p-4 bg-slate-200"
+          style={{ width: `${100 - leftWidth}%`, flexShrink: 0 }}
+        >
           <Card
             className="border border-blue-300 p-4"
             sx={{
