@@ -5,6 +5,9 @@ import { forwardRef } from "react";
 
 type CustomTextFieldProps = Omit<TextFieldProps, "variant"> & {
   variant?: "filled" | "outlined" | "standard";
+  bgColor?: string;
+  textColor?: string;
+  borderColor?: string;
 };
 
 /**
@@ -15,16 +18,23 @@ type CustomTextFieldProps = Omit<TextFieldProps, "variant"> & {
  * - border 제거 (before, after, hover, focus 상태 모두)
  */
 export const CustomTextField = forwardRef<HTMLDivElement, CustomTextFieldProps>(
-  ({ variant = "filled", sx, ...props }, ref) => {
+  (
+    { variant = "filled", bgColor = "#f3f3f5", borderColor, sx, ...props },
+    ref
+  ) => {
     const defaultSx =
       variant === "filled"
         ? {
             "& .MuiFilledInput-root": {
               borderRadius: "8px",
-              backgroundColor: "oklch(96.7% 0.003 264.542)",
+              backgroundColor: bgColor,
+              border: borderColor
+                ? `1px solid ${borderColor}`
+                : "1px solid transparent",
             },
             "& .MuiFilledInput-root:before, & .MuiFilledInput-root:after": {
               borderBottom: "none",
+              borderBottomStyle: "unset",
             },
             "& .MuiFilledInput-root:hover:not(.Mui-disabled .Mui-error):before":
               {
@@ -36,9 +46,16 @@ export const CustomTextField = forwardRef<HTMLDivElement, CustomTextFieldProps>(
                 borderBottom: "none",
               },
             "& .MuiFilledInput-root.Mui-focused": {
-              border: "1px solid #bbb",
+              border: `1px solid #bbb`,
+              backgroundColor: bgColor,
             },
-
+            "& .MuiInputBase-root.MuiFilledInput-root.Mui-disabled": {
+              backgroundColor: bgColor,
+            },
+            "& .MuiInputBase-root.MuiFilledInput-root.Mui-disabled:before": {
+              borderBottom: "none",
+              borderBottomStyle: "unset",
+            },
             ...sx,
           }
         : sx;

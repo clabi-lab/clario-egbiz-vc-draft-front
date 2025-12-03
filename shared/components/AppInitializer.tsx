@@ -28,10 +28,6 @@ const AppInitializer = ({ projectinfo }: { projectinfo: any }) => {
     // 초기 설정
   }, [pathname]);
 
-  useEffect(() => {
-    console.log("projectinfo", projectinfo);
-  }, [projectinfo]);
-
   return null;
 };
 

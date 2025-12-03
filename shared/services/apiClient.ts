@@ -47,17 +47,20 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const response = await fetch(`/api${endpoint}`, {
-        ...rest,
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          ...headers,
-        },
-        credentials: "include",
-        body: data ? JSON.stringify(data) : undefined,
-        signal,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_SERVER}${endpoint}`,
+        {
+          ...rest,
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            ...headers,
+          },
+          credentials: "include",
+          body: data ? JSON.stringify(data) : undefined,
+          signal,
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();

@@ -28,7 +28,7 @@ const ProjectCard = ({
   const { openAlert } = useAlertStore();
   const { openDialog } = useDialogStore();
   const handleClick = () => {
-    router.push(`/project/${project.id}`);
+    router.push(`/project/${project.project_id}`);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -40,7 +40,7 @@ const ProjectCard = ({
 
   const handleCopy = async () => {
     try {
-      await copyProject(project.id);
+      await copyProject(project.project_id);
 
       openAlert({ message: "초안이 복사되었습니다.", severity: "success" });
       refetchProjects();
@@ -54,7 +54,7 @@ const ProjectCard = ({
 
   const handleDelete = async () => {
     try {
-      await deleteProject(project.id);
+      await deleteProject(project.project_id);
       refetchProjects();
       openAlert({ message: "초안이 삭제되었습니다.", severity: "success" });
     } catch (error) {
@@ -67,7 +67,7 @@ const ProjectCard = ({
 
   return (
     <Card
-      className={`p-6 border border-gray-200 cursor-pointer group ${className}`}
+      className={`p-6 border border-gray-200 cursor-pointer group flex flex-col justify-between ${className}`}
       sx={{
         boxShadow: "none",
         borderRadius: "16px",
@@ -83,13 +83,15 @@ const ProjectCard = ({
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
-      aria-label={`초안 ${project.title} 상세보기`}
+      aria-label={`초안 ${project.project_name} 상세보기`}
     >
-      <div className="flex items-center justify-between">
-        <p className="text-lg font-bold">{project.title}</p>
-        <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+      <div className="flex items-start justify-between">
+        <p className="text-lg font-bold w-[83%] line-clamp-2">
+          {project.project_name}
+        </p>
+        <div className="mr-[-16px] mt-[-2px] flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
           <IconButton
-            aria-label={`${project.title} 초안 복사`}
+            aria-label={`${project.project_name} 초안 복사`}
             size="small"
             color="primary"
             onClick={(e) => {
@@ -100,7 +102,7 @@ const ProjectCard = ({
             <CopyIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
           </IconButton>
           <IconButton
-            aria-label={`${project.title} 초안 삭제`}
+            aria-label={`${project.project_name} 초안 삭제`}
             size="small"
             color="error"
             onClick={(e) => {
@@ -119,17 +121,17 @@ const ProjectCard = ({
           </IconButton>
         </div>
       </div>
-      <div className="mt-8">
+      <div className="mt-2">
         <p className="text-sm text-gray-500 flex items-center gap-1">
           <CalendarIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
           <span>
-            생성일: {dayjs(project.createdAt).format("YYYY년 MM월 DD일")}
+            생성일: {dayjs(project.created_at).format("YYYY년 MM월 DD일")}
           </span>
         </p>
         <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
           <CalendarIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
           <span>
-            수정일: {dayjs(project.updatedAt).format("YYYY년 MM월 DD일 HH:mm")}
+            수정일: {dayjs(project.updated_at).format("YYYY년 MM월 DD일 HH:mm")}
           </span>
         </p>
       </div>

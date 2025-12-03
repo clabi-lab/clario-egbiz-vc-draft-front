@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button, Container } from "@mui/material";
+import { Button, CircularProgress, Container } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import FileIcon from "@mui/icons-material/DescriptionOutlined";
@@ -23,6 +23,7 @@ const HomePage = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleOpenDialog = () => {
     openCustomDialog(CreateProjectDialog, {
@@ -33,10 +34,17 @@ const HomePage = () => {
   };
 
   const fetchProjectsData = async (search?: string) => {
-    const response = await fetchProjects(search);
-    setProjects(response.data);
-    if (!search) {
-      setTotalCount(response.data.length || 0);
+    try {
+      setLoading(true);
+      const response = await fetchProjects(search);
+
+      console.log(response);
+      setProjects(response.data);
+      setTotalCount(response.totalCount || 0);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
     }
   };
 
@@ -126,20 +134,20 @@ const HomePage = () => {
         id="project-list-region"
       >
         <Container maxWidth="lg" className="pt-6">
-          {projects.length > 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center mt-[150px]">
+              <CircularProgress />
+            </div>
+          ) : projects.length > 0 ? (
             <div
-              className="flex gap-6 w-full flex-col sm:flex-row flex-wrap"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3"
               role="list"
               aria-label="초안 카드 목록"
             >
               {projects.map((project) => (
-                <div
-                  key={project.id}
-                  role="listitem"
-                  className="w-full sm:w-1/3"
-                >
+                <div key={project.project_id} role="listitem">
                   <ProjectCard
-                    className="w-full"
+                    className="w-full min-h-[170px]"
                     project={project}
                     refetchProjects={() => fetchProjectsData(searchQuery)}
                   />

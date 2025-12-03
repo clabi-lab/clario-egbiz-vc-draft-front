@@ -56,7 +56,7 @@ const CommonDialog = ({
           paddingBottom: "16px",
         }}
       >
-        <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" component="p" sx={{ fontWeight: 600 }}>
           {title}
         </Typography>
         {showCloseButton && (

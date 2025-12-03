@@ -57,7 +57,7 @@ const Dialog = ({
           }}
         >
           <div>
-            <Typography variant="h6" component="h2">
+            <Typography variant="h6" component="p">
               {title}
             </Typography>
             {subtitle && (
