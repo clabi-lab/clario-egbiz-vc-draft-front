@@ -3,7 +3,7 @@ import { Project } from "../types";
 
 export const fetchProjects = async (searchQuery?: string) => {
   const params = searchQuery
-    ? `?search=${encodeURIComponent(searchQuery)}`
+    ? `?searchKeyword=${encodeURIComponent(searchQuery)}`
     : "";
   const response = await apiClient<{
     projects: Project[];
