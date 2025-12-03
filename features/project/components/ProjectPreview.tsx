@@ -1,18 +1,17 @@
 "use client";
 
 import dayjs from "dayjs";
-import { Project } from "../types";
+import { useProjectStore } from "../store/useProjectStore";
 
 interface ProjectPreviewProps {
-  project: Project | null;
   className?: string;
 }
 
-export const ProjectPreview = ({ project, className }: ProjectPreviewProps) => {
-  // A4 고정 크기: 210mm x 297mm
-  // 96 DPI 기준: 794px x 1123px
-  const A4_WIDTH = 794; // px
-  const A4_HEIGHT = 1123; // px
+const A4_WIDTH = 794;
+const A4_HEIGHT = 1123;
+
+export const ProjectPreview = ({ className }: ProjectPreviewProps) => {
+  const { project } = useProjectStore();
 
   return (
     <div
@@ -25,13 +24,15 @@ export const ProjectPreview = ({ project, className }: ProjectPreviewProps) => {
       }}
     >
       {/* 문서 제목 */}
-      {project?.title && (
-        <h1 className="text-xl font-bold mb-2 text-center">{project.title}</h1>
+      {project?.project_name && (
+        <h1 className="text-xl font-bold mb-2 text-center">
+          {project.project_name}
+        </h1>
       )}
 
-      {project?.updatedAt && (
+      {project?.updated_at && (
         <p className="text-sm text-gray-500 text-center">
-          {dayjs(project?.updatedAt).format("YYYY년 MM월 DD일")}
+          {dayjs(project?.updated_at).format("YYYY년 MM월 DD일")}
         </p>
       )}
 
@@ -65,23 +66,18 @@ export const ProjectPreview = ({ project, className }: ProjectPreviewProps) => {
       {/* 챕터 목록 */}
       <div className="space-y-6 mt-6">
         {project?.chapters?.map((chapter, index) => (
-          <div key={`preview-${chapter.title}-${index}`}>
+          <div key={`preview-${chapter.chapter_name}-${index}`}>
             {/* 챕터 제목 */}
-            {chapter.title && (
-              <h2 className="text-xl font-semibold mb-2">{chapter.title}</h2>
+            {chapter.chapter_name && (
+              <h2 className="text-xl font-semibold mb-2">
+                {chapter.chapter_name}
+              </h2>
             )}
 
-            {/* 확정된 본문 또는 초안 */}
-            {chapter.content && !chapter.draftContent && (
+            {/* 본문 내용 */}
+            {(chapter.chapter_body || chapter.draftContent) && (
               <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                {chapter.content}
-              </div>
-            )}
-
-            {/* 생성 초안 */}
-            {chapter.draftContent && (
-              <div className="text-sm leading-relaxed whitespace-pre-wrap text-gray-600">
-                {chapter.draftContent}
+                {chapter.chapter_body || chapter.draftContent}
               </div>
             )}
           </div>

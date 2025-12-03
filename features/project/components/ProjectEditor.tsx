@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button, IconButton, CircularProgress, Card } from "@mui/material";
@@ -14,7 +13,6 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const ProjectEditor = () => {
   const router = useRouter();
-  const chaptersContainerRef = useRef<HTMLDivElement>(null);
 
   const { containerRef, leftWidth, handleMouseDown } = useResizer({
     initialWidth: 50,
@@ -24,8 +22,7 @@ const ProjectEditor = () => {
 
   const { openDialog } = useDialogStore();
 
-  const { project, loading, updateProjectTitle, addChapter } =
-    useProjectStore();
+  const { project, loading } = useProjectStore();
 
   const handleBack = () => {
     openDialog({
@@ -42,20 +39,6 @@ const ProjectEditor = () => {
 
   const handleDownloadDock = () => {
     console.log("download dock");
-  };
-
-  const handleAddChapter = () => {
-    addChapter();
-
-    // 새 챕터가 렌더링된 후 맨 아래로 스크롤
-    setTimeout(() => {
-      if (chaptersContainerRef.current) {
-        chaptersContainerRef.current.scrollTo({
-          top: chaptersContainerRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, 100);
   };
 
   // 기업 정보 필드 정의
@@ -97,7 +80,10 @@ const ProjectEditor = () => {
         </div>
       </nav>
 
-      <div className="flex h-[calc(100svh-69.5px)] relative" ref={containerRef}>
+      <div
+        className="flex h-[calc(100svh-69.5px)] relative overflow-hidden"
+        ref={containerRef}
+      >
         {loading && (
           <div
             className="absolute top-0 left-0 w-full h-full bg-white opacity-50 flex items-center justify-center z-50"
@@ -109,18 +95,13 @@ const ProjectEditor = () => {
         )}
         <div
           className="overflow-auto p-4"
-          ref={chaptersContainerRef}
           style={{ width: `${leftWidth}%`, flexShrink: 0 }}
         >
           {project?.company && (
             <CompanyInfoCard companyFields={companyFields} className="mb-4" />
           )}
 
-          <ProjectForm
-            project={project}
-            onUpdateTitle={updateProjectTitle}
-            onAddChapter={handleAddChapter}
-          />
+          <ProjectForm />
         </div>
 
         {/* Resizer */}
@@ -151,7 +132,7 @@ const ProjectEditor = () => {
             A4 용지 미리보기
             <p>실제 출력 시 모습을 미리 확인할 수 있습니다</p>
           </Card>
-          <ProjectPreview project={project} className="mt-4" />
+          <ProjectPreview className="mt-4" />
         </div>
       </div>
     </section>

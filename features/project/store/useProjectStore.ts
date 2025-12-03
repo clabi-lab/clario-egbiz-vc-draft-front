@@ -1,20 +1,23 @@
 import { create } from "zustand";
-import { Chapter, Company, Project } from "../types";
+import { Chapter, Company, ProjectDetail } from "../types";
 
-export type { Chapter, Company, Project };
+export type { Chapter, Company, ProjectDetail };
 
 interface ProjectState {
-  project: Project | null;
+  project: ProjectDetail | null;
   loading: boolean;
   draggedIndex: number | null;
 
-  setProject: (project: Project | null) => void;
+  setProject: (project: ProjectDetail | null) => void;
   setLoading: (loading: boolean) => void;
-  updateProject: (updates: Partial<Project>) => void;
+  updateProject: (updates: Partial<ProjectDetail>) => void;
   updateProjectTitle: (title: string) => void;
   addChapter: (chapter?: Chapter) => void;
-  updateChapter: (index: number, field: keyof Chapter, value: string) => void;
-  deleteChapter: (index: number) => void;
+  updateChapterField: (
+    index: number,
+    field: keyof Chapter,
+    value: string
+  ) => void;
   reorderChapters: (fromIndex: number, toIndex: number) => void;
   setDraggedIndex: (index: number | null) => void;
   handleDragStart: (index: number) => void;
@@ -24,9 +27,12 @@ interface ProjectState {
 }
 
 const DEFAULT_CHAPTER: Chapter = {
-  title: "새 챕터",
-  content: "",
-  draftContent: "",
+  ai_create_count: 0,
+  chapter_body: "",
+  chapter_id: 0,
+  chapter_name: "새 챕터",
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 };
 
 const INITIAL_STATE = {
@@ -51,7 +57,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateProjectTitle: (title) =>
     set((state) => {
       if (!state.project) return state;
-      return { project: { ...state.project, title } };
+      return { project: { ...state.project, project_name: title } };
     }),
 
   addChapter: (chapter = DEFAULT_CHAPTER) =>
@@ -65,7 +71,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       };
     }),
 
-  updateChapter: (index, field, value) =>
+  updateChapterField: (index, field, value) =>
     set((state) => {
       if (!state.project?.chapters) return state;
       return {
@@ -74,17 +80,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           chapters: state.project.chapters.map((chapter, i) =>
             i === index ? { ...chapter, [field]: value } : chapter
           ),
-        },
-      };
-    }),
-
-  deleteChapter: (index) =>
-    set((state) => {
-      if (!state.project?.chapters) return state;
-      return {
-        project: {
-          ...state.project,
-          chapters: state.project.chapters.filter((_, i) => i !== index),
         },
       };
     }),

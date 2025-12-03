@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { Button, IconButton } from "@mui/material";
 import { CustomTextField } from "@/shared/components/CustomTextField";
 import { Chapter } from "@/features/project/types";
@@ -14,6 +15,14 @@ import SaveIcon from "@mui/icons-material/SaveOutlined";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
+import {
+  updateChapter,
+  deleteChapter,
+  createChapter,
+  createProject,
+} from "../services/project";
+import { useUserStore } from "@/shared/store/useUserStore";
+
 interface ChapterItemProps {
   chapter: Chapter;
   index: number;
@@ -28,31 +37,50 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const [aiPrompt, setAiPrompt] = useState("");
 
   const {
-    updateChapter,
-    deleteChapter,
+    project,
     handleDragStart,
     handleDragEnter,
     handleDragEnd,
+    updateChapterField,
   } = useProjectStore();
+  const { user } = useUserStore();
+
   const { openDialog } = useDialogStore();
   const { openAlert } = useAlertStore();
 
-  const handleDeleteDialog = () => {
+  useEffect(() => {
+    if (chapter.chapter_body) {
+      setIsConfirmed(true);
+    }
+  }, []);
+
+  const handleDeleteDialog = (chapter_id: number) => {
     openDialog({
       title: "챕터 삭제",
       message: "챕터를 삭제하시겠습니까? 삭제된 챕터는 복구할 수 없습니다.",
       confirmButtonText: "삭제",
       cancelButtonText: "취소",
       confirmButtonColor: "error",
-      onConfirm: () => {
-        deleteChapter(index);
-        openAlert({
-          message: "챕터가 삭제되었습니다.",
-          severity: "success",
-          openTime: 2000,
-        });
-      },
+      onConfirm: () => handleDeleteChapter(chapter_id),
     });
+  };
+
+  const handleDeleteChapter = async (chapter_id: number) => {
+    try {
+      await deleteChapter(chapter_id);
+      openAlert({
+        message: "챕터가 삭제되었습니다.",
+        severity: "success",
+        openTime: 2000,
+      });
+    } catch (error) {
+      console.error("챕터 삭제 오류:", error);
+      openAlert({
+        message: "챕터 삭제 중 오류가 발생했습니다.",
+        severity: "error",
+        openTime: 3000,
+      });
+    }
   };
 
   const handleToggleConfirm = () => {
@@ -63,16 +91,66 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
         severity: "info",
         openTime: 2000,
       });
-    } else {
-      if (chapter.draftContent) {
-        updateChapter(index, "content", chapter.draftContent);
-        setIsConfirmed(true);
-        openAlert({
-          message: "초안이 본문으로 확정되었습니다.",
-          severity: "success",
-          openTime: 2000,
+      return;
+    }
+
+    if (chapter.chapter_id) {
+      handleUpdateChapter(chapter);
+    } else if (project) {
+      handleCreateChapter(chapter);
+    }
+  };
+
+  const handleUpdateChapter = async (chapter: Chapter) => {
+    try {
+      await updateChapter(chapter.chapter_id, chapter);
+      setIsConfirmed(true);
+      openAlert({
+        message: "초안이 본문으로 확정되었습니다.",
+        severity: "success",
+        openTime: 2000,
+      });
+    } catch (error) {
+      console.error("챕터 확정 오류:", error);
+      openAlert({
+        message: "챕터 확정 중 오류가 발생했습니다.",
+        severity: "error",
+        openTime: 3000,
+      });
+    }
+  };
+
+  const handleCreateChapter = async (chapter: Chapter) => {
+    try {
+      if (project?.project_id) {
+        await createChapter(project.project_id, chapter);
+      } else {
+        const response = await createProject({
+          user_id: user?.user_id || 0,
+          biz_name: user?.company?.company_name || "",
+          pdf_yn: false,
+          project_name: project?.project_name,
+          chapters: project?.chapters || [],
         });
+
+        if (response.project_id) {
+          await createChapter(response.project_id, chapter);
+        }
       }
+
+      setIsConfirmed(true);
+      openAlert({
+        message: "챕터가 생성되었습니다.",
+        severity: "success",
+        openTime: 2000,
+      });
+    } catch (error) {
+      console.error("챕터 생성 오류:", error);
+      openAlert({
+        message: "챕터 생성 중 오류가 발생했습니다.",
+        severity: "error",
+        openTime: 3000,
+      });
     }
   };
 
@@ -87,7 +165,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     }
 
     setIsGenerating(true);
-    updateChapter(index, "draftContent", "");
+    updateChapterField(index, "draftContent", "");
 
     try {
       const response = await fetch("/api/ai/generate", {
@@ -95,8 +173,8 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          chapterTitle: chapter.title,
-          chapterContent: chapter.content,
+          chapterTitle: chapter.chapter_name,
+          chapterContent: chapter.chapter_body,
         }),
       });
 
@@ -124,7 +202,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             const data = JSON.parse(line);
             if (data.content) {
               accumulatedContent += data.content;
-              updateChapter(index, "draftContent", accumulatedContent);
+              updateChapterField(index, "draftContent", accumulatedContent);
             }
             if (data.error) {
               throw new Error(data.error);
@@ -163,28 +241,42 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     }
   };
 
+  const handleDragEndEvent = () => {
+    handleDragEnd();
+    setIsDraggable(false);
+    openAlert({
+      message: "챕터 순서가 변경되었습니다.",
+      severity: "success",
+      openTime: 2000,
+    });
+  };
+
+  const handleDragEnterEvent = () => {
+    handleDragEnter(index);
+    setIsDragOver(true);
+  };
+
+  const getChapterClassName = () => {
+    const baseClasses =
+      "rounded-md p-4 flex flex-col gap-4 my-4 transition-all";
+    const bgClass = isConfirmed ? "bg-[#fafefc]" : "bg-white";
+    const borderClass = isConfirmed
+      ? "border border-[#b9f8cf]"
+      : "border border-gray-200";
+    const dragClass = isDragOver ? "border-blue-500 bg-blue-50" : "";
+
+    return `${baseClasses} ${bgClass} ${borderClass} ${dragClass}`;
+  };
+
   return (
     <div
       draggable={isDraggable}
       onDragStart={() => handleDragStart(index)}
-      onDragEnd={() => {
-        handleDragEnd();
-        setIsDraggable(false);
-        openAlert({
-          message: "챕터 순서가 변경되었습니다.",
-          severity: "success",
-          openTime: 2000,
-        });
-      }}
-      onDragEnter={() => {
-        handleDragEnter(index);
-        setIsDragOver(true);
-      }}
+      onDragEnd={() => handleDragEndEvent()}
+      onDragEnter={() => handleDragEnterEvent()}
       onDragLeave={() => setIsDragOver(false)}
       onDragOver={(e) => e.preventDefault()}
-      className={`bg-white border border-gray-200 rounded-md p-4 flex flex-col gap-4 my-4 transition-all ${
-        isDragOver ? "border-blue-500 bg-blue-50" : ""
-      }`}
+      className={getChapterClassName()}
       style={{ cursor: isDraggable ? "grabbing" : "default" }}
     >
       <div className="flex items-center justify-between gap-2">
@@ -208,12 +300,16 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             size="small"
             variant="filled"
             hiddenLabel
-            value={chapter.title || ""}
-            onChange={(e) => updateChapter(index, "title", e.target.value)}
+            value={chapter.chapter_name || ""}
+            onChange={(e) =>
+              updateChapterField(index, "chapter_name", e.target.value)
+            }
             fullWidth
             disabled={isConfirmed}
-            inputProps={{
-              "aria-label": "챕터 제목",
+            slotProps={{
+              input: {
+                "aria-label": "챕터 제목",
+              },
             }}
           />
         </div>
@@ -235,61 +331,77 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       {!isCollapsed && (
         <>
           <fieldset onMouseDown={() => setIsDraggable(false)}>
-            <legend className="text-sm text-gray-500">확정된 본문</legend>
+            <legend className="text-sm mb-1">확정된 본문</legend>
             <CustomTextField
               className="w-full"
               size="small"
               variant="filled"
+              bgColor="#fafefc"
+              borderColor="#b9f8cf"
+              rows={3}
+              placeholder="확정할 최종 본문 내용을 입력하세요."
+              multiline
               hiddenLabel
-              value={chapter.content || ""}
-              onChange={(e) => updateChapter(index, "content", e.target.value)}
               fullWidth
+              value={chapter.chapter_body || ""}
+              onChange={(e) =>
+                updateChapterField(index, "chapter_body", e.target.value)
+              }
               disabled={isConfirmed}
-              inputProps={{
-                "aria-label": "확정된 본문",
+              slotProps={{
+                input: {
+                  "aria-label": "확정된 본문",
+                },
               }}
             />
+            <span className="text-xs text-gray-400">
+              확정 버튼을 누르면 이 내용이 최종본으로 저장됩니다.
+            </span>
           </fieldset>
 
           <fieldset onMouseDown={() => setIsDraggable(false)}>
-            <legend className="text-sm text-gray-500">생성 초안</legend>
+            <legend className="text-sm mb-1">생성 초안</legend>
             <CustomTextField
               className="w-full"
               size="small"
               variant="filled"
               rows={3}
+              placeholder="본문 내용을 직접 입력하거나, 하단의 AI 생성 프롬포트를 사용하여 AI가 생성하도록 할 수 있습니다."
               hiddenLabel
               multiline
-              placeholder="본문 내용을 직접 입력하거나, 하단의 AI 생성 프롬포트를 사용하여 AI가 생성하도록 할 수 있습니다."
+              fullWidth
               value={chapter.draftContent || ""}
               onChange={(e) =>
-                updateChapter(index, "draftContent", e.target.value)
+                updateChapterField(index, "draftContent", e.target.value)
               }
-              fullWidth
               disabled={isGenerating || isConfirmed}
-              inputProps={{
-                "aria-label": "생성 초안",
+              slotProps={{
+                input: {
+                  "aria-label": "생성 초안",
+                },
               }}
             />
           </fieldset>
 
           <fieldset onMouseDown={() => setIsDraggable(false)}>
-            <legend className="text-sm text-gray-500">AI 생성 프롬프트</legend>
+            <legend className="text-sm mb-1">AI 생성 프롬프트</legend>
             <CustomTextField
               className="w-full"
               size="small"
               variant="filled"
               rows={3}
+              placeholder="AI가 생성할 내용에 대한 구체적인 지시사항을 입력하세요. 예: '고객 성공 사례 3가지를 포함하여 작성'"
               multiline
               hiddenLabel
-              placeholder="AI가 생성할 내용에 대한 구체적인 지시사항을 입력하세요. 예: '고객 성공 사례 3가지를 포함하여 작성'"
               fullWidth
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={isGenerating || isConfirmed}
-              inputProps={{
-                "aria-label": "AI 생성 프롬프트",
+              slotProps={{
+                input: {
+                  "aria-label": "AI 생성 프롬프트",
+                },
               }}
             />
           </fieldset>
@@ -298,7 +410,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             className="flex items-center justify-between gap-2"
             onMouseDown={() => setIsDraggable(false)}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant="outlined"
                 color="primary"
@@ -329,7 +441,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                 startIcon={<CheckIcon aria-hidden="true" />}
                 size="small"
                 onClick={handleToggleConfirm}
-                disabled={!chapter.draftContent || isGenerating}
+                disabled={!chapter.chapter_body || isGenerating}
                 aria-label={
                   isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
                 }
@@ -342,7 +454,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               color="error"
               startIcon={<SaveIcon aria-hidden="true" />}
               size="small"
-              onClick={handleDeleteDialog}
+              onClick={() => handleDeleteDialog(chapter.chapter_id)}
               disabled={isGenerating}
               aria-label="챕터 삭제"
             >

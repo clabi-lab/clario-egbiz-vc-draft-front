@@ -1,10 +1,3 @@
-// Project 관련 타입
-export interface Chapter {
-  title?: string;
-  content?: string;
-  draftContent?: string;
-}
-
 export interface Company {
   name?: string;
   description?: string;
@@ -13,14 +6,41 @@ export interface Company {
   service?: string;
 }
 
-export interface Project {
-  id: string;
-  title?: string;
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  company?: Company | null;
-  chapters?: Chapter[] | null;
+export interface ProjectDetail {
+  project_name: string;
+
+  project_id?: number;
+  pdf_key?: string;
+  pdf_json?: string;
+  pdf_processing_json?: string;
+  chapters?: Chapter[];
+  updated_at?: string;
+  user_id?: number;
+  company?: Company;
+}
+
+export interface ProjectCreateRequest {
+  user_id: number;
+  biz_name: string;
+  pdf_yn: boolean;
+
+  project_name?: string;
+  pdf_key?: string;
+  pdf_json?: string;
+  pdf_processing_json?: string;
+  chapters?: Chapter[];
+
+  company?: Company;
+}
+
+export interface Chapter {
+  chapter_id: number;
+  chapter_body: string;
+  chapter_name: string;
+  ai_create_count: number;
+  draftContent?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ProjectListItem {

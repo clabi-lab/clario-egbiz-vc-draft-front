@@ -1,35 +1,59 @@
 import { apiClient } from "@/shared/services/apiClient";
-import { ProjectListItem, GenerateContentRequest } from "../types";
+import {
+  GenerateContentRequest,
+  ProjectCreateRequest,
+  Chapter,
+  ProjectDetail,
+} from "../types";
 
 export type { GenerateContentRequest };
 
-export const fetchProjects = async (searchQuery?: string) => {
-  const params = searchQuery
-    ? `?search=${encodeURIComponent(searchQuery)}`
-    : "";
-  const response = await apiClient<{ data: ProjectListItem[] }>(
-    `/projects${params}`
-  );
+// Project 관련 API
+export const fetchProject = async (project_id: string) => {
+  const response = await apiClient<ProjectDetail>(`/project/${project_id}`);
   return response;
 };
 
-export const createProject = async (project: ProjectListItem) => {
-  const response = await apiClient("/projects", {
+export const createProject = async (project: ProjectCreateRequest) => {
+  const response = await apiClient<ProjectDetail>("/project/create", {
     method: "POST",
     data: project,
   });
   return response;
 };
 
-export const deleteProject = async (projectId: string) => {
-  const response = await apiClient(`/projects/${projectId}`, {
-    method: "DELETE",
+export const updateProject = async (
+  project_id: number,
+  project_name: string
+) => {
+  const response = await apiClient(`/project/${project_id}/update`, {
+    method: "POST",
+    data: {
+      project_name: project_name,
+    },
   });
   return response;
 };
 
-export const copyProject = async (projectId: string) => {
-  const response = await apiClient(`/projects/${projectId}/copy`, {
+// Chapter 관련 API
+export const createChapter = async (project_id: number, chapter: Chapter) => {
+  const response = await apiClient(`/chapter/create`, {
+    method: "POST",
+    data: { project_id, ...chapter },
+  });
+  return response;
+};
+
+export const updateChapter = async (chapter_id: number, chapter: Chapter) => {
+  const response = await apiClient(`/chapter/${chapter_id}/update`, {
+    method: "POST",
+    data: chapter,
+  });
+  return response;
+};
+
+export const deleteChapter = async (chapter_id: number) => {
+  const response = await apiClient(`/chapter/${chapter_id}/delete`, {
     method: "POST",
   });
   return response;

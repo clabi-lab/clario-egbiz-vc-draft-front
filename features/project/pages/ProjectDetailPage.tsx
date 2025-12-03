@@ -4,10 +4,9 @@ import { useEffect } from "react";
 import { useParams } from "next/navigation";
 
 import { ProjectEditor } from "../components";
-import { Project } from "@/features/project/types";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
 
-import { fetchProjects } from "../services/project";
+import { fetchProject } from "../services/project";
 
 const ProjectDetailPage = () => {
   const params = useParams();
@@ -16,6 +15,15 @@ const ProjectDetailPage = () => {
   const { setProject, setLoading, reset } = useProjectStore();
 
   useEffect(() => {
+    const updateProjects = async () => {
+      setLoading(true);
+      const response = await fetchProject(projectId);
+      if (response) {
+        setProject(response);
+        setLoading(false);
+      }
+    };
+
     if (projectId) {
       updateProjects();
     }
@@ -24,15 +32,6 @@ const ProjectDetailPage = () => {
       reset();
     };
   }, [projectId]);
-
-  const updateProjects = async () => {
-    setLoading(true);
-    const response = (await fetchProjects(projectId)) as unknown as Project;
-    if (response) {
-      setProject(response);
-      setLoading(false);
-    }
-  };
 
   return <ProjectEditor />;
 };
