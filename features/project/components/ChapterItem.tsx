@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import { Button, IconButton } from "@mui/material";
 import { CustomTextField } from "@/shared/components/CustomTextField";
@@ -6,6 +6,7 @@ import { Chapter } from "@/features/project/types";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
 import { useDialogStore } from "@/shared/store/useDialogStore";
 import { useAlertStore } from "@/shared/store/useAlertStore";
+import { useUserStore } from "@/shared/store/useUserStore";
 
 import DragIcon from "@mui/icons-material/DragIndicatorOutlined";
 import AutoIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -21,7 +22,6 @@ import {
   createChapter,
   createProject,
 } from "../services/project";
-import { useUserStore } from "@/shared/store/useUserStore";
 
 interface ChapterItemProps {
   chapter: Chapter;
@@ -33,8 +33,24 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const [isDraggable, setIsDraggable] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(() => {
+    return !!chapter.chapter_body;
+  });
   const [aiPrompt, setAiPrompt] = useState("");
+
+  // 로컬 상태로 입력값 관리 (성능 최적화)
+  const [localChapterName, setLocalChapterName] = useState(
+    chapter.chapter_name || ""
+  );
+  const [localChapterBody, setLocalChapterBody] = useState(
+    chapter.chapter_body || ""
+  );
+  const [localDraftContent, setLocalDraftContent] = useState(
+    chapter.draftContent || ""
+  );
+
+  // debounce를 위한 타이머 ref
+  const debounceTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   const {
     project,
@@ -42,6 +58,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     handleDragEnter,
     handleDragEnd,
     updateChapterField,
+    removeChapter,
   } = useProjectStore();
   const { user } = useUserStore();
 
@@ -49,9 +66,30 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const { openAlert } = useAlertStore();
 
   useEffect(() => {
-    if (chapter.chapter_body) {
-      setIsConfirmed(true);
-    }
+    setLocalChapterName(chapter.chapter_name || "");
+    setLocalChapterBody(chapter.chapter_body || "");
+    setLocalDraftContent(chapter.draftContent || "");
+  }, [chapter.chapter_name, chapter.chapter_body, chapter.draftContent]);
+
+  const debouncedUpdate = useCallback(
+    (field: keyof Chapter, value: string) => {
+      if (debounceTimerRef.current[field]) {
+        clearTimeout(debounceTimerRef.current[field]);
+      }
+
+      debounceTimerRef.current[field] = setTimeout(() => {
+        updateChapterField(index, field, value);
+      }, 300);
+    },
+    [index, updateChapterField]
+  );
+
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimerRef.current).forEach((timer) =>
+        clearTimeout(timer)
+      );
+    };
   }, []);
 
   const handleDeleteDialog = (chapter_id: number) => {
@@ -67,7 +105,10 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
 
   const handleDeleteChapter = async (chapter_id: number) => {
     try {
-      await deleteChapter(chapter_id);
+      if (chapter_id !== 0) {
+        await deleteChapter(chapter_id);
+      }
+      removeChapter(chapter_id);
       openAlert({
         message: "챕터가 삭제되었습니다.",
         severity: "success",
@@ -91,19 +132,27 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
         severity: "info",
         openTime: 2000,
       });
-      return;
-    }
+    } else {
+      // 확정 전에 로컬 상태를 store에 동기화
+      const updatedChapter = {
+        ...chapter,
+        chapter_name: localChapterName,
+        chapter_body: localChapterBody,
+        draftContent: localDraftContent,
+      };
 
-    if (chapter.chapter_id) {
-      handleUpdateChapter(chapter);
-    } else if (project) {
-      handleCreateChapter(chapter);
+      if (chapter.chapter_id) {
+        handleUpdateChapter(updatedChapter);
+      } else if (project) {
+        handleCreateChapter(updatedChapter);
+      }
     }
   };
 
   const handleUpdateChapter = async (chapter: Chapter) => {
     try {
       await updateChapter(chapter.chapter_id, chapter);
+
       setIsConfirmed(true);
       openAlert({
         message: "초안이 본문으로 확정되었습니다.",
@@ -165,6 +214,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     }
 
     setIsGenerating(true);
+    setLocalDraftContent("");
     updateChapterField(index, "draftContent", "");
 
     try {
@@ -202,6 +252,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             const data = JSON.parse(line);
             if (data.content) {
               accumulatedContent += data.content;
+              setLocalDraftContent(accumulatedContent);
               updateChapterField(index, "draftContent", accumulatedContent);
             }
             if (data.error) {
@@ -300,10 +351,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             size="small"
             variant="filled"
             hiddenLabel
-            value={chapter.chapter_name || ""}
-            onChange={(e) =>
-              updateChapterField(index, "chapter_name", e.target.value)
-            }
+            value={localChapterName}
+            onChange={(e) => {
+              setLocalChapterName(e.target.value);
+              debouncedUpdate("chapter_name", e.target.value);
+            }}
             fullWidth
             disabled={isConfirmed}
             slotProps={{
@@ -343,10 +395,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               multiline
               hiddenLabel
               fullWidth
-              value={chapter.chapter_body || ""}
-              onChange={(e) =>
-                updateChapterField(index, "chapter_body", e.target.value)
-              }
+              value={localChapterBody}
+              onChange={(e) => {
+                setLocalChapterBody(e.target.value);
+                debouncedUpdate("chapter_body", e.target.value);
+              }}
               disabled={isConfirmed}
               slotProps={{
                 input: {
@@ -370,10 +423,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               hiddenLabel
               multiline
               fullWidth
-              value={chapter.draftContent || ""}
-              onChange={(e) =>
-                updateChapterField(index, "draftContent", e.target.value)
-              }
+              value={localDraftContent}
+              onChange={(e) => {
+                setLocalDraftContent(e.target.value);
+                debouncedUpdate("draftContent", e.target.value);
+              }}
               disabled={isGenerating || isConfirmed}
               slotProps={{
                 input: {
@@ -441,7 +495,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                 startIcon={<CheckIcon aria-hidden="true" />}
                 size="small"
                 onClick={handleToggleConfirm}
-                disabled={!chapter.chapter_body || isGenerating}
+                disabled={!localChapterBody || isGenerating}
                 aria-label={
                   isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
                 }

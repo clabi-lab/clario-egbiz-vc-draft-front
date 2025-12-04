@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 import { useAlertStore } from "@/shared/store/useAlertStore";
 import { useProjectStore } from "../store/useProjectStore";
@@ -19,6 +20,7 @@ import { Chapter } from "../types";
 import { useUserStore } from "@/shared/store/useUserStore";
 
 export const ProjectForm = () => {
+  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { openAlert } = useAlertStore();
   const { project, addChapter, updateProjectTitle, setProject } =
@@ -65,14 +67,27 @@ export const ProjectForm = () => {
     }
   };
 
+  const handleAddChapter = () => {
+    addChapter();
+    setTimeout(() => {
+      const scrollContainer = formRef.current?.parentElement;
+      if (scrollContainer) {
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === "Enter") {
-      addChapter();
+      handleAddChapter();
     }
   };
 
   return (
-    <form>
+    <form ref={formRef}>
       <fieldset>
         <legend className="text-sm text-gray-500">문서 제목</legend>
         <div className="flex items-center justify-between gap-2">
@@ -111,7 +126,7 @@ export const ProjectForm = () => {
           color="primary"
           startIcon={<AddIcon aria-hidden="true" />}
           size="small"
-          onClick={() => addChapter()}
+          onClick={handleAddChapter}
           onKeyDown={handleKeyDown}
           aria-label="새 챕터 추가"
         >
@@ -120,7 +135,7 @@ export const ProjectForm = () => {
       </div>
       {project?.chapters?.map((chapter: Chapter, index: number) => (
         <ChapterItem
-          key={`${chapter.chapter_name}-${index}`}
+          key={chapter.chapter_id || `temp-${index}`}
           chapter={chapter}
           index={index}
         />

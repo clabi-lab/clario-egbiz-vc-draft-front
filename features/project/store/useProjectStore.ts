@@ -13,6 +13,7 @@ interface ProjectState {
   updateProject: (updates: Partial<ProjectDetail>) => void;
   updateProjectTitle: (title: string) => void;
   addChapter: (chapter?: Chapter) => void;
+  removeChapter: (chapter_id: number) => void;
   updateChapterField: (
     index: number,
     field: keyof Chapter,
@@ -67,6 +68,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         project: {
           ...state.project,
           chapters: [...(state.project.chapters || []), chapter],
+        },
+      };
+    }),
+
+  removeChapter: (chapter_id: number) =>
+    set((state) => {
+      if (!state.project?.chapters) return state;
+      return {
+        project: {
+          ...state.project,
+          chapters: state.project.chapters.filter(
+            (chapter) => chapter.chapter_id !== chapter_id
+          ),
         },
       };
     }),
