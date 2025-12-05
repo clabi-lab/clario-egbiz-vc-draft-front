@@ -14,11 +14,14 @@ import { CustomTextField } from "@/shared/components/CustomTextField";
 import { useDialogStore } from "@/shared/store/useDialogStore";
 
 import { fetchProjects } from "../services/home";
+
 import { Project } from "../types";
+import { useProjectStore } from "@/features/project/store/useProjectStore";
 
 const HomePage = () => {
   const router = useRouter();
   const { openCustomDialog } = useDialogStore();
+  const { setPdfData } = useProjectStore();
 
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,7 +30,10 @@ const HomePage = () => {
 
   const handleOpenDialog = () => {
     openCustomDialog(CreateProjectDialog, {
-      onCreateProject: () => {
+      onCreateProject: (pdfData?: any) => {
+        if (pdfData) {
+          setPdfData(pdfData);
+        }
         router.push("/project");
       },
     });
@@ -38,7 +44,6 @@ const HomePage = () => {
       setLoading(true);
       const response = await fetchProjects(search);
 
-      console.log(response);
       setProjects(response.data);
       setTotalCount(response.totalCount || 0);
       setLoading(false);

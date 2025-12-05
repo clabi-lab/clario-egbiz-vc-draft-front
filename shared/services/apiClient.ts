@@ -4,6 +4,7 @@ interface ApiOptions<TRequestBody = unknown> extends Omit<RequestInit, "body"> {
   retryDelay?: number; // 첫 재시도 대기 시간(ms, 기본값: 1000)
   signal?: AbortSignal; // 요청 취소를 위한 signal
   responseType?: "json" | "blob"; // 응답 타입 (기본값: json)
+  baseUrl?: string; // 기본 서버 URL (기본값: NEXT_PUBLIC_BACKEND_SERVER)
 }
 
 const parseResponse = async <T>(response: Response): Promise<T> => {
@@ -42,6 +43,7 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
     retryDelay = 1000,
     signal,
     responseType = "json",
+    baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER,
     ...rest
   } = options;
 
@@ -54,17 +56,14 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
           ? { ...headers }
           : { "Content-Type": "application/json", ...headers };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_SERVER}${endpoint}`,
-        {
-          ...rest,
-          method,
-          headers: fetchHeaders,
-          credentials: "include",
-          body: data ? JSON.stringify(data) : undefined,
-          signal,
-        }
-      );
+      const response = await fetch(`${baseUrl}${endpoint}`, {
+        ...rest,
+        method,
+        headers: fetchHeaders,
+        credentials: "include",
+        body: data ? JSON.stringify(data) : undefined,
+        signal,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();

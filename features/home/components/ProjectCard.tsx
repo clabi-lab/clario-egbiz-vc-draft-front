@@ -122,14 +122,20 @@ const ProjectCard = ({
         </div>
       </div>
       <div className="mt-2">
-        <p className="text-sm text-gray-500 flex items-center gap-1">
-          <CalendarIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
+        <p className="text-sm text-gray-500 flex gap-1">
+          <CalendarIcon
+            sx={{ width: 16, height: 16, marginTop: "1px" }}
+            aria-hidden="true"
+          />
           <span>
             생성일: {dayjs(project.created_at).format("YYYY년 MM월 DD일")}
           </span>
         </p>
-        <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
-          <CalendarIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
+        <p className="text-sm text-gray-500 mt-2 flex gap-1">
+          <CalendarIcon
+            sx={{ width: 16, height: 16, marginTop: "1px" }}
+            aria-hidden="true"
+          />
           <span>
             수정일: {dayjs(project.updated_at).format("YYYY년 MM월 DD일 HH:mm")}
           </span>
