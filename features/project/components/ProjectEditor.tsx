@@ -7,9 +7,12 @@ import { CompanyInfoCard, ProjectForm, ProjectPreview } from ".";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
 import { useDialogStore } from "@/shared/store/useDialogStore";
 import { useResizer } from "@/features/project/hooks/useResizer";
+import { useAlertStore } from "@/shared/store/useAlertStore";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+
+import { downloadProjectDocx } from "../services/project";
 
 const ProjectEditor = () => {
   const router = useRouter();
@@ -21,6 +24,7 @@ const ProjectEditor = () => {
   });
 
   const { openDialog } = useDialogStore();
+  const { openAlert } = useAlertStore();
 
   const { project, loading } = useProjectStore();
 
@@ -37,8 +41,26 @@ const ProjectEditor = () => {
     });
   };
 
-  const handleDownloadDock = () => {
-    console.log("download dock");
+  const handleDownloadDocx = async () => {
+    if (!project?.project_id) {
+      return;
+    }
+
+    try {
+      await downloadProjectDocx(project.project_id, project.project_name);
+      openAlert({
+        message: "DOCX 다운로드가 완료되었습니다.",
+        severity: "success",
+        openTime: 2000,
+      });
+    } catch (error) {
+      console.error("다운로드 오류:", error);
+      openAlert({
+        message: "다운로드 중 오류가 발생했습니다.",
+        severity: "error",
+        openTime: 3000,
+      });
+    }
   };
 
   // 기업 정보 필드 정의
@@ -64,19 +86,21 @@ const ProjectEditor = () => {
           <IconButton onClick={handleBack} aria-label="목록으로 돌아가기">
             <ArrowBackIcon sx={{ width: 20, height: 20 }} aria-hidden="true" />
           </IconButton>
-          <Button
-            variant="contained"
-            startIcon={
-              <FileDownloadIcon
-                sx={{ width: 16, height: 16 }}
-                aria-hidden="true"
-              />
-            }
-            onClick={handleDownloadDock}
-            aria-label="DOCK 다운로드"
-          >
-            DOCK 다운로드
-          </Button>
+          {project?.project_id && (
+            <Button
+              variant="contained"
+              startIcon={
+                <FileDownloadIcon
+                  sx={{ width: 16, height: 16 }}
+                  aria-hidden="true"
+                />
+              }
+              onClick={handleDownloadDocx}
+              aria-label="DOCX 다운로드"
+            >
+              DOCX 다운로드
+            </Button>
+          )}
         </div>
       </nav>
 

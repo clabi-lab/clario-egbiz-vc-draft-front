@@ -5,6 +5,7 @@ import {
   Chapter,
   ProjectDetail,
 } from "../types";
+import dayjs from "dayjs";
 
 export type { GenerateContentRequest };
 
@@ -35,6 +36,35 @@ export const updateProject = async (
   return response;
 };
 
+export const downloadProjectDocx = async (
+  project_id: number,
+  project_name: string
+) => {
+  try {
+    const blob = await apiClient<Blob>(`/project/${project_id}/docx`, {
+      method: "GET",
+      responseType: "blob",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${project_name}_${dayjs().format("YYYYMMDD")}.docx`;
+
+    document.body.appendChild(link);
+    link.click();
+
+    // 정리
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    return true;
+  } catch (error) {
+    console.error("DOCX 다운로드 오류:", error);
+    throw error;
+  }
+};
+
 // Chapter 관련 API
 export const createChapter = async (project_id: number, chapter: Chapter) => {
   const response = await apiClient(`/chapter/create`, {
@@ -59,20 +89,21 @@ export const deleteChapter = async (chapter_id: number) => {
   return response;
 };
 
-// AI 스트리밍 생성 (클라이언트에서 직접 fetch를 사용하므로 이 함수는 참고용)
-export const generateAIContent = async (
-  request: GenerateContentRequest,
+// AI 스트리밍 생성 - 공통 함수
+export const streamAIContent = async (
+  url: string,
+  requestBody: any,
   onChunk: (content: string) => void,
   onError: (error: Error) => void,
   onComplete: () => void
 ) => {
   try {
-    const response = await fetch("/api/ai/generate", {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

@@ -3,6 +3,7 @@ interface ApiOptions<TRequestBody = unknown> extends Omit<RequestInit, "body"> {
   retries?: number; // 재시도 횟수 (기본값: 3)
   retryDelay?: number; // 첫 재시도 대기 시간(ms, 기본값: 1000)
   signal?: AbortSignal; // 요청 취소를 위한 signal
+  responseType?: "json" | "blob"; // 응답 타입 (기본값: json)
 }
 
 const parseResponse = async <T>(response: Response): Promise<T> => {
@@ -40,6 +41,7 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
     retries = 3,
     retryDelay = 1000,
     signal,
+    responseType = "json",
     ...rest
   } = options;
 
@@ -47,15 +49,17 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
+      const fetchHeaders: HeadersInit =
+        responseType === "blob"
+          ? { ...headers }
+          : { "Content-Type": "application/json", ...headers };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_SERVER}${endpoint}`,
         {
           ...rest,
           method,
-          headers: {
-            "Content-Type": "application/json",
-            ...headers,
-          },
+          headers: fetchHeaders,
           credentials: "include",
           body: data ? JSON.stringify(data) : undefined,
           signal,
@@ -86,6 +90,11 @@ export async function apiClient<TResponse, TRequestBody = unknown>(
         }
 
         throw error;
+      }
+
+      // responseType에 따라 다르게 처리
+      if (responseType === "blob") {
+        return response.blob() as Promise<TResponse>;
       }
 
       return parseResponse<TResponse>(response);
