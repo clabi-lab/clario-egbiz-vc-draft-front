@@ -1,23 +1,29 @@
 import { create } from "zustand";
 import { Chapter, Company, ProjectDetail } from "../types";
+import { ClaDocStatusResponse } from "@/features/home/services/cladoc";
 
 export type { Chapter, Company, ProjectDetail };
+
+export type PdfData = ClaDocStatusResponse;
 
 interface ProjectState {
   project: ProjectDetail | null;
   loading: boolean;
   draggedIndex: number | null;
+  pdfData: PdfData | null;
 
   setProject: (project: ProjectDetail | null) => void;
   setLoading: (loading: boolean) => void;
+  setPdfData: (pdfData: PdfData | null) => void;
   updateProject: (updates: Partial<ProjectDetail>) => void;
   updateProjectTitle: (title: string) => void;
-  addChapter: (chapter?: Chapter) => void;
-  removeChapter: (chapter_id: number) => void;
+  addLocalChapter: (chapter?: Chapter) => void;
+  removeLocalChapter: (chapter_id: number) => void;
+  updateLocalChapter: (index: number, updates: Partial<Chapter>) => void;
   updateChapterField: (
     index: number,
     field: keyof Chapter,
-    value: string
+    value: string | number | boolean
   ) => void;
   reorderChapters: (fromIndex: number, toIndex: number) => void;
   setDraggedIndex: (index: number | null) => void;
@@ -40,6 +46,7 @@ const INITIAL_STATE = {
   project: null,
   loading: false,
   draggedIndex: null,
+  pdfData: null,
 };
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
@@ -48,6 +55,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setProject: (project) => set({ project }),
 
   setLoading: (loading) => set({ loading }),
+
+  setPdfData: (pdfData) => set({ pdfData }),
 
   updateProject: (updates) =>
     set((state) => {
@@ -61,7 +70,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return { project: { ...state.project, project_name: title } };
     }),
 
-  addChapter: (chapter = DEFAULT_CHAPTER) =>
+  addLocalChapter: (chapter = DEFAULT_CHAPTER) =>
     set((state) => {
       if (!state.project) return state;
       return {
@@ -72,7 +81,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       };
     }),
 
-  removeChapter: (chapter_id: number) =>
+  removeLocalChapter: (chapter_id: number) =>
     set((state) => {
       if (!state.project?.chapters) return state;
       return {
@@ -80,6 +89,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           ...state.project,
           chapters: state.project.chapters.filter(
             (chapter) => chapter.chapter_id !== chapter_id
+          ),
+        },
+      };
+    }),
+
+  updateLocalChapter: (index, updates) =>
+    set((state) => {
+      if (!state.project?.chapters) return state;
+      return {
+        project: {
+          ...state.project,
+          chapters: state.project.chapters.map((chapter, i) =>
+            i === index ? { ...chapter, ...updates } : chapter
           ),
         },
       };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Button, IconButton } from "@mui/material";
 import { CustomTextField } from "@/shared/components/CustomTextField";
@@ -15,12 +15,15 @@ import CheckIcon from "@mui/icons-material/CheckOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SendIcon from "@mui/icons-material/Send";
 
 import {
   updateChapter,
   deleteChapter,
   createChapter,
   createProject,
+  rewriteChapter,
+  addChapter,
 } from "../services/project";
 
 interface ChapterItemProps {
@@ -57,8 +60,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     handleDragStart,
     handleDragEnter,
     handleDragEnd,
+    updateLocalChapter,
     updateChapterField,
-    removeChapter,
+    removeLocalChapter,
   } = useProjectStore();
   const { user } = useUserStore();
 
@@ -71,19 +75,6 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     setLocalDraftContent(chapter.draftContent || "");
   }, [chapter.chapter_name, chapter.chapter_body, chapter.draftContent]);
 
-  const debouncedUpdate = useCallback(
-    (field: keyof Chapter, value: string) => {
-      if (debounceTimerRef.current[field]) {
-        clearTimeout(debounceTimerRef.current[field]);
-      }
-
-      debounceTimerRef.current[field] = setTimeout(() => {
-        updateChapterField(index, field, value);
-      }, 300);
-    },
-    [index, updateChapterField]
-  );
-
   useEffect(() => {
     return () => {
       Object.values(debounceTimerRef.current).forEach((timer) =>
@@ -91,6 +82,24 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       );
     };
   }, []);
+
+  const debouncedUpdate = (field: keyof Chapter, value: string) => {
+    if (debounceTimerRef.current[field]) {
+      clearTimeout(debounceTimerRef.current[field]);
+    }
+
+    debounceTimerRef.current[field] = setTimeout(() => {
+      updateChapterField(index, field, value);
+    }, 300);
+  };
+
+  const showAlert = (
+    message: string,
+    severity: "success" | "error" | "info",
+    openTime = 2000
+  ) => {
+    openAlert({ message, severity, openTime });
+  };
 
   const handleDeleteDialog = (chapter_id: number) => {
     openDialog({
@@ -108,181 +117,128 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       if (chapter_id !== 0) {
         await deleteChapter(chapter_id);
       }
-      removeChapter(chapter_id);
-      openAlert({
-        message: "챕터가 삭제되었습니다.",
-        severity: "success",
-        openTime: 2000,
-      });
+      removeLocalChapter(chapter_id);
+      showAlert("챕터가 삭제되었습니다.", "success");
     } catch (error) {
       console.error("챕터 삭제 오류:", error);
-      openAlert({
-        message: "챕터 삭제 중 오류가 발생했습니다.",
-        severity: "error",
-        openTime: 3000,
-      });
+      showAlert("챕터 삭제 중 오류가 발생했습니다.", "error", 3000);
     }
   };
 
   const handleToggleConfirm = () => {
     if (isConfirmed) {
       setIsConfirmed(false);
-      openAlert({
-        message: "본문 확정이 해제되었습니다.",
-        severity: "info",
-        openTime: 2000,
-      });
-    } else {
-      // 확정 전에 로컬 상태를 store에 동기화
-      const updatedChapter = {
-        ...chapter,
-        chapter_name: localChapterName,
-        chapter_body: localChapterBody,
-        draftContent: localDraftContent,
-      };
+      showAlert("본문 확정이 해제되었습니다.", "info");
+      return;
+    }
 
-      if (chapter.chapter_id) {
-        handleUpdateChapter(updatedChapter);
-      } else if (project) {
-        handleCreateChapter(updatedChapter);
-      }
+    const updatedChapter = {
+      ...chapter,
+      chapter_name: localChapterName,
+      chapter_body: localDraftContent ?? localChapterBody,
+      draftContent: "",
+    };
+
+    if (chapter.chapter_id) {
+      handleUpdateChapter(updatedChapter);
+    } else if (project) {
+      handleCreateChapter(updatedChapter);
     }
   };
 
   const handleUpdateChapter = async (chapter: Chapter) => {
     try {
-      await updateChapter(chapter.chapter_id, chapter);
+      await updateChapter(chapter.chapter_id, {
+        chapter_name: chapter.chapter_name,
+        chapter_body: chapter.chapter_body || "",
+        ai_create_count: chapter.ai_create_count,
+        token_count: chapter.token_count || 0,
+      });
 
       setIsConfirmed(true);
-      openAlert({
-        message: "초안이 본문으로 확정되었습니다.",
-        severity: "success",
-        openTime: 2000,
-      });
+      updateLocalChapter(index, chapter);
+      showAlert("초안이 본문으로 확정되었습니다.", "success");
     } catch (error) {
       console.error("챕터 확정 오류:", error);
-      openAlert({
-        message: "챕터 확정 중 오류가 발생했습니다.",
-        severity: "error",
-        openTime: 3000,
-      });
+      showAlert("챕터 확정 중 오류가 발생했습니다.", "error", 3000);
     }
   };
 
   const handleCreateChapter = async (chapter: Chapter) => {
     try {
-      if (project?.project_id) {
-        await createChapter(project.project_id, chapter);
-      } else {
+      let projectId = project?.project_id;
+
+      if (!projectId) {
         const response = await createProject({
-          user_id: user?.user_id || 0,
+          user_id: user?.user_id || "",
           biz_name: user?.company?.company_name || "",
           pdf_yn: false,
           project_name: project?.project_name,
           chapters: project?.chapters || [],
         });
+        projectId = response.project_id;
+      }
 
-        if (response.project_id) {
-          await createChapter(response.project_id, chapter);
-        }
+      if (projectId) {
+        await createChapter(projectId, chapter);
       }
 
       setIsConfirmed(true);
-      openAlert({
-        message: "챕터가 생성되었습니다.",
-        severity: "success",
-        openTime: 2000,
-      });
+      showAlert("챕터가 생성되었습니다.", "success");
     } catch (error) {
       console.error("챕터 생성 오류:", error);
-      openAlert({
-        message: "챕터 생성 중 오류가 발생했습니다.",
-        severity: "error",
-        openTime: 3000,
-      });
+      showAlert("챕터 생성 중 오류가 발생했습니다.", "error", 3000);
     }
   };
 
+  const resetDraftContent = () => {
+    setLocalDraftContent("");
+    updateChapterField(index, "draftContent", "");
+  };
+
+  const setGeneratedContent = (content: string) => {
+    setLocalDraftContent(content);
+    updateChapterField(index, "draftContent", content);
+    setIsGenerating(false);
+    setAiPrompt("");
+  };
+
   const generateContent = async (prompt: string) => {
-    if (!prompt.trim()) {
-      openAlert({
-        message: "프롬프트를 입력해주세요.",
-        severity: "warning",
-        openTime: 2000,
-      });
+    setIsGenerating(true);
+    resetDraftContent();
+
+    const response = await addChapter({
+      project_name: project?.project_name || "",
+      user_id: user?.user_id || "",
+      biz_name: user?.company?.company_name || "",
+      project_id: project?.project_id?.toString() || "",
+      chapter_name: chapter.chapter_name || "",
+    });
+
+    setGeneratedContent(response[0].chapter_body);
+  };
+
+  const regenerateContentWithClario = async (prompt: string) => {
+    if (!project?.project_id) {
+      showAlert("프로젝트 정보를 찾을 수 없습니다.", "error");
       return;
     }
 
     setIsGenerating(true);
-    setLocalDraftContent("");
-    updateChapterField(index, "draftContent", "");
+    resetDraftContent();
 
-    try {
-      const response = await fetch("/api/ai/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          chapterTitle: chapter.chapter_name,
-          chapterContent: chapter.chapter_body,
-        }),
-      });
+    const response = await rewriteChapter({
+      project_name: project.project_name || "",
+      user_id: user?.user_id || "",
+      biz_name: user?.company?.company_name || "",
+      project_id: project.project_id.toString(),
+      chapter_id: chapter.chapter_id,
+      chapter_name: chapter.chapter_name || "",
+      generation_count: 0,
+      user_prompt: prompt,
+    });
 
-      if (!response.ok) {
-        throw new Error(`AI 생성 실패: ${response.status}`);
-      }
-
-      if (!response.body) {
-        throw new Error("스트리밍 응답을 받을 수 없습니다.");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulatedContent = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
-
-        for (const line of lines) {
-          try {
-            const data = JSON.parse(line);
-            if (data.content) {
-              accumulatedContent += data.content;
-              setLocalDraftContent(accumulatedContent);
-              updateChapterField(index, "draftContent", accumulatedContent);
-            }
-            if (data.error) {
-              throw new Error(data.error);
-            }
-          } catch (parseError) {
-            console.warn("JSON 파싱 실패:", line);
-          }
-        }
-      }
-
-      openAlert({
-        message: "AI 생성이 완료되었습니다.",
-        severity: "success",
-        openTime: 2000,
-      });
-    } catch (error) {
-      console.error("AI 생성 오류:", error);
-      openAlert({
-        message:
-          error instanceof Error
-            ? error.message
-            : "AI 생성 중 오류가 발생했습니다.",
-        severity: "error",
-        openTime: 3000,
-      });
-    } finally {
-      setIsGenerating(false);
-      setAiPrompt("");
-    }
+    setGeneratedContent(response[0].chapter_body);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -295,11 +251,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const handleDragEndEvent = () => {
     handleDragEnd();
     setIsDraggable(false);
-    openAlert({
-      message: "챕터 순서가 변경되었습니다.",
-      severity: "success",
-      openTime: 2000,
-    });
+    showAlert("챕터 순서가 변경되었습니다.", "success");
   };
 
   const handleDragEnterEvent = () => {
@@ -307,17 +259,33 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     setIsDragOver(true);
   };
 
-  const getChapterClassName = () => {
-    const baseClasses =
-      "rounded-md p-4 flex flex-col gap-4 my-4 transition-all";
-    const bgClass = isConfirmed ? "bg-[#fafefc]" : "bg-white";
-    const borderClass = isConfirmed
-      ? "border border-[#b9f8cf]"
-      : "border border-gray-200";
-    const dragClass = isDragOver ? "border-blue-500 bg-blue-50" : "";
-
-    return `${baseClasses} ${bgClass} ${borderClass} ${dragClass}`;
+  const handleChapterNameChange = (value: string) => {
+    setLocalChapterName(value);
+    debouncedUpdate("chapter_name", value);
   };
+
+  const handleChapterBodyChange = (value: string) => {
+    setLocalChapterBody(value);
+    debouncedUpdate("chapter_body", value);
+  };
+
+  const handleDraftContentChange = (value: string) => {
+    setLocalDraftContent(value);
+    debouncedUpdate("draftContent", value);
+  };
+
+  const getChapterClassName = () => {
+    const classes = [
+      "rounded-md p-4 flex flex-col gap-4 my-4 transition-all",
+      isConfirmed
+        ? "bg-[#fafefc] border border-[#b9f8cf]"
+        : "bg-white border border-gray-200",
+      isDragOver ? "border-blue-500 bg-blue-50" : "",
+    ];
+    return classes.join(" ");
+  };
+
+  const isDisabledForGeneration = isGenerating || isConfirmed;
 
   return (
     <div
@@ -352,10 +320,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             variant="filled"
             hiddenLabel
             value={localChapterName}
-            onChange={(e) => {
-              setLocalChapterName(e.target.value);
-              debouncedUpdate("chapter_name", e.target.value);
-            }}
+            onChange={(e) => handleChapterNameChange(e.target.value)}
             fullWidth
             disabled={isConfirmed}
             slotProps={{
@@ -396,11 +361,8 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               hiddenLabel
               fullWidth
               value={localChapterBody}
-              onChange={(e) => {
-                setLocalChapterBody(e.target.value);
-                debouncedUpdate("chapter_body", e.target.value);
-              }}
-              disabled={isConfirmed}
+              onChange={(e) => handleChapterBodyChange(e.target.value)}
+              disabled={!!localChapterBody}
               slotProps={{
                 input: {
                   "aria-label": "확정된 본문",
@@ -424,11 +386,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               multiline
               fullWidth
               value={localDraftContent}
-              onChange={(e) => {
-                setLocalDraftContent(e.target.value);
-                debouncedUpdate("draftContent", e.target.value);
-              }}
-              disabled={isGenerating || isConfirmed}
+              onChange={(e) => handleDraftContentChange(e.target.value)}
+              disabled={isDisabledForGeneration}
+              loading={isGenerating}
               slotProps={{
                 input: {
                   "aria-label": "생성 초안",
@@ -437,7 +397,10 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             />
           </fieldset>
 
-          <fieldset onMouseDown={() => setIsDraggable(false)}>
+          <fieldset
+            onMouseDown={() => setIsDraggable(false)}
+            className="flex items-center justify-between gap-2"
+          >
             <legend className="text-sm mb-1">AI 생성 프롬프트</legend>
             <CustomTextField
               className="w-full"
@@ -451,13 +414,31 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isGenerating || isConfirmed}
+              disabled={isDisabledForGeneration}
               slotProps={{
                 input: {
                   "aria-label": "AI 생성 프롬프트",
                 },
               }}
             />
+            <Button
+              size="small"
+              color="primary"
+              variant="contained"
+              className="h-[88px]"
+              onClick={() => generateContent(aiPrompt)}
+              disabled={isDisabledForGeneration}
+              sx={{
+                minWidth: "36px",
+                "& .MuiSvgIcon-root": {
+                  width: "20px",
+                  height: "20px",
+                  transform: "translateX(3px) rotate(-35deg)",
+                },
+              }}
+            >
+              <SendIcon aria-hidden="true" />
+            </Button>
           </fieldset>
 
           <div
@@ -471,7 +452,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                 startIcon={<AutoIcon aria-hidden="true" />}
                 size="small"
                 onClick={() => generateContent(aiPrompt)}
-                disabled={isGenerating || !aiPrompt.trim() || isConfirmed}
+                disabled={isDisabledForGeneration}
                 aria-label="AI로 초안 생성"
               >
                 {isGenerating ? "생성 중..." : "기본 생성"}
@@ -482,8 +463,8 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                 color="primary"
                 startIcon={<ReplayIcon aria-hidden="true" />}
                 size="small"
-                onClick={() => generateContent(aiPrompt)}
-                disabled={isGenerating || !aiPrompt.trim() || isConfirmed}
+                onClick={() => regenerateContentWithClario(aiPrompt)}
+                disabled={isDisabledForGeneration}
                 aria-label="AI 초안 재생성"
               >
                 재생성
@@ -495,7 +476,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                 startIcon={<CheckIcon aria-hidden="true" />}
                 size="small"
                 onClick={handleToggleConfirm}
-                disabled={!localChapterBody || isGenerating}
+                disabled={isGenerating}
                 aria-label={
                   isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
                 }

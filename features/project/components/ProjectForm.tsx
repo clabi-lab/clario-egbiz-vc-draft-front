@@ -23,8 +23,14 @@ export const ProjectForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { openAlert } = useAlertStore();
-  const { project, addChapter, updateProjectTitle, setProject } =
-    useProjectStore();
+  const {
+    project,
+    addLocalChapter,
+    updateProjectTitle,
+    setProject,
+    pdfData,
+    setPdfData,
+  } = useProjectStore();
   const { user } = useUserStore();
 
   const handleUpdateTitle = async (value: string) => {
@@ -40,16 +46,21 @@ export const ProjectForm = () => {
       }
 
       const response = await createProject({
-        user_id: user?.user_id || 0,
+        user_id: user?.user_id || "",
         biz_name: user?.company?.company_name || "",
-        pdf_yn: false,
+        pdf_yn: !!pdfData,
         project_name: value,
         chapters: project?.chapters || [],
+        pdf_key: pdfData?.task_id || "",
+        pdf_json: pdfData ? JSON.stringify(pdfData) : undefined,
+        pdf_processing_json: pdfData ? JSON.stringify(pdfData) : undefined,
       });
 
       if (response.project_id) {
         router.push(`/project/${response.project_id}`);
         setProject(response);
+        // PDF 데이터 사용 완료 후 초기화
+        setPdfData(null);
       }
 
       openAlert({
@@ -68,7 +79,7 @@ export const ProjectForm = () => {
   };
 
   const handleAddChapter = () => {
-    addChapter();
+    addLocalChapter();
     setTimeout(() => {
       const scrollContainer = formRef.current?.parentElement;
       if (scrollContainer) {

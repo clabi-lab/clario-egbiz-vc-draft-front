@@ -1,6 +1,6 @@
 "use client";
 
-import { TextField, TextFieldProps } from "@mui/material";
+import { TextField, TextFieldProps, CircularProgress } from "@mui/material";
 import { forwardRef } from "react";
 
 type CustomTextFieldProps = Omit<TextFieldProps, "variant"> & {
@@ -8,6 +8,7 @@ type CustomTextFieldProps = Omit<TextFieldProps, "variant"> & {
   bgColor?: string;
   textColor?: string;
   borderColor?: string;
+  loading?: boolean;
 };
 
 /**
@@ -19,7 +20,15 @@ type CustomTextFieldProps = Omit<TextFieldProps, "variant"> & {
  */
 export const CustomTextField = forwardRef<HTMLDivElement, CustomTextFieldProps>(
   (
-    { variant = "filled", bgColor = "#f3f3f5", borderColor, sx, ...props },
+    {
+      variant = "filled",
+      bgColor = "#f3f3f5",
+      borderColor,
+      sx,
+      loading,
+      slotProps,
+      ...props
+    },
     ref
   ) => {
     const defaultSx =
@@ -60,7 +69,36 @@ export const CustomTextField = forwardRef<HTMLDivElement, CustomTextFieldProps>(
           }
         : sx;
 
-    return <TextField ref={ref} variant={variant} sx={defaultSx} {...props} />;
+    return (
+      <div style={{ position: "relative", width: "100%" }}>
+        <TextField
+          ref={ref}
+          variant={variant}
+          sx={defaultSx}
+          slotProps={{
+            ...slotProps,
+            input: {
+              ...(slotProps?.input as any),
+            },
+          }}
+          {...props}
+        />
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          >
+            <CircularProgress size={24} />
+          </div>
+        )}
+      </div>
+    );
   }
 );
 

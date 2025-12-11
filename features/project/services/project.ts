@@ -1,13 +1,15 @@
 import { apiClient } from "@/shared/services/apiClient";
 import {
-  GenerateContentRequest,
   ProjectCreateRequest,
   Chapter,
   ProjectDetail,
+  DraftChapterRequest,
+  RewriteChapterRequest,
+  AddChapterRequest,
+  UpdateChapterRequest,
 } from "../types";
-import dayjs from "dayjs";
 
-export type { GenerateContentRequest };
+import dayjs from "dayjs";
 
 // Project 관련 API
 export const fetchProject = async (project_id: string) => {
@@ -74,7 +76,10 @@ export const createChapter = async (project_id: number, chapter: Chapter) => {
   return response;
 };
 
-export const updateChapter = async (chapter_id: number, chapter: Chapter) => {
+export const updateChapter = async (
+  chapter_id: number,
+  chapter: UpdateChapterRequest
+) => {
   const response = await apiClient(`/chapter/${chapter_id}/update`, {
     method: "POST",
     data: chapter,
@@ -89,60 +94,32 @@ export const deleteChapter = async (chapter_id: number) => {
   return response;
 };
 
-// AI 스트리밍 생성 - 공통 함수
-export const streamAIContent = async (
-  url: string,
-  requestBody: any,
-  onChunk: (content: string) => void,
-  onError: (error: Error) => void,
-  onComplete: () => void
-) => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
+// AI 통한 챕터 초안 생성
+export const draftChapter = async (data: DraftChapterRequest) => {
+  const response = await apiClient(`/draft`, {
+    method: "POST",
+    data: data,
+    baseUrl: process.env.NEXT_PUBLIC_CLARIO_SERVER,
+  });
+  return response;
+};
 
-    if (!response.ok) {
-      throw new Error(`AI 생성 실패: ${response.status}`);
-    }
+// AI 통한 챕터 재생성
+export const rewriteChapter = async (data: RewriteChapterRequest) => {
+  const response = await apiClient<{ items: Chapter[] }>(`/rewrite_chapter`, {
+    method: "POST",
+    data: data,
+    baseUrl: process.env.NEXT_PUBLIC_CLARIO_SERVER,
+  });
+  return response.items;
+};
 
-    if (!response.body) {
-      throw new Error("스트리밍 응답을 받을 수 없습니다.");
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        onComplete();
-        break;
-      }
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n").filter((line) => line.trim() !== "");
-
-      for (const line of lines) {
-        try {
-          const data = JSON.parse(line);
-          if (data.content) {
-            onChunk(data.content);
-          }
-          if (data.error) {
-            throw new Error(data.error);
-          }
-        } catch (parseError) {
-          console.warn("JSON 파싱 실패:", line);
-        }
-      }
-    }
-  } catch (error) {
-    onError(error instanceof Error ? error : new Error("알 수 없는 오류"));
-  }
+// AI 통한 챕터 추가
+export const addChapter = async (data: AddChapterRequest) => {
+  const response = await apiClient<{ items: Chapter[] }>(`/add_chapter`, {
+    method: "POST",
+    data: data,
+    baseUrl: process.env.NEXT_PUBLIC_CLARIO_SERVER,
+  });
+  return response.items;
 };
