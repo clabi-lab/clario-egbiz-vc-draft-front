@@ -171,7 +171,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       if (!projectId) {
         const response = await createProject({
           user_id: user?.user_id || "",
-          biz_name: user?.company?.company_name || "",
+          biz_name: user?.company?.name || "",
           pdf_yn: false,
           project_name: project?.project_name,
           chapters: project?.chapters || [],
@@ -210,7 +210,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     const response = await addChapter({
       project_name: project?.project_name || "",
       user_id: user?.user_id || "",
-      biz_name: user?.company?.company_name || "",
+      biz_name: user?.company?.name || "",
       project_id: project?.project_id?.toString() || "",
       chapter_name: chapter.chapter_name || "",
     });
@@ -230,7 +230,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     const response = await rewriteChapter({
       project_name: project.project_name || "",
       user_id: user?.user_id || "",
-      biz_name: user?.company?.company_name || "",
+      biz_name: user?.company?.name || "",
       project_id: project.project_id.toString(),
       chapter_id: chapter.chapter_id,
       chapter_name: chapter.chapter_name || "",
@@ -446,43 +446,47 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             onMouseDown={() => setIsDraggable(false)}
           >
             <div className="flex items-center gap-2 flex-wrap">
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<AutoIcon aria-hidden="true" />}
-                size="small"
-                onClick={() => generateContent(aiPrompt)}
-                disabled={isDisabledForGeneration}
-                aria-label="AI로 초안 생성"
-              >
-                {isGenerating ? "생성 중..." : "기본 생성"}
-              </Button>
+              {chapter.chapter_body ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<ReplayIcon aria-hidden="true" />}
+                    size="small"
+                    onClick={() => regenerateContentWithClario(aiPrompt)}
+                    disabled={isDisabledForGeneration}
+                    aria-label="AI 초안 재생성"
+                  >
+                    재생성
+                  </Button>
 
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<ReplayIcon aria-hidden="true" />}
-                size="small"
-                onClick={() => regenerateContentWithClario(aiPrompt)}
-                disabled={isDisabledForGeneration}
-                aria-label="AI 초안 재생성"
-              >
-                재생성
-              </Button>
-
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<CheckIcon aria-hidden="true" />}
-                size="small"
-                onClick={handleToggleConfirm}
-                disabled={isGenerating}
-                aria-label={
-                  isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
-                }
-              >
-                {isConfirmed ? "확정 해제" : "확정"}
-              </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<CheckIcon aria-hidden="true" />}
+                    size="small"
+                    onClick={handleToggleConfirm}
+                    disabled={isGenerating}
+                    aria-label={
+                      isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
+                    }
+                  >
+                    {isConfirmed ? "확정 해제" : "확정"}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<AutoIcon aria-hidden="true" />}
+                  size="small"
+                  onClick={() => generateContent(aiPrompt)}
+                  disabled={isDisabledForGeneration}
+                  aria-label="AI로 초안 생성"
+                >
+                  {isGenerating ? "생성 중..." : "기본 생성"}
+                </Button>
+              )}
             </div>
 
             <Button
