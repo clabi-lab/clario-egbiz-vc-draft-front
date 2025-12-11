@@ -1,18 +1,17 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export interface UserCompany {
-  company_id: number;
-  company_name: string;
+export interface Company {
+  name?: string;
   description?: string;
-  founded_at?: string;
+  foundedAt?: string;
   ceo?: string;
   service?: string;
 }
 
 export interface User {
   user_id: string;
-  company: UserCompany | null;
+  company: Company | null;
 }
 
 interface UserState {
@@ -27,8 +26,19 @@ interface UserState {
 const parseToken = (token: string): User | null => {
   try {
     const payload = token.split(".")[1];
-    const decoded = JSON.parse(atob(payload));
+    // const decoded = JSON.parse(atob(payload));
 
+    // 추후 하드 코딩 제거
+    const decoded = {
+      user_id: "586-88-02378",
+      company: {
+        name: "클라비",
+        description: "클라비는 컴퓨 및 클라우드서비스를 제공하는 회사입니다.",
+        foundedAt: "2022-07-12",
+        ceo: "안인구",
+        service: "컴퓨 및 클라우드서비스",
+      },
+    };
     return {
       user_id: decoded.user_id,
       company: decoded.company ?? null,
