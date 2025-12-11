@@ -25,8 +25,8 @@ export interface ProjectDetail {
 
   project_id?: number;
   pdf_key?: string;
-  pdf_json?: string;
-  pdf_processing_json?: string;
+  pdf_json?: string | null;
+  pdf_processing_json?: string | null;
   chapters?: Chapter[];
   updated_at?: string;
   user_id?: number;
@@ -40,8 +40,8 @@ export interface ProjectCreateRequest {
 
   project_name?: string;
   pdf_key?: string;
-  pdf_json?: string;
-  pdf_processing_json?: string;
+  pdf_json?: string | null;
+  pdf_processing_json?: string | null;
   chapters?: Chapter[];
 
   company?: Company;
@@ -52,7 +52,7 @@ export interface DraftChapterRequest {
   project_name: string;
   user_id: string;
   biz_name: string;
-  pdf_key: string;
+  pdf_key: string | null;
   pdf_json: any;
 }
 

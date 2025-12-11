@@ -21,7 +21,7 @@ import { useProjectStore } from "@/features/project/store/useProjectStore";
 const HomePage = () => {
   const router = useRouter();
   const { openCustomDialog } = useDialogStore();
-  const { setPdfData } = useProjectStore();
+  const { setPdfData, setProject } = useProjectStore();
 
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +34,7 @@ const HomePage = () => {
         if (pdfData) {
           setPdfData(pdfData);
         }
-        router.push("/project");
+        router.push(`/project/new`);
       },
     });
   };
