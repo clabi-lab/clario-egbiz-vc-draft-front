@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useUserStore } from "@/shared/store/useUserStore";
 import { useParams, useRouter } from "next/navigation";
 import { useProjectStore } from "@/features/project/store/useProjectStore";
@@ -29,6 +29,10 @@ const ProjectDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 중복 실행 방지를 위한 ref
+  const isProcessingRef = useRef(false);
+  const prevProjectIdRef = useRef<string | null>(null);
+
   // 프로젝트가 이미 생성된 경우 리다이렉트
   const redirectToExistingProject = () => {
     if (project?.project_id) {
@@ -48,7 +52,9 @@ const ProjectDetailPage = () => {
       const response = await createProject({
         user_id: user?.user_id.toString() ?? "",
         biz_name: user?.company?.name ?? "",
-        project_name: project?.project_name ?? "",
+        project_name:
+          project?.project_name ??
+          `새 프로젝트 ${new Date().toISOString().split("T")[0]}`,
         chapters,
         pdf_yn: !!pdfData,
         pdf_key: pdfData?.task_id ?? "",
@@ -66,7 +72,9 @@ const ProjectDetailPage = () => {
 
   // PDF 데이터를 기반으로 챕터 초안 생성
   const generateChapterDraft = async () => {
-    if (redirectToExistingProject()) return;
+    if (redirectToExistingProject() || isProcessingRef.current) return;
+
+    isProcessingRef.current = true;
 
     try {
       const response = await draftChapter({
@@ -83,11 +91,17 @@ const ProjectDetailPage = () => {
       console.error("챕터 초안 생성 실패:", err);
       setError("챕터 초안 생성에 실패했습니다. 다시 시도해주세요.");
       setIsLoading(false);
+    } finally {
+      isProcessingRef.current = false;
     }
   };
 
   // 기존 프로젝트 불러오기
   const fetchExistingProject = async () => {
+    if (isProcessingRef.current) return;
+
+    isProcessingRef.current = true;
+
     try {
       setIsLoading(true);
       const response = await fetchProject(projectId);
@@ -102,18 +116,27 @@ const ProjectDetailPage = () => {
       setError("프로젝트를 불러오는데 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsLoading(false);
+      isProcessingRef.current = false;
     }
   };
 
   // 재시도 핸들러
   const handleRetry = () => {
+    if (isProcessingRef.current) return;
+
     setError(null);
     setIsLoading(true);
+    isProcessingRef.current = false; // 재시도를 위해 플래그 리셋
     generateChapterDraft();
   };
 
   // 프로젝트 초기화
   useEffect(() => {
+    // projectId가 변경되지 않았거나 처리 중이면 스킵
+    if (prevProjectIdRef.current === projectId || isProcessingRef.current)
+      return;
+
+    prevProjectIdRef.current = projectId;
     const isNewProject = projectId === "new";
 
     if (isNewProject) {
