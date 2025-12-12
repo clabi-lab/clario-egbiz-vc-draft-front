@@ -16,13 +16,23 @@ import { ProjectEditor } from "../components";
 
 import { createProject, draftChapter, fetchProject } from "../services/project";
 
-import { Chapter } from "../types";
+import { Chapter, DraftChapterResponse } from "../types";
+import { setFips } from "crypto";
 
 const ProjectDetailPage = () => {
   const params = useParams();
   const projectId = params.id as string;
 
-  const { pdfData, project, setProject, reset } = useProjectStore();
+  const {
+    pdfData,
+    project,
+    pdfJson,
+    pdfProcessingJson,
+    setProject,
+    reset,
+    setPdfJson,
+    setPdfProcessingJson,
+  } = useProjectStore();
   const { user } = useUserStore();
   const router = useRouter();
 
@@ -42,34 +52,6 @@ const ProjectDetailPage = () => {
     return false;
   };
 
-  // 프로젝트 생성 처리
-  const handleCreateProject = async (chapters: Chapter[]) => {
-    if (project?.project_id) return;
-
-    try {
-      const pdfJsonString = pdfData ? JSON.stringify(pdfData) : null;
-
-      const response = await createProject({
-        user_id: user?.user_id.toString() ?? "",
-        biz_name: user?.company?.name ?? "",
-        project_name:
-          project?.project_name ??
-          `새 프로젝트 ${new Date().toISOString().split("T")[0]}`,
-        chapters,
-        pdf_yn: !!pdfData,
-        pdf_key: pdfData?.task_id ?? "",
-        pdf_json: pdfJsonString,
-        pdf_processing_json: pdfJsonString,
-      });
-
-      router.push(`/project/${response.project_id}`);
-    } catch (err) {
-      console.error("프로젝트 생성 실패:", err);
-      setError("프로젝트 생성에 실패했습니다. 다시 시도해주세요.");
-      setIsLoading(false);
-    }
-  };
-
   // PDF 데이터를 기반으로 챕터 초안 생성
   const generateChapterDraft = async () => {
     if (redirectToExistingProject() || isProcessingRef.current) return;
@@ -85,14 +67,42 @@ const ProjectDetailPage = () => {
         pdf_json: pdfData,
       });
 
-      const chapters = (response as { items?: Chapter[] }).items ?? [];
-      await handleCreateProject(chapters);
+      setPdfJson(response.pdf_json);
+      setPdfProcessingJson(response.pdf_processing_json);
+
+      await handleCreateProject(response);
     } catch (err) {
       console.error("챕터 초안 생성 실패:", err);
       setError("챕터 초안 생성에 실패했습니다. 다시 시도해주세요.");
       setIsLoading(false);
     } finally {
       isProcessingRef.current = false;
+    }
+  };
+
+  // 프로젝트 생성 처리
+  const handleCreateProject = async (draftChapter: DraftChapterResponse) => {
+    if (project?.project_id) return;
+
+    try {
+      const response = await createProject({
+        user_id: user?.user_id.toString() ?? "",
+        biz_name: user?.company?.name ?? "",
+        project_name:
+          project?.project_name ??
+          `새 프로젝트 ${new Date().toISOString().split("T")[0]}`,
+        chapters: draftChapter.items,
+        pdf_yn: !!pdfData,
+        pdf_key: pdfData?.task_id ?? "",
+        pdf_json: JSON.stringify(draftChapter.pdf_json),
+        pdf_processing_json: JSON.stringify(draftChapter.pdf_processing_json),
+      });
+
+      router.push(`/project/${response.project_id}`);
+    } catch (err) {
+      console.error("프로젝트 생성 실패:", err);
+      setError("프로젝트 생성에 실패했습니다. 다시 시도해주세요.");
+      setIsLoading(false);
     }
   };
 

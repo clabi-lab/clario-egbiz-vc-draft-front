@@ -8,7 +8,6 @@ import { useDialogStore } from "@/shared/store/useDialogStore";
 import { useAlertStore } from "@/shared/store/useAlertStore";
 import { useUserStore } from "@/shared/store/useUserStore";
 
-import DragIcon from "@mui/icons-material/DragIndicatorOutlined";
 import AutoIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import ReplayIcon from "@mui/icons-material/ReplayOutlined";
 import CheckIcon from "@mui/icons-material/CheckOutlined";
@@ -32,8 +31,6 @@ interface ChapterItemProps {
 }
 
 export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [isDraggable, setIsDraggable] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(() => {
@@ -45,21 +42,13 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const [localChapterName, setLocalChapterName] = useState(
     chapter.chapter_name || ""
   );
-  const [localChapterBody, setLocalChapterBody] = useState(
-    chapter.chapter_body || ""
-  );
-  const [localDraftContent, setLocalDraftContent] = useState(
-    chapter.draftContent || ""
-  );
+  const [localDraftContent, setLocalDraftContent] = useState("");
 
   // debounce를 위한 타이머 ref
   const debounceTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   const {
     project,
-    handleDragStart,
-    handleDragEnter,
-    handleDragEnd,
     updateLocalChapter,
     updateChapterField,
     removeLocalChapter,
@@ -71,9 +60,8 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
 
   useEffect(() => {
     setLocalChapterName(chapter.chapter_name || "");
-    setLocalChapterBody(chapter.chapter_body || "");
-    setLocalDraftContent(chapter.draftContent || "");
-  }, [chapter.chapter_name, chapter.chapter_body, chapter.draftContent]);
+    setLocalDraftContent("");
+  }, [chapter.chapter_name, chapter.chapter_body, chapter.chapter_body]);
 
   useEffect(() => {
     return () => {
@@ -135,7 +123,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     const updatedChapter = {
       ...chapter,
       chapter_name: localChapterName,
-      chapter_body: localDraftContent ?? localChapterBody,
+      chapter_body: localDraftContent,
       draftContent: "",
     };
 
@@ -193,29 +181,34 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
 
   const resetDraftContent = () => {
     setLocalDraftContent("");
-    updateChapterField(index, "draftContent", "");
+    updateChapterField(index, "chapter_body", "");
   };
 
   const setGeneratedContent = (content: string) => {
     setLocalDraftContent(content);
-    updateChapterField(index, "draftContent", content);
+    updateChapterField(index, "chapter_body", content);
     setIsGenerating(false);
     setAiPrompt("");
   };
 
-  const generateContent = async (prompt: string) => {
+  const generateContent = async () => {
+    if (!project?.project_id) {
+      showAlert("프로젝트 정보를 찾을 수 없습니다.", "error");
+      return;
+    }
+
     setIsGenerating(true);
-    resetDraftContent();
 
     const response = await addChapter({
-      project_name: project?.project_name || "",
-      user_id: user?.user_id || "",
-      biz_name: user?.company?.name || "",
-      project_id: project?.project_id?.toString() || "",
-      chapter_name: chapter.chapter_name || "",
+      project_id: project?.project_id,
+      chapter_name: chapter.chapter_name,
     });
 
-    setGeneratedContent(response[0].chapter_body);
+    await createChapter(project?.project_id, response[0]);
+
+    updateLocalChapter(index, response[0]);
+    setIsGenerating(false);
+    setIsConfirmed(true);
   };
 
   const regenerateContentWithClario = async (prompt: string) => {
@@ -228,13 +221,11 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     resetDraftContent();
 
     const response = await rewriteChapter({
-      project_name: project.project_name || "",
-      user_id: user?.user_id || "",
-      biz_name: user?.company?.name || "",
-      project_id: project.project_id.toString(),
+      project_id: project.project_id,
       chapter_id: chapter.chapter_id,
       chapter_name: chapter.chapter_name || "",
-      generation_count: 0,
+      confirmed_text: chapter.chapter_body || "",
+      draft_text: localDraftContent || "",
       user_prompt: prompt,
     });
 
@@ -244,19 +235,8 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      generateContent(aiPrompt);
+      regenerateContentWithClario(aiPrompt);
     }
-  };
-
-  const handleDragEndEvent = () => {
-    handleDragEnd();
-    setIsDraggable(false);
-    showAlert("챕터 순서가 변경되었습니다.", "success");
-  };
-
-  const handleDragEnterEvent = () => {
-    handleDragEnter(index);
-    setIsDragOver(true);
   };
 
   const handleChapterNameChange = (value: string) => {
@@ -265,13 +245,12 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   };
 
   const handleChapterBodyChange = (value: string) => {
-    setLocalChapterBody(value);
     debouncedUpdate("chapter_body", value);
   };
 
   const handleDraftContentChange = (value: string) => {
     setLocalDraftContent(value);
-    debouncedUpdate("draftContent", value);
+    debouncedUpdate("chapter_body", value);
   };
 
   const getChapterClassName = () => {
@@ -280,7 +259,6 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       isConfirmed
         ? "bg-[#fafefc] border border-[#b9f8cf]"
         : "bg-white border border-gray-200",
-      isDragOver ? "border-blue-500 bg-blue-50" : "",
     ];
     return classes.join(" ");
   };
@@ -288,32 +266,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const isDisabledForGeneration = isGenerating || isConfirmed;
 
   return (
-    <div
-      draggable={isDraggable}
-      onDragStart={() => handleDragStart(index)}
-      onDragEnd={() => handleDragEndEvent()}
-      onDragEnter={() => handleDragEnterEvent()}
-      onDragLeave={() => setIsDragOver(false)}
-      onDragOver={(e) => e.preventDefault()}
-      className={getChapterClassName()}
-      style={{ cursor: isDraggable ? "grabbing" : "default" }}
-    >
+    <div className={getChapterClassName()}>
       <div className="flex items-center justify-between gap-2">
-        <IconButton
-          size="small"
-          sx={{ cursor: "grab", "&:active": { cursor: "grabbing" } }}
-          onMouseDown={() => setIsDraggable(true)}
-          onMouseUp={() => setIsDraggable(false)}
-          aria-label="챕터 순서 변경"
-        >
-          <DragIcon sx={{ width: 16, height: 16 }} aria-hidden="true" />
-        </IconButton>
-
-        <div
-          className="w-full"
-          onMouseDown={() => setIsDraggable(false)}
-          onMouseUp={() => setIsDraggable(false)}
-        >
+        <div className="w-full">
           <CustomTextField
             className="w-full"
             size="small"
@@ -347,7 +302,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
 
       {!isCollapsed && (
         <>
-          <fieldset onMouseDown={() => setIsDraggable(false)}>
+          <fieldset>
             <legend className="text-sm mb-1">확정된 본문</legend>
             <CustomTextField
               className="w-full"
@@ -360,7 +315,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               multiline
               hiddenLabel
               fullWidth
-              value={localChapterBody}
+              value={chapter.chapter_body || ""}
               onChange={(e) => handleChapterBodyChange(e.target.value)}
               disabled
               slotProps={{
@@ -374,7 +329,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             </span>
           </fieldset>
 
-          <fieldset onMouseDown={() => setIsDraggable(false)}>
+          <fieldset>
             <legend className="text-sm mb-1">생성 초안</legend>
             <CustomTextField
               className="w-full"
@@ -397,10 +352,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             />
           </fieldset>
 
-          <fieldset
-            onMouseDown={() => setIsDraggable(false)}
-            className="flex items-center justify-between gap-2"
-          >
+          <fieldset className="flex items-center justify-between gap-2">
             <legend className="text-sm mb-1">AI 생성 프롬프트</legend>
             <CustomTextField
               className="w-full"
@@ -426,7 +378,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               color="primary"
               variant="contained"
               className="h-[88px]"
-              onClick={() => generateContent(aiPrompt)}
+              onClick={() => generateContent()}
               disabled={isDisabledForGeneration}
               sx={{
                 minWidth: "36px",
@@ -441,10 +393,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             </Button>
           </fieldset>
 
-          <div
-            className="flex items-center justify-between gap-2"
-            onMouseDown={() => setIsDraggable(false)}
-          >
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 flex-wrap">
               {chapter.chapter_body ? (
                 <>
@@ -480,7 +429,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                   color="primary"
                   startIcon={<AutoIcon aria-hidden="true" />}
                   size="small"
-                  onClick={() => generateContent(aiPrompt)}
+                  onClick={generateContent}
                   disabled={isDisabledForGeneration}
                   aria-label="AI로 초안 생성"
                 >

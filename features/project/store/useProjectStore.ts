@@ -11,10 +11,16 @@ interface ProjectState {
   loading: boolean;
   draggedIndex: number | null;
   pdfData: PdfData | null;
+  pdfJson: string | Record<string, any> | null;
+  pdfProcessingJson: string | Record<string, any> | null;
 
   setProject: (project: ProjectDetail | null) => void;
   setLoading: (loading: boolean) => void;
   setPdfData: (pdfData: PdfData | null) => void;
+  setPdfJson: (pdfJson: string | Record<string, any> | null) => void;
+  setPdfProcessingJson: (
+    pdfProcessingJson: string | Record<string, any> | null
+  ) => void;
   updateProject: (updates: Partial<ProjectDetail>) => void;
   updateProjectTitle: (title: string) => void;
   addLocalChapter: (chapter?: Chapter) => void;
@@ -35,6 +41,7 @@ interface ProjectState {
 
 const DEFAULT_CHAPTER: Chapter = {
   ai_create_count: 0,
+  token_count: 0,
   chapter_body: "",
   chapter_id: 0,
   chapter_name: "새 챕터",
@@ -47,6 +54,8 @@ const INITIAL_STATE = {
   loading: false,
   draggedIndex: null,
   pdfData: null,
+  pdfJson: null,
+  pdfProcessingJson: null,
 };
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
@@ -57,6 +66,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setLoading: (loading) => set({ loading }),
 
   setPdfData: (pdfData) => set({ pdfData }),
+
+  setPdfJson: (pdfJson) => set({ pdfJson }),
+  setPdfProcessingJson: (pdfProcessingJson) => set({ pdfProcessingJson }),
 
   updateProject: (updates) =>
     set((state) => {

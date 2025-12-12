@@ -7,6 +7,7 @@ import {
   RewriteChapterRequest,
   AddChapterRequest,
   UpdateChapterRequest,
+  DraftChapterResponse,
 } from "../types";
 
 import dayjs from "dayjs";
@@ -96,7 +97,7 @@ export const deleteChapter = async (chapter_id: number) => {
 
 // AI 통한 챕터 초안 생성
 export const draftChapter = async (data: DraftChapterRequest) => {
-  const response = await apiClient(`/draft`, {
+  const response = await apiClient<DraftChapterResponse>(`/draft`, {
     method: "POST",
     data: data,
     baseUrl: process.env.NEXT_PUBLIC_CLARIO_SERVER,

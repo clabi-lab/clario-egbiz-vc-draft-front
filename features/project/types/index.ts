@@ -56,6 +56,12 @@ export interface DraftChapterRequest {
   pdf_json: any;
 }
 
+export interface DraftChapterResponse {
+  pdf_json: string | Record<string, any>;
+  pdf_processing_json: string | Record<string, any>;
+  items: Chapter[];
+}
+
 export interface UpdateChapterRequest {
   chapter_name: string;
   chapter_body: string;
@@ -64,33 +70,27 @@ export interface UpdateChapterRequest {
 }
 
 export interface RewriteChapterRequest {
-  project_name: string;
-  user_id: string;
-  biz_name: string;
-  project_id: string;
+  project_id: number;
   chapter_id: number;
   chapter_name: string;
-  generation_count: number;
+  confirmed_text: string;
+  draft_text: string;
   user_prompt: string;
 }
 
 export interface AddChapterRequest {
-  project_name: string;
-  user_id: string;
-  biz_name: string;
-  project_id: string;
+  project_id: number;
   chapter_name: string;
 }
 
 export interface Chapter {
   chapter_id: number;
-  chapter_body: string;
   chapter_name: string;
+  chapter_body: string;
   ai_create_count: number;
-  draftContent?: string;
-  created_at?: string;
-  updated_at?: string;
-  token_count?: number;
+  token_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // AI 생성 관련 타입
