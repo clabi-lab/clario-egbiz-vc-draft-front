@@ -7,7 +7,7 @@ interface UseResizerOptions {
 }
 
 interface UseResizerReturn {
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   leftWidth: number;
   isResizing: boolean;
   handleMouseDown: () => void;
@@ -27,7 +27,7 @@ export const useResizer = (
     ...options,
   };
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [leftWidth, setLeftWidth] = useState(initialWidth);
   const [isResizing, setIsResizing] = useState(false);
 
@@ -73,4 +73,3 @@ export const useResizer = (
     handleMouseDown,
   };
 };
-
