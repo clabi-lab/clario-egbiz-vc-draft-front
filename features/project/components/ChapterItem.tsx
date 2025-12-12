@@ -193,9 +193,12 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       chapter_name: chapter.chapter_name,
     });
 
-    await createChapter(project?.project_id, response[0]);
+    const chapterResponse = await createChapter(
+      project?.project_id,
+      response[0]
+    );
     await updateTokenCount(
-      chapter.chapter_id,
+      chapterResponse.chapter_id,
       response[0].token_count,
       response[0].ai_create_count
     );
@@ -342,7 +345,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               multiline
               fullWidth
               value={localDraftContent}
-              onChange={(e) => handleDraftContentChange(e.target.value)}
+              onChange={(e) => setLocalDraftContent(e.target.value)}
               disabled={isDisabledForGeneration}
               loading={isGenerating}
               slotProps={{
@@ -353,7 +356,10 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             />
           </fieldset>
 
-          <fieldset className="flex items-center justify-between gap-2">
+          <fieldset
+            className="flex items-center justify-between gap-2"
+            disabled={!chapter.chapter_body}
+          >
             <legend className="text-sm mb-1">AI 생성 프롬프트</legend>
             <CustomTextField
               className="w-full"
@@ -380,7 +386,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               variant="contained"
               className="h-[88px]"
               onClick={() => regenerateContent(aiPrompt)}
-              disabled={isDisabledForGeneration}
+              disabled={isDisabledForGeneration || !chapter.chapter_body}
               sx={{
                 minWidth: "36px",
                 "& .MuiSvgIcon-root": {

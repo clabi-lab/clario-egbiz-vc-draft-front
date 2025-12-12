@@ -70,7 +70,7 @@ export const downloadProjectDocx = async (
 
 // Chapter 관련 API
 export const createChapter = async (project_id: number, chapter: Chapter) => {
-  const response = await apiClient(`/chapter/create`, {
+  const response = await apiClient<{ chapter_id: number }>(`/chapter/create`, {
     method: "POST",
     data: { project_id, ...chapter },
   });
