@@ -95,6 +95,24 @@ export const deleteChapter = async (chapter_id: number) => {
   return response;
 };
 
+export const updateTokenCount = async (
+  chapter_id: number,
+  token_count: number,
+  ai_create_count: number
+) => {
+  const response = await apiClient<{ token_count: number }>(
+    `/chapter/${chapter_id}/token-count`,
+    {
+      method: "POST",
+      data: {
+        token_count,
+        ai_create_count,
+      },
+    }
+  );
+  return response;
+};
+
 // AI 통한 챕터 초안 생성
 export const draftChapter = async (data: DraftChapterRequest) => {
   const response = await apiClient<DraftChapterResponse>(`/draft`, {

@@ -23,6 +23,7 @@ import {
   createProject,
   rewriteChapter,
   addChapter,
+  updateTokenCount,
 } from "../services/project";
 
 interface ChapterItemProps {
@@ -179,18 +180,6 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     }
   };
 
-  const resetDraftContent = () => {
-    setLocalDraftContent("");
-    updateChapterField(index, "chapter_body", "");
-  };
-
-  const setGeneratedContent = (content: string) => {
-    setLocalDraftContent(content);
-    updateChapterField(index, "chapter_body", content);
-    setIsGenerating(false);
-    setAiPrompt("");
-  };
-
   const generateContent = async () => {
     if (!project?.project_id) {
       showAlert("프로젝트 정보를 찾을 수 없습니다.", "error");
@@ -205,20 +194,24 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     });
 
     await createChapter(project?.project_id, response[0]);
+    await updateTokenCount(
+      chapter.chapter_id,
+      response[0].token_count,
+      response[0].ai_create_count
+    );
 
     updateLocalChapter(index, response[0]);
     setIsGenerating(false);
     setIsConfirmed(true);
   };
 
-  const regenerateContentWithClario = async (prompt: string) => {
+  const regenerateContent = async (prompt: string) => {
     if (!project?.project_id) {
       showAlert("프로젝트 정보를 찾을 수 없습니다.", "error");
       return;
     }
 
     setIsGenerating(true);
-    resetDraftContent();
 
     const response = await rewriteChapter({
       project_id: project.project_id,
@@ -229,13 +222,21 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       user_prompt: prompt,
     });
 
-    setGeneratedContent(response[0].chapter_body);
+    await updateTokenCount(
+      chapter.chapter_id,
+      response[0].token_count,
+      response[0].ai_create_count
+    );
+
+    setLocalDraftContent(response[0].chapter_body);
+    setAiPrompt("");
+    setIsGenerating(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      regenerateContentWithClario(aiPrompt);
+      regenerateContent(aiPrompt);
     }
   };
 
@@ -378,7 +379,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               color="primary"
               variant="contained"
               className="h-[88px]"
-              onClick={() => generateContent()}
+              onClick={() => regenerateContent(aiPrompt)}
               disabled={isDisabledForGeneration}
               sx={{
                 minWidth: "36px",
@@ -402,7 +403,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                     color="primary"
                     startIcon={<ReplayIcon aria-hidden="true" />}
                     size="small"
-                    onClick={() => regenerateContentWithClario(aiPrompt)}
+                    onClick={() => regenerateContent(aiPrompt)}
                     disabled={isDisabledForGeneration}
                     aria-label="AI 초안 재생성"
                   >
