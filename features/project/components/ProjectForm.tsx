@@ -47,7 +47,7 @@ export const ProjectForm = () => {
 
       const response = await createProject({
         user_id: user?.user_id || "",
-        biz_name: user?.company?.company_name || "",
+        biz_name: user?.company?.name || "",
         pdf_yn: !!pdfData,
         project_name: value,
         chapters: project?.chapters || [],

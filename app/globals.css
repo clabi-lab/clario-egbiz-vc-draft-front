@@ -1,10 +1,10 @@
+@import url("https://use.typekit.net/tzo8iiv.css");
+
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
-@import url("https://use.typekit.net/tzo8iiv.css");
 
 body {
   font-family: "sans-serif", sans-serif;
