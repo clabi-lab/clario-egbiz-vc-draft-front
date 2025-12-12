@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { parseJWT } from "@/shared/utils/jwt";
+
+export const EXTERNAL_REDIRECT_URL = "https://www.clabi.co.kr/";
 
 export interface Company {
   name?: string;
@@ -24,28 +27,13 @@ interface UserState {
 }
 
 const parseToken = (token: string): User | null => {
-  try {
-    const payload = token.split(".")[1];
-    // const decoded = JSON.parse(atob(payload));
+  const decoded = parseJWT<{ user_id: string; company: Company }>(token);
+  if (!decoded) return null;
 
-    // 추후 하드 코딩 제거
-    const decoded = {
-      user_id: "586-88-02378",
-      company: {
-        name: "클라비",
-        description: "클라비는 컴퓨 및 클라우드서비스를 제공하는 회사입니다.",
-        foundedAt: "2022-07-12",
-        ceo: "안인구",
-        service: "컴퓨 및 클라우드서비스",
-      },
-    };
-    return {
-      user_id: decoded.user_id,
-      company: decoded.company ?? null,
-    };
-  } catch {
-    return null;
-  }
+  return {
+    user_id: decoded.user_id,
+    company: decoded.company ?? null,
+  };
 };
 
 export const useUserStore = create<UserState>()(
@@ -61,11 +49,30 @@ export const useUserStore = create<UserState>()(
 
       setUser: (user) => set({ user }),
 
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        // 쿠키에서도 토큰 제거
+        if (typeof document !== "undefined") {
+          document.cookie =
+            "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+        set({ user: null, token: null });
+      },
     }),
     {
       name: "user-storage",
-      partialize: (state) => ({ token: state.token, user: state.user }),
+      storage: {
+        getItem: (name) => {
+          // sessionStorage 사용 - 탭/브라우저 닫으면 자동 삭제
+          const str = sessionStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name);
+        },
+      },
     }
   )
 );

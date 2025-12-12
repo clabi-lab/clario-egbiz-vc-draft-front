@@ -1,4 +1,4 @@
-const ChatLayout = ({
+const Layout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -10,4 +10,4 @@ const ChatLayout = ({
   );
 };
 
-export default ChatLayout;
+export default Layout;

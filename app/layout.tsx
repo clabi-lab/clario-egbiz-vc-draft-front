@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import { Providers } from "./providers/providers";
 
-import AppInitializer from "@/shared/components/AppInitializer";
+import { AuthProvider } from "@/shared/components/AuthProvider";
 import { GlobalAlert } from "@/shared/components/GlobalAlert";
 import GlobalDialog from "@/shared/components/GlobalDialog";
 import ThemeProviderClient from "@/shared/components/ThemeProviderClient";
@@ -43,12 +43,13 @@ const RootLayout = async ({
     <html lang="ko">
       <body>
         <Providers>
-          <AppInitializer projectinfo={null} />
-          <ThemeProviderClient>
-            <GlobalAlert />
-            <GlobalDialog />
-            {children}
-          </ThemeProviderClient>
+          <AuthProvider>
+            <ThemeProviderClient>
+              <GlobalAlert />
+              <GlobalDialog />
+              {children}
+            </ThemeProviderClient>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

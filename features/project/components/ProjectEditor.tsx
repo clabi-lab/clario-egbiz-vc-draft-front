@@ -13,9 +13,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import { downloadProjectDocx } from "../services/project";
+import { useUserStore } from "@/shared/store/useUserStore";
 
 const ProjectEditor = () => {
   const router = useRouter();
+  const { user } = useUserStore();
 
   const { containerRef, leftWidth, handleMouseDown } = useResizer({
     initialWidth: 50,
@@ -65,15 +67,19 @@ const ProjectEditor = () => {
 
   // 기업 정보 필드 정의
   const companyFields = [
-    { label: "기업명", value: project?.company?.name, fullWidth: false },
+    { label: "기업명", value: user?.company?.name ?? "", fullWidth: false },
     {
       label: "기업설명",
-      value: project?.company?.description,
+      value: user?.company?.description ?? "",
       fullWidth: false,
     },
-    { label: "설립일", value: project?.company?.foundedAt, fullWidth: false },
-    { label: "대표자", value: project?.company?.ceo, fullWidth: false },
-    { label: "서비스", value: project?.company?.service, fullWidth: true },
+    {
+      label: "설립일",
+      value: user?.company?.foundedAt ?? "",
+      fullWidth: false,
+    },
+    { label: "대표자", value: user?.company?.ceo ?? "", fullWidth: false },
+    { label: "서비스", value: user?.company?.service ?? "", fullWidth: true },
   ];
 
   return (
@@ -121,9 +127,7 @@ const ProjectEditor = () => {
           className="overflow-auto p-4"
           style={{ width: `${leftWidth}%`, flexShrink: 0 }}
         >
-          {project?.company && (
-            <CompanyInfoCard companyFields={companyFields} className="mb-4" />
-          )}
+          <CompanyInfoCard companyFields={companyFields} className="mb-4" />
 
           <ProjectForm />
         </div>
