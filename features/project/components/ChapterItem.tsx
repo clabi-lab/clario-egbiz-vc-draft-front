@@ -362,7 +362,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               fullWidth
               value={localChapterBody}
               onChange={(e) => handleChapterBodyChange(e.target.value)}
-              disabled={!!localChapterBody}
+              disabled
               slotProps={{
                 input: {
                   "aria-label": "확정된 본문",
