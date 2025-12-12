@@ -52,8 +52,8 @@ export const ProjectForm = () => {
         project_name: value,
         chapters: project?.chapters || [],
         pdf_key: pdfData?.task_id || "",
-        pdf_json: pdfData ? JSON.stringify(pdfData) : undefined,
-        pdf_processing_json: pdfData ? JSON.stringify(pdfData) : undefined,
+        pdf_json: pdfData ? JSON.stringify(pdfData) : null,
+        pdf_processing_json: null,
       });
 
       if (response.project_id) {
