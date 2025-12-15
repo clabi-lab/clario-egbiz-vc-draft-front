@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import { Button, IconButton } from "@mui/material";
 import { CustomTextField } from "@/shared/components/CustomTextField";
@@ -37,50 +37,18 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
   const [isConfirmed, setIsConfirmed] = useState(() => {
     return !!chapter.chapter_body;
   });
-  const [aiPrompt, setAiPrompt] = useState("");
 
-  // 로컬 상태로 입력값 관리 (성능 최적화)
+  const [aiPrompt, setAiPrompt] = useState("");
   const [localChapterName, setLocalChapterName] = useState(
     chapter.chapter_name || ""
   );
   const [localDraftContent, setLocalDraftContent] = useState("");
+  const [chapterNameError, setChapterNameError] = useState(false);
 
-  // debounce를 위한 타이머 ref
-  const debounceTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
-
-  const {
-    project,
-    updateLocalChapter,
-    updateChapterField,
-    removeLocalChapter,
-  } = useProjectStore();
+  const { project, updateLocalChapter, removeLocalChapter } = useProjectStore();
   const { user } = useUserStore();
-
   const { openDialog } = useDialogStore();
   const { openAlert } = useAlertStore();
-
-  useEffect(() => {
-    setLocalChapterName(chapter.chapter_name || "");
-    setLocalDraftContent("");
-  }, [chapter.chapter_name, chapter.chapter_body, chapter.chapter_body]);
-
-  useEffect(() => {
-    return () => {
-      Object.values(debounceTimerRef.current).forEach((timer) =>
-        clearTimeout(timer)
-      );
-    };
-  }, []);
-
-  const debouncedUpdate = (field: keyof Chapter, value: string) => {
-    if (debounceTimerRef.current[field]) {
-      clearTimeout(debounceTimerRef.current[field]);
-    }
-
-    debounceTimerRef.current[field] = setTimeout(() => {
-      updateChapterField(index, field, value);
-    }, 300);
-  };
 
   const showAlert = (
     message: string,
@@ -186,11 +154,17 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
       return;
     }
 
+    if (!localChapterName.trim()) {
+      setChapterNameError(true);
+      showAlert("챕터 제목을 입력해주세요.", "error");
+      return;
+    }
+
     setIsGenerating(true);
 
     const response = await addChapter({
       project_id: project?.project_id,
-      chapter_name: chapter.chapter_name,
+      chapter_name: localChapterName,
     });
 
     const chapterResponse = await createChapter(
@@ -243,20 +217,6 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
     }
   };
 
-  const handleChapterNameChange = (value: string) => {
-    setLocalChapterName(value);
-    debouncedUpdate("chapter_name", value);
-  };
-
-  const handleChapterBodyChange = (value: string) => {
-    debouncedUpdate("chapter_body", value);
-  };
-
-  const handleDraftContentChange = (value: string) => {
-    setLocalDraftContent(value);
-    debouncedUpdate("chapter_body", value);
-  };
-
   const getChapterClassName = () => {
     const classes = [
       "rounded-md p-4 flex flex-col gap-4 my-4 transition-all",
@@ -279,9 +239,16 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
             variant="filled"
             hiddenLabel
             value={localChapterName}
-            onChange={(e) => handleChapterNameChange(e.target.value)}
+            onChange={(e) => {
+              setLocalChapterName(e.target.value);
+              if (chapterNameError && e.target.value.trim()) {
+                setChapterNameError(false);
+              }
+            }}
             fullWidth
             disabled={isConfirmed}
+            error={chapterNameError}
+            helperText={chapterNameError ? "챕터 제목을 입력해주세요." : ""}
             slotProps={{
               input: {
                 "aria-label": "챕터 제목",
@@ -320,7 +287,6 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
               hiddenLabel
               fullWidth
               value={chapter.chapter_body || ""}
-              onChange={(e) => handleChapterBodyChange(e.target.value)}
               disabled
               slotProps={{
                 input: {
@@ -409,7 +375,7 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                     color="primary"
                     startIcon={<ReplayIcon aria-hidden="true" />}
                     size="small"
-                    onClick={() => regenerateContent(aiPrompt)}
+                    onClick={() => regenerateContent("")}
                     disabled={isDisabledForGeneration}
                     aria-label="AI 초안 재생성"
                   >
@@ -422,7 +388,9 @@ export const ChapterItem = ({ chapter, index }: ChapterItemProps) => {
                     startIcon={<CheckIcon aria-hidden="true" />}
                     size="small"
                     onClick={handleToggleConfirm}
-                    disabled={isGenerating}
+                    disabled={
+                      isGenerating || (!isConfirmed && !localDraftContent)
+                    }
                     aria-label={
                       isConfirmed ? "초안 확정 해제" : "초안을 본문으로 확정"
                     }

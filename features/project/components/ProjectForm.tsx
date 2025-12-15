@@ -80,6 +80,7 @@ export const ProjectForm = () => {
 
   const handleAddChapter = () => {
     addLocalChapter();
+
     setTimeout(() => {
       const scrollContainer = formRef.current?.parentElement;
       if (scrollContainer) {
@@ -137,7 +138,7 @@ export const ProjectForm = () => {
           color="primary"
           startIcon={<AddIcon aria-hidden="true" />}
           size="small"
-          onClick={handleAddChapter}
+          onClick={() => handleAddChapter()}
           onKeyDown={handleKeyDown}
           aria-label="새 챕터 추가"
         >

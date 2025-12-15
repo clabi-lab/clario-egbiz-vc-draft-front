@@ -44,7 +44,7 @@ const DEFAULT_CHAPTER: Chapter = {
   token_count: 0,
   chapter_body: "",
   chapter_id: 0,
-  chapter_name: "새 챕터",
+  chapter_name: "",
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
