@@ -67,8 +67,10 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchProjectsData();
-  }, []);
+    if (searchQuery === "") {
+      fetchProjectsData();
+    }
+  }, [searchQuery]);
 
   return (
     <main>
