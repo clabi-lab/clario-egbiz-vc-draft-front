@@ -16,8 +16,7 @@ import { ProjectEditor } from "../components";
 
 import { createProject, draftChapter, fetchProject } from "../services/project";
 
-import { Chapter, DraftChapterResponse } from "../types";
-import { setFips } from "crypto";
+import {  DraftChapterResponse } from "../types";
 
 const ProjectDetailPage = () => {
   const params = useParams();
@@ -26,8 +25,6 @@ const ProjectDetailPage = () => {
   const {
     pdfData,
     project,
-    pdfJson,
-    pdfProcessingJson,
     setProject,
     reset,
     setPdfJson,

@@ -148,7 +148,6 @@ export const ProjectForm = () => {
       {project?.chapters?.map((chapter: Chapter, index: number) => (
         <ChapterItem
           key={chapter.chapter_id || `temp-${index}`}
-          chapter={chapter}
           index={index}
         />
       ))}

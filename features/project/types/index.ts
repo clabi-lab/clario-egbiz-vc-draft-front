@@ -91,6 +91,7 @@ export interface Chapter {
   token_count: number;
   created_at: string;
   updated_at: string;
+  draftContent?: string; // 초안 내용 (확정 전)
 }
 
 // AI 생성 관련 타입

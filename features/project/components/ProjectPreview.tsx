@@ -81,7 +81,8 @@ export const ProjectPreview = ({ className }: ProjectPreviewProps) => {
     // 챕터별로 처리
     if (project.chapters?.length) {
       for (const chapter of project.chapters) {
-        const content = chapter.chapter_body || "";
+        // draftContent가 있으면 사용, 없으면 chapter_body 사용
+        const content = chapter.draftContent || chapter.chapter_body || "";
         const lines = content
           .split("\n")
           .filter((line) => line.trim() !== "" || content.includes("\n"));

@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import { Chapter, Company, ProjectDetail } from "../types";
+import { Chapter, ProjectDetail } from "../types";
 import { ClaDocStatusResponse } from "@/features/home/services/cladoc";
-
-export type { Chapter, Company, ProjectDetail };
 
 export type PdfData = ClaDocStatusResponse;
 
@@ -43,6 +41,7 @@ const DEFAULT_CHAPTER: Chapter = {
   ai_create_count: 0,
   token_count: 0,
   chapter_body: "",
+  draftContent: "",
   chapter_id: 0,
   chapter_name: "",
   created_at: new Date().toISOString(),
