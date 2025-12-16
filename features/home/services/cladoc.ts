@@ -9,7 +9,7 @@ const TIMEOUT = {
 
 const POLLING = {
   MAX_ATTEMPTS: 60,
-  INTERVAL: 5000, // 5초
+  INTERVAL: 10000, // 10초
   INITIAL_DELAY: 2000, // 2초
 } as const;
 
@@ -155,6 +155,7 @@ async function initiatePdfProcessing(
       method: "POST",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-store",
       },
       body: formData,
     },
@@ -183,6 +184,7 @@ async function fetchProcessingStatus(
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-store",
       },
     },
     TIMEOUT.STATUS_CHECK
