@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
       httpOnly: false, // 클라이언트에서도 접근 가능하도록 설정
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      // maxAge 제거 - 세션 쿠키로 설정 (브라우저 닫으면 삭제됨)
+      maxAge: 60 * 60 * 8, // 8시간 (28800초)
       path: "/",
     });
 
