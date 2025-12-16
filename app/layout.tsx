@@ -10,15 +10,15 @@ import ThemeProviderClient from "@/shared/components/ThemeProviderClient";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Next Front Project",
-  description: "Next Front Project",
-  keywords: ["Next", "Front", "Project"],
-  publisher: "Next Front Project",
+  title: "경기기업비서 VC 지원서 AI 작성",
+  description: "경기기업비서 VC 지원서 AI 작성",
+  keywords: ["경기", "기업비서", "VC", "지원서", "AI", "작성"],
+  publisher: "경기기업비서",
   openGraph: {
-    title: "Next Front Project",
-    description: "Next Front Project",
-    url: "https://next-front-project.com/",
-    siteName: "Next Front Project",
+    title: "경기기업비서 VC 지원서 AI 작성",
+    description: "경기기업비서 VC 지원서 AI 작성",
+    url: "https://vc-draft.egbiz.clabi.co.kr/",
+    siteName: "경기기업비서 VC 지원서 AI 작성",
     locale: "ko_KR",
     type: "website",
   },
