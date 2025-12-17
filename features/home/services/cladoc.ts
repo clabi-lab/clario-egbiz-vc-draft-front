@@ -155,7 +155,6 @@ async function initiatePdfProcessing(
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Cache-Control": "no-store",
       },
       body: formData,
     },
