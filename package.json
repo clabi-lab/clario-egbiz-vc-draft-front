@@ -16,9 +16,9 @@
     "@tanstack/react-query": "^5.76.1",
     "dayjs": "^1.11.19",
     "isomorphic-dompurify": "^2.33.0",
-    "next": "^15.3.6",
-    "react": "^19.0.1",
-    "react-dom": "^19.2.1",
+    "next": "^15.3.8",
+    "react": "^19.0.3",
+    "react-dom": "^19.0.3",
     "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.4"
   },
