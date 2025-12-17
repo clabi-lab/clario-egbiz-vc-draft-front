@@ -183,6 +183,7 @@ async function fetchProcessingStatus(
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-store",
       },
     },
     TIMEOUT.STATUS_CHECK
