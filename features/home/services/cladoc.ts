@@ -19,6 +19,12 @@ const PROCESSING_CONFIG = {
   PROCESSING_MODE: "text-ocr-others-vlm",
 } as const;
 
+const RETRY_CONFIG = {
+  MAX_RETRIES: 3, // 최대 재시도 횟수
+  RETRY_DELAY: 2000, // 재시도 대기 시간 (2초)
+  BACKOFF_MULTIPLIER: 1.5, // 재시도마다 대기 시간 증가 배율
+} as const;
+
 // ============================================================================
 // 타입 정의
 // ============================================================================
@@ -137,38 +143,109 @@ async function fetchWithTimeout(
 }
 
 /**
- * PDF 처리를 시작합니다.
+ * 재시도 가능한 에러인지 확인합니다.
+ */
+function isRetryableError(error: unknown, statusCode?: number): boolean {
+  // 5xx 서버 에러는 재시도 가능
+  if (statusCode && statusCode >= 500) {
+    return true;
+  }
+
+  // 네트워크 에러는 재시도 가능
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes("network") ||
+      message.includes("timeout") ||
+      message.includes("fetch") ||
+      message.includes("연결")
+    );
+  }
+
+  return false;
+}
+
+/**
+ * PDF 처리를 시작합니다. (재시도 로직 포함)
  */
 async function initiatePdfProcessing(
   file: File,
   onProgress?: ProgressCallback
 ): Promise<ClaDocResponse> {
-  const formData = new FormData();
-  formData.append("input_type", PROCESSING_CONFIG.INPUT_TYPE);
-  formData.append("output_type", PROCESSING_CONFIG.OUTPUT_TYPE);
-  formData.append("processing_mode", PROCESSING_CONFIG.PROCESSING_MODE);
-  formData.append("file", file);
+  let lastError: Error | null = null;
+  let attempt = 0;
 
-  const response = await fetchWithTimeout(
-    `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/pdf-process-integrated`,
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: formData,
-    },
-    TIMEOUT.INIT_REQUEST
-  );
+  while (attempt <= RETRY_CONFIG.MAX_RETRIES) {
+    try {
+      const formData = new FormData();
+      formData.append("input_type", PROCESSING_CONFIG.INPUT_TYPE);
+      formData.append("output_type", PROCESSING_CONFIG.OUTPUT_TYPE);
+      formData.append("processing_mode", PROCESSING_CONFIG.PROCESSING_MODE);
+      formData.append("file", file);
 
-  if (!response.ok) {
-    throw new Error(`PDF 처리 요청 실패: ${response.status}`);
+      if (attempt > 0) {
+        onProgress?.(
+          `PDF 처리 요청 재시도 중... (${attempt}/${RETRY_CONFIG.MAX_RETRIES})`
+        );
+      }
+
+      const response = await fetchWithTimeout(
+        `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/pdf-process-integrated`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: formData,
+        },
+        TIMEOUT.INIT_REQUEST
+      );
+
+      if (!response.ok) {
+        const statusCode = response.status;
+
+        // 4xx 에러는 재시도하지 않음 (클라이언트 에러)
+        if (statusCode >= 400 && statusCode < 500) {
+          throw new Error(
+            `PDF 처리 요청 실패: ${statusCode} - 잘못된 요청입니다.`
+          );
+        }
+
+        // 5xx 에러는 재시도 가능
+        if (isRetryableError(null, statusCode)) {
+          throw new Error(`PDF 처리 요청 실패: ${statusCode}`);
+        }
+
+        throw new Error(`PDF 처리 요청 실패: ${statusCode}`);
+      }
+
+      const data: ClaDocResponse = await response.json();
+      onProgress?.("PDF 처리가 시작되었습니다...");
+
+      return data;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      // 마지막 시도이거나 재시도 불가능한 에러면 즉시 throw
+      if (
+        attempt >= RETRY_CONFIG.MAX_RETRIES ||
+        !isRetryableError(error, undefined)
+      ) {
+        throw lastError;
+      }
+
+      // 재시도 전 대기 (exponential backoff)
+      const delay =
+        RETRY_CONFIG.RETRY_DELAY *
+        Math.pow(RETRY_CONFIG.BACKOFF_MULTIPLIER, attempt);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+
+      attempt++;
+    }
   }
 
-  const data: ClaDocResponse = await response.json();
-  onProgress?.("PDF 처리가 시작되었습니다...");
-
-  return data;
+  // 이론적으로는 여기 도달하지 않지만 타입 안전성을 위해
+  throw lastError || new Error("PDF 처리 요청 실패");
 }
 
 /**
@@ -178,7 +255,7 @@ async function fetchProcessingStatus(
   taskId: string
 ): Promise<ClaDocStatusResponse> {
   const response = await fetchWithTimeout(
-    `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/pdf-process/status/${taskId}`,
+    `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/${process.env.NEXT_PUBLIC_CLADOC_SERVER_PATH}/status/${taskId}`,
     {
       method: "GET",
       headers: {
