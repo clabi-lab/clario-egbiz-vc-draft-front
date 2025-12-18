@@ -255,7 +255,7 @@ async function fetchProcessingStatus(
   taskId: string
 ): Promise<ClaDocStatusResponse> {
   const response = await fetchWithTimeout(
-    `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/${process.env.NEXT_PUBLIC_CLADOC_PATH}/status/${taskId}`,
+    `${process.env.NEXT_PUBLIC_CLADOC_SERVER}/${process.env.NEXT_PUBLIC_CLADOC_SERVER_PATH}/status/${taskId}`,
     {
       method: "GET",
       headers: {
